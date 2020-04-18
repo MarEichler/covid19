@@ -3,7 +3,7 @@ title: ""
 output:
   html_document:
     highlight: "tango"
-    code_folding: "show"
+#    code_folding: "show"
 ---
 
 ```{r, echo=FALSE, eval=FALSE}
@@ -13,7 +13,6 @@ output:
 #     once for the charts and the data (don't have to worky about putting into new file )
 
 ```
-
 
 ```{r, results="hide", warning=FALSE, message=FALSE}
 library(tidyverse)
