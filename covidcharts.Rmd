@@ -27,13 +27,13 @@ AccentCol01 <- "firebrick"
 knitr::opts_chunk$set(fig.width=10, fig.height=4, dpi=300)
 ```
 
-The data is taken from [Our World in Data](https://ourworldindata.org/coronavirus).  There are csv files available for download for deaths, total cases, and new cases, each by date.  
+The data is taken from [Our World in Data](https://ourworldindata.org/coronavirus).  There are csv files available for download for deaths, total cases, and daily cases, each by date.  
 
 ```{r, message=FALSE}
 # https://ourworldindata.org/coronavirus
 owid_deaths <- read_csv("total-deaths-covid-19.csv")
 owid_totalcases <- read_csv("total-cases-covid-19.csv")
-owid_newcases <- read_csv("daily-cases-covid-19.csv ")
+owid_dailycases <- read_csv("daily-cases-covid-19.csv ")
 
 #column names that the data sets should be joined as 
 match_cols <- c("Entity", "Code", "Date")
@@ -43,7 +43,7 @@ covid19 <- inner_join(
     owid_deaths
   , inner_join(
         owid_totalcases
-      , owid_newcases
+      , owid_dailycases
       , by =match_cols
       )
   , by=match_cols
@@ -80,15 +80,15 @@ One important calculation is the growth rate.  The growth rate is calculated as 
 $$
 \text{Growth Rate} = \frac{ \text{New-Cases}_N}{\text{New-Cases}_{N-1}}
 $$
-where $N$ is a given day.  
+where $N$ is a given day.  If the growth rate is below 1 that means the number of new cases is slowing down - this is a positive sign.  
 
-If the growth rate is below 1 that means the number of new cases is slowing down - this is a positive sign.  
-
-I also wanted to look at the dealth percentage which I calculated as the total number of dealths divided by the total number of cases for a given day.  
+I also wanted to look at the dealth percentage which I calculated as the total number of dealths divided by the total number of cases for a given day.  In addition, the daily deaths are calculating using the total deaths by date values.  
 
 ```{r}
+#number of rows; use for `for loop`  
 R <- nrow(covid19_US)
 
+#GROWTH FACTOR  
 covid19_US$`Growth Factor` <- NA
 
 #calculate growth rate
@@ -100,6 +100,7 @@ for (r in 2:R){
 }
 
 
+#DEATH PERCENTAGE  
 covid19_US$`Death Percentage` <- NA
 
 # calculate dealth percentage  
@@ -108,6 +109,20 @@ for (r in 1:R){
     #dealth percentage = total deaths / total cases 
     covid19_US$`Total Deaths`[r] /  covid19_US$`Total Cases`[r] 
 }
+
+
+covid19_US$`Daily Deaths` <- NA  
+
+#first row of daily deaths = first row of total deaths 
+covid19_US$`Daily Deaths`[1] <- covid19_US$`Total Deaths`[1]
+
+#calculate the rest of daily deaths using total deaths  
+for (r in 2:R){
+  covid19_US$`Daily Deaths`[r] <- 
+    #daily deaths = total deaths_today - total deaths_yesterday 
+    covid19_US$`Total Deaths`[r] - covid19_US$`Total Deaths`[r-1]
+}
+
 ```
 
 I am restricted the charts to show values after March 17, 2020 (first date in data set is March 18, 2020).  This is when preventative measures started to increase dramatically.  In addition, given the small number of cases prior to this date caused great variability in the growth rate and has multiple instances where it's  NA or equal to infinity.  
@@ -135,15 +150,19 @@ current_values <- covid19_US_adj %>%
     filter(Date == current_date)
 
 
-current_US_deaths     <- current_values$`Total Deaths`
-current_US_totalcases <- current_values$`Total Cases`
-current_US_newcases   <- current_values$`Daily Cases`
-current_US_growthfact <- current_values$`Growth Factor`
-current_US_deathperc  <- current_values$`Death Percentage`
+current_US_deaths      <- current_values$`Total Deaths`
+current_US_totalcases  <- current_values$`Total Cases`
+current_US_dailycases <- current_values$`Daily Cases`
+current_US_growthfact  <- current_values$`Growth Factor`
+current_US_deathperc   <- current_values$`Death Percentage`
+current_US_dailydeaths <- current_values$`Daily Deaths`
 ```
 
-###  Total Cases  
+###  Total Cases and Total Deaths  
+These show the cumulative total of cases and deaths.  
 ```{r}
+#total cases by day bar chart 
+
 plot_tc <- ggplot(covid19_US_adj, aes(x=Date, y=`Total Cases`))+
   #use geom_col because counts per day have alread been counted 
   geom_col(alpha=0.6)+
@@ -166,14 +185,48 @@ plot_tc <- ggplot(covid19_US_adj, aes(x=Date, y=`Total Cases`))+
               )+
   #add commas to numbers in y axis; requires scales package
   scale_y_continuous(labels=comma)
-plot_tc
+```
+
+```{r}
+#total deaths by day bar chart  
+
+plot_td <- ggplot(covid19_US_adj, aes(x=Date, y=`Total Deaths`))+
+  #use geom_col because counts per day have alread been counted 
+  geom_col(alpha=0.6)+
+  ggtitle("Total Deaths of COVID-19 in the United States by Day")+
+  geom_label(
+      data=current_values
+    #format label so there is a comma after three places 
+    , aes(label = formatC(`Total Deaths`, big.mark=",", format="d"))
+    )+
+  theme_minimal()+
+  theme(
+     legend.position = "none"
+    ,axis.title.x=element_blank()
+    ,axis.title.y=element_blank()
+  )+
+  scale_x_date(breaks=date_breaks("7 days")
+              , labels = date_format("%b-%d")
+              , minor_breaks=date_breaks("1 day")
+              , lim = c(as.Date(startdate)+.5, as.Date(current_date)+1)  
+              )+
+  #add commas to numbers in y axis; requires scales package
+  scale_y_continuous(labels=comma)
+```
+
+```{r, fig.height=8}  
+#Put the plots together and have the plot axes line up
+gTC <- ggplotGrob(plot_tc)
+gTD <- ggplotGrob(plot_td)
+grid.newpage()
+grid.draw(rbind(gTC, gTD))
 ```
 
 ### Growth Factor and Daily Cases 
 Recall that a growth factor less than 1 is a positive sign that the growth of cases is slowing down.  Growth factor is directly related to daily cases - if daily cases goes now the growth factor is less than 1; if daily cases goes up the growth factor is greater than one.  These two charts represent the same information in two differnt ways.  
 
 ```{r}
-#Start by plotting the growth factor.   
+#growth factor by date line chart 
 
 plot_gf  <- ggplot(covid19_US_adj, aes(x=Date, y=`Growth Factor`))+
   geom_point(size=2, alpha=0.6)+
@@ -201,7 +254,7 @@ plot_gf  <- ggplot(covid19_US_adj, aes(x=Date, y=`Growth Factor`))+
 ```
 
 ```{r}  
-#Then plot the daily cases.   
+#daily cases by date bar chart    
 
 plot_dc <- ggplot(covid19_US_adj, aes(x=Date, y=`Daily Cases`))+
   #use geom_col because counts per day have alread been counted 
@@ -241,12 +294,15 @@ grid.draw(rbind(gGF, gDC))
 
 ### Total Deaths and Death Percentage   
 
-In order to have separate axes on the same plot - I have to start by finding the multiplier that will transform the primary axis into the secondary axis.  I start by defining two function: one for finding rounding to a specific base (i.e. rounding to the nearest 5,000) and a function for finding the upper limit for the primary y-axis.  
 ```{r}
+#start by defining two fucntion
+
+#round number to specific base  
 func_mround <- function(x, base){
   base*round(x/base)
 }
 
+#round up to a certain base; this will be used for upper bound for primary axis 
 Ylim <- function(curr_val, base){
 round_curr_val <- func_mround(curr_val, base)
 if( round_curr_val - curr_val < 0 ){
@@ -258,55 +314,68 @@ return(lim)
 }
 ```
 
-I am setting the primary (total dealths) y-axis base to 5,000.  That is use to find the upper limit for the primary y-axis.  After limit is found; that can be used to calculate the transform multiplier.  This takes some extra coding because I want the secondary axis to match up with the primary axis.  
 
-As an example, say the primary axis is from 0 to 20 and it has 4 breaks (so 5, 10, 15, 20).  Say the secondary axis is a percentage.  I want to make sure that the the upper limit of the secondary axis is divisible by 4 so that the 'breaks' line up.  If I don't do this, the secondary axis breaks will not align with the break lines shown in the primary axis - this makes the plot harder to read.  
+
+
 ```{r}
 #td = total deaths 
-#set base for first axis 
-td_base <- 5000
+#set base for primary axis 
+dd_base <- 1000
 
-#first/main y-axis limit 
-td_y1lim  <- Ylim(current_US_deaths, td_base)
+#primary/main y-axis limit 
+dd_y1lim  <- Ylim(max(covid19_US_adj$`Daily Deaths`), dd_base) + dd_base
+  #add an extra base to add more room 
 
 #max value for the secondary axis 
 maxdeathperc <- max(covid19_US_adj$`Death Percentage`, na.rm=TRUE)
 
-#set transform for sec axis 
-#adjust the decimal to be the top value you want on the sec axis
-# i.e. if you want the top value make it ylimit*(1/.10)
-# the main axis is broken into 7 lines so I wanted a limit ....
-#    ... that could also be broken into 7 lines; hence .07
+#TRANSFORM PRIMARY AXIS TO SECONDARY AXIS 
+#in order to have a secondary axis have to have a multiplier to transform primary axis to sec axis
+#find the Ylim of primary axis
+# next want to find an upper bound for seconday axis
+#     want both upper bounds to be divisible by the same number 
+#     i.e. if the primary axis is from 0 to 20 and it has 4 breaks (5, 10, 15, 20)
+#     I want to set the upper bound of the secondary axis to a value divisible by 4
+#     want teh break lines of the primary axis to match up with the breaks of the secondary axis 
+#what if I don't do this?
+#     the text breaks of the seconday axis will not line up with the line breaks of the primary axis 
 
-#want both axes to have the same divsors 
-#this way the secondary axis will match up with the primary axis
-divisor <- td_y1lim/td_base
-#round to the nearest percentage 
+#find what the divisor is 
+divisor <- dd_y1lim/dd_base
+
+# use divisor to find acceptable base for sec axis 
 dp_base <- divisor/100
+
+#find rounded value of sec axis with sec base 
 Rmaxdeathperc <- func_mround(maxdeathperc, dp_base)
 
-#if the round is < actual then limit is round + sec_base
+#round sec-axis value up; for the sec axis Ylimit
 if( Rmaxdeathperc - maxdeathperc < 0 ){
-  td_y2lim <- Rmaxdeathperc + dp_base
+  dp_y2lim <- Rmaxdeathperc + dp_base
 } else {
-  td_y2lim <- Rmaxdeathperc
+  dp_y2lim <- Rmaxdeathperc
 }
-td_transform <- td_y1lim*(1/td_y2lim)
+
+#calculate the transform variable  
+dd_transform <- dd_y1lim*(1/dp_y2lim)
+
+
+
 ```
 
 ```{r}
-#Start by plotting the primary data: total deaths.    
+#plot the primary data: daily deaths by day bar chart    
 
-plot_td <- ggplot(covid19_US_adj, aes(x=Date))+
+plot_dd <- ggplot(covid19_US_adj, aes(x=Date))+
   #use geom_col because counts per day have alread been counted 
-  geom_col(aes(y=`Total Deaths`), alpha=0.6)+
+  geom_col(aes(y=`Daily Deaths`), alpha=0.6)+
   #add total dealths label 
   geom_label(
       data = current_values
     #format label so there is a comma after three places 
     , aes(
-        label = formatC(`Total Deaths`, big.mark=",", format="d")
-      , y     = `Total Deaths`
+        label = formatC(`Daily Deaths`, big.mark=",", format="d")
+      , y     = `Daily Deaths`
       )
     )
 ```
@@ -314,42 +383,41 @@ plot_td <- ggplot(covid19_US_adj, aes(x=Date))+
 ```{r}
 #Then, plot the secondary data: death percentage.  
 
-plot_td <- plot_td + 
+plot_dd <- plot_dd + 
   geom_line(
     data = covid19_US_adj, 
     #transformatio to match secondary axis below
-      aes(y=`Death Percentage`*td_transform)
+      aes(y=`Death Percentage`*dd_transform)
     , color=AccentCol01
     , size= 1
     )+
   geom_point(
     data = covid19_US_adj, 
     #transformatio to match secondary axis below
-      aes(y=`Death Percentage`*td_transform)
+      aes(y=`Death Percentage`*dd_transform)
     #color 
     , color=AccentCol01
     , size= 2
     )+
   #add label to most recent value 
-  geom_label_repel(
+  geom_label(
       data = current_values
     , aes(
         label = percent(`Death Percentage`, accuracy=0.001)
       # remember to add the transform! 
-      , y     = `Death Percentage`*td_transform 
+      , y     = `Death Percentage`*dd_transform 
       )
-    , seed = 100
-    , box.padding = 0.6 
-    , hjust = 0
-    , vjust = 1
+    , hjust = 0.25
+    , vjust = 0
     , color = AccentCol01
     )
+
 ```
 
 ```{r }
 #It is imparative to add the scales.  
 
-plot_td <- plot_td + 
+plot_dd <- plot_dd + 
   #scale the date to be onece a week 
   #add specific limits so it will line up with geom_line 
   scale_x_date(breaks=date_breaks("7 days")
@@ -359,21 +427,22 @@ plot_td <- plot_td +
               )+
   #add commas to numbers in y axis; requires scales package
   scale_y_continuous(
-      limits = c(0, td_y1lim)
+      limits = c(0, dd_y1lim)
     #add commas to numbers in y axis; requires scales package
     , labels = comma
     #this transformation MUST match the transformation above
     #divide by current_US_deaths leads to an axis of 0 to 1
     #divide by current_US_deaths*10 leads to an axis of 0 to 0.1
-    , sec.axis = sec_axis(~./td_transform)    )
+    , sec.axis = sec_axis(~./dd_transform)
+    )
 ```
 
 ```{r }
 #Finally, a title and other themes are specified.    
 
-plot_td <- plot_td + 
+plot_dd <- plot_dd + 
   #add title 
-  ggtitle("Total Deaths and Dealth Percentage of COVID-19 in the United States by Day")+
+  ggtitle("Daily Deaths and Dealth Percentage of COVID-19 in the United States by Day")+
   #minimal theme
   theme_minimal()+
   theme(
@@ -384,29 +453,40 @@ plot_td <- plot_td +
     , axis.title.y = element_blank()
   )
 
-plot_td
+plot_dd
 ```
 
-### Values for Past Week 
-
+#### Summary  
 
 Although the growth rate appears to be starting to slow down; the death percentage has been consistently going up over the past 4 weeks and is almost at 5%.  
+
+### Values for Past Week 
 
 ```{r}
 #transpose table; easier to read
 covid19_US_adj %>%
   arrange(desc(Date)) %>%
   top_n(7, wt=Date) %>%
-  #format data for output tabel 
+  #format data for output tabe
   mutate(
-      #Date = format(Date, format="%a,   %b   %d,   %Y")
       Date = format(Date, '%a, %b %d, %Y')
-    , `Total Deaths` = formatC(`Total Deaths`, big.mark=",", format="d")
     , `Total Cases` = formatC(`Total Cases`, big.mark=",", format="d")
     , `Daily Cases`  = formatC(`Daily Cases`, big.mark=",", format="d")
     , `Growth Factor` = round(`Growth Factor`, 4)
+    , `Total Deaths` = formatC(`Total Deaths`, big.mark=",", format="d")
+    , `Daily Deaths` = formatC(`Daily Deaths`, big.mark=",", format="d")
     , `Death Percentage` = percent(`Death Percentage`, accuracy=0.001)
   ) %>%
+  #re-order to group cases and death information together 
+  select(
+      Date
+    , `Total Cases`
+    , `Daily Cases`
+    , `Growth Factor`
+    , `Total Deaths`
+    , `Daily Deaths`
+    , `Death Percentage`
+    ) %>%
   kable(align=c('l', rep('r', 5))) %>%
   kable_styling(
     bootstrap_options = c(
@@ -416,6 +496,8 @@ covid19_US_adj %>%
       , "hover"
       #table doesn't have to be full width 
       , full_width = FALSE
+      #make it horizontally scrollable
+      , "responsive"
       )
     ) %>%
   row_spec(1, bold=T, color="white", background = "rgba(0, 0, 0, .5)")
