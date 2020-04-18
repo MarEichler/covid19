@@ -2,9 +2,9 @@
 title: ""
 output:
   html_document:
-    toc: false
-    toc_float: true
-    toc_depth: 4
+#    toc: false
+#    toc_float: true
+#    toc_depth: 4
     highlight: "tango"
     code_folding: "show"
 ---
