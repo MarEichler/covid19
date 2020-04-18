@@ -178,9 +178,9 @@ Recall that a growth factor less than 1 is a positive sign that the growth of ca
 Start by plotting the growth factor. 
 ```{r plot-gf}
 plot_gf  <- ggplot(covid19_US_adj, aes(x=Date, y=`Growth Factor`))+
-  geom_point()+
-  geom_line()+
-  geom_hline(yintercept = 1, linetype="dotted", color=AccentCol01)+
+  geom_point(size=2, alpha=0.6)+
+  geom_line(size=1, alpha=0.6)+
+  geom_hline(yintercept = 1, linetype="dotted", color=AccentCol01, size=1)+
   ggtitle("Growth Factor of COVID-19 in the United States by Day")+
   # ADD LABEL 
   geom_label(
@@ -384,18 +384,23 @@ plot_td <- plot_td +
 plot_td
 ```
 
-
+<br> 
 
 # Values for Past Week 
+
+
+Although the growth rate appears to be starting to slow down; the death percentage has been consistently going up over the past 4 weeks and is almost at 5%. 
 
 ```{r}
 #transpose table; easier to read
 covid19_US_adj %>%
-  arrange(Date) %>%
+  arrange(desc(Date)) %>%
   top_n(7, wt=Date) %>%
   #format data for output tabel 
   mutate(
-      `Total Deaths` = formatC(`Total Deaths`, big.mark=",", format="d")
+      #Date = format(Date, format="%a,   %b   %d,   %Y")
+      Date = format(Date, '%a, %b %d, %Y')
+    , `Total Deaths` = formatC(`Total Deaths`, big.mark=",", format="d")
     , `Total Cases` = formatC(`Total Cases`, big.mark=",", format="d")
     , `Daily Cases`  = formatC(`Daily Cases`, big.mark=",", format="d")
     , `Growth Factor` = round(`Growth Factor`, 4)
@@ -409,13 +414,12 @@ covid19_US_adj %>%
       #highlight row when hover over it 
       , "hover"
       #table doesn't have to be full width 
-      , full_width = F
+      , full_width = FALSE
       )
     ) %>%
-  row_spec(7, bold=T, color="white", background = "rgba(0, 0, 0, .5)")
+  row_spec(1, bold=T, color="white", background = "rgba(0, 0, 0, .5)")
 
 ```
 
-
-
+ 
 
