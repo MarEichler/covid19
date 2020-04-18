@@ -2,11 +2,10 @@
 title: "Tracking COVID-19"
 output:
   html_document:
-    toc: true
-    toc_float: true
+#    toc: true
+#    toc_float: true
     toc_depth: 4
     highlight: "tango"
-    code_folding: "hide"
 ---
 
 ```{r, echo=FALSE, eval=FALSE}
@@ -14,6 +13,7 @@ output:
 #this is so the Rmd can be called twice in the index.Rmd file
 #     once for just the charts
 #     once for the charts and the data (don't have to worky about putting into new file )
+
 ```
 
 
@@ -26,8 +26,8 @@ library(lubridate)
 library(scales)
 library(ggrepel)
 library(kableExtra)
-knitr::opts_chunk$set(fig.width=8, fig.height=3.5)
 AccentCol01 <- "firebrick"
+knitr::opts_chunk$set(fig.width=10, fig.height=4, dpi=300)
 ```
 
 The data is taken from [Our World in Data](https://ourworldindata.org/coronavirus).  There are csv files available for download for deaths, total cases, and new cases, each by date.  
@@ -186,7 +186,7 @@ plot_gf  <- ggplot(covid19_US_adj, aes(x=Date, y=`Growth Factor`))+
   # ADD LABEL 
   geom_label(
       data = current_values
-    , aes(label = round(`Growth Factor`, 3))
+    , aes(label = round(`Growth Factor`, 4))
     )+
   theme_minimal()+
   theme(
@@ -233,7 +233,7 @@ plot_dc <- ggplot(covid19_US_adj, aes(x=Date, y=`Daily Cases`))+
   scale_y_continuous(labels=comma)
 ```
 
-```{r, fig.height=7}  
+```{r, fig.height=8}  
 #Put the plots together and have the plot axes line up
 
 gGF <- ggplotGrob(plot_gf)
