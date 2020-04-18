@@ -78,7 +78,7 @@ covid19_US <- covid19 %>%
 One important calculation is the growth rate.  The growth rate is calculated as follows: 
 
 $$
-\text{Growth Rate} = \frac{ \text{New-Cases}_N}{\text{New-Cases}_{N-1}}
+\text{Growth Rate} = \frac{ \text{Daily-Cases}_N}{\text{Daily-Cases}_{N-1}}
 $$
 where $N$ is a given day.  If the growth rate is below 1 that means the number of new cases is slowing down - this is a positive sign.  
 
@@ -302,7 +302,7 @@ plot_gf  <- ggplot(covid19_US_adj, aes(x=Date, y=`Growth Factor`))+
 plot_dc <- ggplot(covid19_US_adj, aes(x=Date, y=`Daily Cases`))+
   #use geom_col because counts per day have alread been counted 
   geom_col(alpha=0.6)+
-  ggtitle("New Cases of COVID-19 in the United States by Day")+
+  ggtitle("Daily Cases of COVID-19 in the United States by Day")+
   # ADD LABEL 
   geom_label(
       data = current_values
@@ -325,8 +325,6 @@ plot_dc <- ggplot(covid19_US_adj, aes(x=Date, y=`Daily Cases`))+
               )+
   #add commas to numbers in y axis; requires scales package
   scale_y_continuous(labels=comma)
-
-plot_dc
 ```
 
 ```{r, fig.height=8}  
