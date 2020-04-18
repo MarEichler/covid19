@@ -226,17 +226,52 @@ grid.draw(rbind(gTC, gTD))
 Recall that a growth factor less than 1 is a positive sign that the growth of cases is slowing down.  Growth factor is directly related to daily cases - if daily cases goes now the growth factor is less than 1; if daily cases goes up the growth factor is greater than one.  These two charts represent the same information in two differnt ways.  
 
 ```{r}
+#set the limits for the x-axis
+#want the limits to be the same so the axes for different charts line up
+#need to add extra for the bar charts 
+
+x_min <- as.Date(startdate)+.5
+x_max <- as.Date(current_date)+1
+```
+
+
+```{r}
 #growth factor by date line chart 
 
+caption <- "A growth factor above 1 means daily cases are increasing"
+
 plot_gf  <- ggplot(covid19_US_adj, aes(x=Date, y=`Growth Factor`))+
+  #add red box to show growth rates that are above 1
+  annotate(
+      "rect"
+    , xmin = x_min
+    , xmax = x_max
+    , ymin =  1
+    , ymax =  Inf
+    , fill = AccentCol01
+    , alpha = 0.2
+    ) +
+  #add line at 1 
+  annotate(
+      "segment"
+    , x     = x_min
+    , xend  = x_max
+    , y     =  1
+    , yend  =  1
+    , color = AccentCol01
+    , linetype = "dotted"
+    , size = 1
+    ) +
   geom_point(size=2, alpha=0.6)+
   geom_line(size=1, alpha=0.6)+
-  geom_hline(yintercept = 1, linetype="dotted", color=AccentCol01, size=1)+
+ # geom_hline(yintercept = 1, linetype="dotted", color=AccentCol01, size=1)+
   ggtitle("Growth Factor of COVID-19 in the United States by Day")+
   # ADD LABEL 
   geom_label(
       data = current_values
     , aes(label = round(`Growth Factor`, 4))
+    , vjust=0
+    , nudge_y = 0.1
     )+
   theme_minimal()+
   theme(
@@ -247,10 +282,18 @@ plot_gf  <- ggplot(covid19_US_adj, aes(x=Date, y=`Growth Factor`))+
   scale_x_date(breaks=date_breaks("7 days")
               , labels = date_format("%b-%d")
               , minor_breaks=date_breaks("1 day")
-              , limits = c(as.Date(startdate)+.5, as.Date(current_date)+1) 
+              , limits = c(x_min, x_max) 
               )+
   #want growth rate to go to 0
-  ylim(0, NA)
+  ylim(0, NA)+
+  #add text 
+  annotate("text"
+           , x = x_max - 1
+           , y = 2
+           , label = caption
+           , vjust="inward"
+           , hjust= 1
+           )
 ```
 
 ```{r}  
@@ -264,7 +307,8 @@ plot_dc <- ggplot(covid19_US_adj, aes(x=Date, y=`Daily Cases`))+
   geom_label(
       data = current_values
     #format label so there is a comma after three places 
-    , aes(        label = formatC(`Daily Cases`, big.mark=",", format="d"))
+    , aes(label = formatC(`Daily Cases`, big.mark=",", format="d"))
+    , vjust = 0
     )+
   theme_minimal()+
   theme(
@@ -277,10 +321,12 @@ plot_dc <- ggplot(covid19_US_adj, aes(x=Date, y=`Daily Cases`))+
   scale_x_date(breaks=date_breaks("7 days")
               , labels = date_format("%b-%d")
               , minor_breaks=date_breaks("1 day")
-              , lim = c(as.Date(startdate)+.5, as.Date(current_date)+1)  
+              , limits = c(x_min, x_max)   
               )+
   #add commas to numbers in y axis; requires scales package
   scale_y_continuous(labels=comma)
+
+plot_dc
 ```
 
 ```{r, fig.height=8}  
