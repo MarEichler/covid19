@@ -29,28 +29,8 @@ knitr::opts_chunk$set(fig.width=10, fig.height=4, dpi=300)
 
 The data is taken from [Our World in Data](https://ourworldindata.org/coronavirus) who gets their data from the Eurpoean CDC.  They file can be found [here](https://ourworldindata.org/coronavirus-source-data) and is called `full_data.csv`; also called "All four metrics".   
 
-```{r, message=FALSE, eval=FALSE}
-# https://ourworldindata.org/coronavirus
-owid_deaths <- read_csv("total-deaths-covid-19.csv")
-owid_totalcases <- read_csv("total-cases-covid-19.csv")
-owid_dailycases <- read_csv("daily-cases-covid-19.csv ")
-
-#column names that the data sets should be joined as 
-match_cols <- c("Entity", "Code", "Date")
-
-#do nested inner_joins to join all three data sets on the above critera 
-covid19 <- inner_join(
-    owid_deaths
-  , inner_join(
-        owid_totalcases
-      , owid_dailycases
-      , by =match_cols
-      )
-  , by=match_cols
-  )
-```
-
 ```{r}
+#https://ourworldindata.org/coronavirus-source-data 
 covid19 <- read_csv("full_data.csv",
                 col_types = cols(
                     date = col_date(format = ""),
