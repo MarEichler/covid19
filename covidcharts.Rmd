@@ -511,7 +511,7 @@ plot_dd
 
 #### Summary  
 
-Although the growth rate appears to be starting to slow down; the death percentage has been consistently going up over the past 4 weeks and is almost at 5%.  
+Although the growth rate appears to be starting to slow down; the death percentage has been consistently going up over the past 4 weeks.  
 
 ### Values for Past Week 
 
