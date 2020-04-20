@@ -27,7 +27,28 @@ AccentCol01 <- "firebrick"
 knitr::opts_chunk$set(fig.width=10, fig.height=4, dpi=300)
 ```
 
-The data is taken from [Our World in Data](https://ourworldindata.org/coronavirus) who gets their data from the Eurpoean CDC.  They file can be found [here](https://ourworldindata.org/coronavirus-source-data) and is called `full_data.csv`; also called "All four metrics".   
+The data is taken from
+<a href="https://ourworldindata.org/coronavirus" target="_blank">
+Our World in Data </a> 
+who gets their data from the Eurpoean CDC.  They file can be found
+<a href="https://ourworldindata.org/coronavirus-source-data" target="_blank" >
+here </a>
+and is called `full_data.csv`; also called "All four metrics".  There is an option to download data directly from
+<a href="https://www.ecdc.europa.eu/en/publications-data/download-todays-data-geographic-distribution-covid-19-cases-worldwide" target="_blank" >
+European CDC </a>
+; however Our World in Data has "cleaned up" these data, making them easier to use.  
+
+Given that the data from Our World in Data is updated daily based on London time; the datas and values do not match up with the
+<a href="https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/cases-in-us.html" target="_blank">
+American CDC </a> 
+values.  However, I am sticking with the OWID data set as it is available for download; where the CDC data is not.  
+
+```{r, eval=FALSE}
+#download data directly from European CDC
+library(utils)
+data <- read.csv("https://opendata.ecdc.europa.eu/covid19/casedistribution/csv", na.strings = "", fileEncoding = "UTF-8-BOM")
+```
+
 
 ```{r}
 #https://ourworldindata.org/coronavirus-source-data 
