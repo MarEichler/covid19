@@ -117,7 +117,7 @@ startdate <- "2020-03-17"
 
 covid19_US_adj <- covid19_US  %>%
   #only look at data after a given start date
-  filter(date > as.Date(startdate)) %>%
+  filter(date >= as.Date(startdate)) %>%
   #remove any NA's that are still present 
   drop_na()
 ```
@@ -146,7 +146,7 @@ current_US_newdeaths <- current_values$new_deaths
 #want the limits to be the same so the axes for different charts line up
 #need to add extra for the bar charts 
 
-x_min <- as.Date(startdate)+.5
+x_min <- as.Date(startdate)-.5
 x_max <- as.Date(current_date)+1
 ```
 
@@ -163,6 +163,7 @@ plot_tc <- ggplot(covid19_US_adj, aes(x=date, y=total_cases))+
       data=current_values
     #format label so there is a comma after three places 
     , aes(label = formatC(total_cases, big.mark=",", format="d"))
+    , position = position_stack(vjust = 0.85)
     )+
   theme_minimal()+
   theme(
@@ -190,6 +191,8 @@ plot_td <- ggplot(covid19_US_adj, aes(x=date, y=total_deaths))+
       data=current_values
     #format label so there is a comma after three places 
     , aes(label = formatC(total_deaths, big.mark=",", format="d"))
+    # position label on bar chart; 85% of the way up 
+    , position = position_stack(vjust = 0.85)
     )+
   theme_minimal()+
   theme(
@@ -293,6 +296,7 @@ plot_dc <- ggplot(covid19_US_adj, aes(x=date, y=new_cases))+
     #format label so there is a comma after three places 
     , aes(label = formatC(new_cases, big.mark=",", format="d"))
     , vjust = 0
+    , nudge_y = 1000
     )+
   theme_minimal()+
   theme(
@@ -309,6 +313,7 @@ plot_dc <- ggplot(covid19_US_adj, aes(x=date, y=new_cases))+
               )+
   #add commas to numbers in y axis; requires scales package
   scale_y_continuous(labels=comma)
+plot_dc
 ```
 
 ```{r, fig.height=8}  
@@ -405,6 +410,7 @@ plot_dd <- ggplot(covid19_US_adj, aes(x=date))+
         label = formatC(new_deaths, big.mark=",", format="d")
       , y     = new_deaths
       )
+    , nudge_y = 250
     )
 ```
 
@@ -437,9 +443,9 @@ plot_dd <- plot_dd +
       )
     , hjust = 0.25
     , vjust = 0
+    , nudge_y = .0020 * dd_transform 
     , color = AccentCol01
     )
-
 ```
 
 ```{r }
