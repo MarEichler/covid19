@@ -65,31 +65,6 @@ covid19 <- read_csv("full_data.csv",
 ```
 
 
-```{r, eval=FALSE}
-#I'm just look at the data for the United States.   
-
-covid19_colnames <- colnames(covid19)
-covid19_US <- covid19 %>%
-    mutate(Date = 
-           #change column type to date 
-           as.Date(
-             #parse through current string format mmm d, yyyy
-             #requires lubricate package 
-             parse_date_time(Date, orders=c("mdy"))
-             )
-         ) %>% 
-  #only look at USA
-  filter(Entity == "United States") %>% 
-  #only return date and daily count 
-  #rename long column names into shorter names 
-  select(
-      Date
-    , "Total Deaths" = covid19_colnames[4]
-    , "Total Cases"  = covid19_colnames[5]
-    , "Daily Cases"  = covid19_colnames[6]
-    )
-```
-
 ```{r}
 covid19_US <- covid19 %>%
   filter(location == "United States")
