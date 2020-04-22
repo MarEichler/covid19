@@ -11,7 +11,7 @@ output:
 
 
 # Tracking COVID-19 {.tabset}
-Data available through: 2020-04-21  
+Data available through: 2020-04-22  
 Code last updated: 2020-04-21
 
 ## Charts
