@@ -351,49 +351,6 @@ return(lim)
 }
 ```
 
-
-
-
-```{r OLDDDD, eval=FALSE}
-#td = total deaths 
-#set base for primary axis 
-dd_base <- 1000
-
-#primary/main y-axis limit 
-dd_y1lim  <- Ylim(max(covid19_US_adj$new_deaths), dd_base) + dd_base
-  #add an extra base to add more room 
-
-#max value for the secondary axis 
-maxdeathperc <- max(covid19_US_adj$death_percentage, na.rm=TRUE)
-
-#TRANSFORM PRIMARY AXIS TO SECONDARY AXIS 
-#in order to have a secondary axis have to have a multiplier to transform primary axis to sec axis
-#find the Ylim of primary axis
-# next want to find an upper bound for seconday axis
-#     want both upper bounds to be divisible by the same number 
-#     i.e. if the primary axis is from 0 to 20 and it has 4 breaks (5, 10, 15, 20)
-#     I want to set the upper bound of the secondary axis to a value divisible by 4
-#     want teh break lines of the primary axis to match up with the breaks of the secondary axis 
-#what if I don't do this?
-#     the text breaks of the seconday axis will not line up with the line breaks of the primary axis 
-
-#find what the divisor is 
-divisor <- dd_y1lim/dd_base
-
-# use divisor to find acceptable base for sec axis 
-dp_base <- divisor/100
-
-#find rounded value of sec axis with sec base 
-Rmaxdeathperc <- func_mround(maxdeathperc, dp_base)
-
-#round sec-axis value up; for the sec axis Ylimit
-if( Rmaxdeathperc - maxdeathperc < 0 ){
-  dp_y2lim <- Rmaxdeathperc + dp_base
-} else {
-  dp_y2lim <- Rmaxdeathperc
-}
-```
-
 ```{r}
 #td = total deaths 
 #set base for primary axis 
