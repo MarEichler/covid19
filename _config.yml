@@ -1,9 +1,10 @@
 ---
-title: "COVID19"
+title: "covid19"
 date: 
 output:
   html_document:
     toc: true
     toc_float: true
 theme:  jekyll-theme-minimal
+
 ---
