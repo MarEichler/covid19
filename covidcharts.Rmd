@@ -4,6 +4,8 @@ output:
   html_document:
     highlight: "tango"
 #    code_folding: "show"
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r, echo=FALSE, eval=FALSE}
@@ -156,8 +158,8 @@ These show the cumulative total of cases and deaths.
 #total cases by day bar chart 
 
 plot_tc <- ggplot(covid19_US_adj, aes(x=date, y=total_cases))+
-  #use geom_col because counts per day have alread been counted 
-  geom_col(alpha=0.6)+
+  geom_area(alpha=0.4)+
+  geom_line(size=1, alpha=0.6)+
   ggtitle("Total Cases of COVID-19 in the United States by Day")+
   geom_label(
       data=current_values
@@ -184,8 +186,8 @@ plot_tc <- ggplot(covid19_US_adj, aes(x=date, y=total_cases))+
 #total deaths by day bar chart  
 
 plot_td <- ggplot(covid19_US_adj, aes(x=date, y=total_deaths))+
-  #use geom_col because counts per day have alread been counted 
-  geom_col(alpha=0.6)+
+  geom_area(alpha=0.4)+
+  geom_line(size=1, alpha=0.6)+
   ggtitle("Total Deaths of COVID-19 in the United States by Day")+
   geom_label(
       data=current_values
