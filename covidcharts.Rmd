@@ -161,11 +161,13 @@ plot_tc <- ggplot(covid19_US_adj, aes(x=date, y=total_cases))+
   geom_area(alpha=0.4)+
   geom_line(size=1, alpha=0.6)+
   ggtitle("Total Cases of COVID-19 in the United States by Day")+
-  geom_label(
+  geom_text(
       data=current_values
     #format label so there is a comma after three places 
     , aes(label = formatC(total_cases, big.mark=",", format="d"))
-    , position = position_stack(vjust = 0.85)
+    #, position = position_stack(vjust = 0.85)
+    , vjust = -0.2
+    , hjust = 1
     )+
   theme_minimal()+
   theme(
@@ -180,6 +182,7 @@ plot_tc <- ggplot(covid19_US_adj, aes(x=date, y=total_cases))+
               )+
   #add commas to numbers in y axis; requires scales package
   scale_y_continuous(labels=comma)
+plot_tc
 ```
 
 ```{r}
@@ -189,12 +192,12 @@ plot_td <- ggplot(covid19_US_adj, aes(x=date, y=total_deaths))+
   geom_area(alpha=0.4)+
   geom_line(size=1, alpha=0.6)+
   ggtitle("Total Deaths of COVID-19 in the United States by Day")+
-  geom_label(
+  geom_text(
       data=current_values
     #format label so there is a comma after three places 
     , aes(label = formatC(total_deaths, big.mark=",", format="d"))
-    # position label on bar chart; 85% of the way up 
-    , position = position_stack(vjust = 0.85)
+    , vjust = -0.2
+    , hjust=1
     )+
   theme_minimal()+
   theme(
@@ -351,7 +354,7 @@ return(lim)
 
 
 
-```{r}
+```{r OLDDDD, eval=FALSE}
 #td = total deaths 
 #set base for primary axis 
 dd_base <- 1000
@@ -389,13 +392,48 @@ if( Rmaxdeathperc - maxdeathperc < 0 ){
 } else {
   dp_y2lim <- Rmaxdeathperc
 }
-
-#calculate the transform variable  
-dd_transform <- dd_y1lim*(1/dp_y2lim)
-
-
-
 ```
+
+```{r}
+#td = total deaths 
+#set base for primary axis 
+dd_base <- 1000
+
+#primary/main y-axis limit 
+dd_y1lim  <- Ylim(max(covid19_US_adj$new_deaths), dd_base)
+  #add an extra base to add more room 
+
+
+#TRANSFORM PRIMARY AXIS TO SECONDARY AXIS 
+#in order to have a secondary axis have to have a multiplier to transform primary axis to sec axis
+#find the Ylim of primary axis
+# next want to find an upper bound for seconday axis
+#     want both upper bounds to be divisible by the same number 
+#     i.e. if the primary axis is from 0 to 20 and it has 4 breaks (5, 10, 15, 20)
+#     I want to set the upper bound of the secondary axis to a value divisible by 4
+#     want teh break lines of the primary axis to match up with the breaks of the secondary axis 
+#what if I don't do this?
+#     the text breaks of the seconday axis will not line up with the line breaks of the primary axis 
+
+#find what the divisor is 
+divisor <- dd_y1lim/dd_base
+
+#max value for the secondary axis 
+maxdeathperc <- max(covid19_US_adj$death_percentage, na.rm=TRUE)
+
+
+dp_y2lim  <- Ylim(maxdeathperc, .01)+.01
+
+dp_base <- dp_y2lim/divisor
+
+#calculate the breaks 
+dd_y1breaks <- c(1:divisor)*dd_base
+dp_y2breaks <- c(1:divisor)*dp_base
+
+#calculate the transform multiplier 
+dd_transform <- dd_y1lim*(1/dp_y2lim)
+```
+
 
 ```{r}
 #plot the primary data: new deaths by day bar chart    
@@ -463,12 +501,16 @@ plot_dd <- plot_dd +
   #add commas to numbers in y axis; requires scales package
   scale_y_continuous(
       limits = c(0, dd_y1lim)
+    , breaks = dd_y1breaks
     #add commas to numbers in y axis; requires scales package
     , labels = comma
     #this transformation MUST match the transformation above
     #divide by current_US_deaths leads to an axis of 0 to 1
     #divide by current_US_deaths*10 leads to an axis of 0 to 0.1
-    , sec.axis = sec_axis(~./dd_transform)
+    , sec.axis = sec_axis(
+        ~./dd_transform
+      ,  breaks = dp_y2breaks
+      )
     )
 ```
 
