@@ -1,16 +1,13 @@
 ---
-title: ""
+title: "Tracking COVID-19"
 output:
   html_document:
-#    toc: false
-#    toc_float: true
-#    toc_depth: 4
     highlight: "tango"
     code_folding: "show"
 ---
 
 
-# Tracking COVID-19 {.tabset}
+# {.tabset}
 Data available through: 2020-04-24  
 Code last updated: 2020-04-24
 
