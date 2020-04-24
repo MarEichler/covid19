@@ -182,7 +182,6 @@ plot_tc <- ggplot(covid19_US_adj, aes(x=date, y=total_cases))+
               )+
   #add commas to numbers in y axis; requires scales package
   scale_y_continuous(labels=comma)
-plot_tc
 ```
 
 ```{r}
