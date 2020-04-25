@@ -752,29 +752,30 @@ Sun, Apr 19, 2020
 <p>This data is downloaded directly from the <a href="https://www.ecdc.europa.eu/en/publications-data/download-todays-data-geographic-distribution-covid-19-cases-worldwide" target="_blank"> European CDC</a>. This data requires formating the dates and calculating the cumulative totals. If you want to the data already ‘cleaned/wrangled’, you can take it from <a href="https://ourworldindata.org/coronavirus" target="_blank"> Our World in Data </a> who gets their data from the Eurpoean CDC. They file can be found <a href="https://ourworldindata.org/coronavirus-source-data" target="_blank"> here </a> and is called <code>full_data.csv</code>; also called “All four metrics”.</p>
 <p>This data is from the ECDC and thus updated based on Eurpoean time zone days. Because of this the datas and values do not match up with the <a href="https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/cases-in-us.html" target="_blank"> American CDC </a> values. However, I am sticking with the EDC data set as it is available for download; where the CDC data is not.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="co">#download data directly from European CDC</span></a>
-<a class="sourceLine" id="cb2-2" title="2">raw_data &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;https://opendata.ecdc.europa.eu/covid19/casedistribution/csv&quot;</span>, <span class="dt">na.strings =</span> <span class="st">&quot;&quot;</span>, <span class="dt">fileEncoding =</span> <span class="st">&quot;UTF-8-BOM&quot;</span>)</a>
-<a class="sourceLine" id="cb2-3" title="3">max_date &lt;-<span class="st"> </span><span class="kw">max</span>(<span class="kw">as.Date</span>(raw_data<span class="op">$</span>dateRep, <span class="dt">format=</span><span class="st">&quot;%d/%m/%Y&quot;</span>))</a>
+<a class="sourceLine" id="cb2-2" title="2">raw_data &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;https://opendata.ecdc.europa.eu/covid19/casedistribution/csv&quot;</span></a>
+<a class="sourceLine" id="cb2-3" title="3">                     , <span class="dt">na.strings =</span> <span class="st">&quot;&quot;</span>, <span class="dt">fileEncoding =</span> <span class="st">&quot;UTF-8-BOM&quot;</span>)</a>
 <a class="sourceLine" id="cb2-4" title="4"></a>
-<a class="sourceLine" id="cb2-5" title="5">covid19_US &lt;-<span class="st"> </span>raw_data <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb2-6" title="6"><span class="st">  </span><span class="co">#only look at USA </span></a>
-<a class="sourceLine" id="cb2-7" title="7"><span class="st">  </span><span class="kw">filter</span>(countryterritoryCode  <span class="op">==</span><span class="st"> &quot;USA&quot;</span>) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-8" title="8"><span class="st">  </span><span class="co">#read date character into date format</span></a>
-<a class="sourceLine" id="cb2-9" title="9"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">date =</span> <span class="kw">as.Date</span>(dateRep, <span class="dt">format=</span><span class="st">&quot;%d/%m/%Y&quot;</span>)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-10" title="10"><span class="st">  </span><span class="co">#order by date</span></a>
-<a class="sourceLine" id="cb2-11" title="11"><span class="st">  </span><span class="kw">arrange</span>(date) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-12" title="12"><span class="st">  </span><span class="co">#calculate cumulative sums</span></a>
-<a class="sourceLine" id="cb2-13" title="13"><span class="st">  </span><span class="kw">mutate</span>(</a>
-<a class="sourceLine" id="cb2-14" title="14">      <span class="dt">total_cases =</span> <span class="kw">cumsum</span>(cases)</a>
-<a class="sourceLine" id="cb2-15" title="15">    , <span class="dt">total_deaths =</span> <span class="kw">cumsum</span>(deaths)</a>
-<a class="sourceLine" id="cb2-16" title="16">  ) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-17" title="17"><span class="st">  </span><span class="co">#only select date, new cases, new deaths</span></a>
-<a class="sourceLine" id="cb2-18" title="18"><span class="st">  </span><span class="kw">select</span>(</a>
-<a class="sourceLine" id="cb2-19" title="19">      date</a>
-<a class="sourceLine" id="cb2-20" title="20">    , <span class="dt">new_cases =</span> cases</a>
-<a class="sourceLine" id="cb2-21" title="21">    , <span class="dt">new_deaths =</span>deaths</a>
-<a class="sourceLine" id="cb2-22" title="22">    , total_cases</a>
-<a class="sourceLine" id="cb2-23" title="23">    , total_deaths</a>
-<a class="sourceLine" id="cb2-24" title="24">    )</a></code></pre></div>
+<a class="sourceLine" id="cb2-5" title="5"></a>
+<a class="sourceLine" id="cb2-6" title="6">covid19_US &lt;-<span class="st"> </span>raw_data <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb2-7" title="7"><span class="st">  </span><span class="co">#only look at USA </span></a>
+<a class="sourceLine" id="cb2-8" title="8"><span class="st">  </span><span class="kw">filter</span>(countryterritoryCode  <span class="op">==</span><span class="st"> &quot;USA&quot;</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb2-9" title="9"><span class="st">  </span><span class="co">#read date character into date format</span></a>
+<a class="sourceLine" id="cb2-10" title="10"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">date =</span> <span class="kw">as.Date</span>(dateRep, <span class="dt">format=</span><span class="st">&quot;%d/%m/%Y&quot;</span>)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb2-11" title="11"><span class="st">  </span><span class="co">#order by date</span></a>
+<a class="sourceLine" id="cb2-12" title="12"><span class="st">  </span><span class="kw">arrange</span>(date) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb2-13" title="13"><span class="st">  </span><span class="co">#calculate cumulative sums</span></a>
+<a class="sourceLine" id="cb2-14" title="14"><span class="st">  </span><span class="kw">mutate</span>(</a>
+<a class="sourceLine" id="cb2-15" title="15">      <span class="dt">total_cases =</span> <span class="kw">cumsum</span>(cases)</a>
+<a class="sourceLine" id="cb2-16" title="16">    , <span class="dt">total_deaths =</span> <span class="kw">cumsum</span>(deaths)</a>
+<a class="sourceLine" id="cb2-17" title="17">  ) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb2-18" title="18"><span class="st">  </span><span class="co">#only select date, new cases, new deaths</span></a>
+<a class="sourceLine" id="cb2-19" title="19"><span class="st">  </span><span class="kw">select</span>(</a>
+<a class="sourceLine" id="cb2-20" title="20">      date</a>
+<a class="sourceLine" id="cb2-21" title="21">    , <span class="dt">new_cases =</span> cases</a>
+<a class="sourceLine" id="cb2-22" title="22">    , <span class="dt">new_deaths =</span>deaths</a>
+<a class="sourceLine" id="cb2-23" title="23">    , total_cases</a>
+<a class="sourceLine" id="cb2-24" title="24">    , total_deaths</a>
+<a class="sourceLine" id="cb2-25" title="25">    )</a></code></pre></div>
 <p>One important calculation is the growth rate. The growth rate is calculated as follows:</p>
 <p><span class="math display">\[
 \text{Growth Rate} = \frac{ \text{New-Cases}_N}{\text{New-Cases}_{N-1}}

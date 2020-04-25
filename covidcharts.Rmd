@@ -46,8 +46,9 @@ values.  However, I am sticking with the EDC data set as it is available for dow
 
 ```{r}
 #download data directly from European CDC
-raw_data <- read.csv("https://opendata.ecdc.europa.eu/covid19/casedistribution/csv", na.strings = "", fileEncoding = "UTF-8-BOM")
-max_date <- max(as.Date(raw_data$dateRep, format="%d/%m/%Y"))
+raw_data <- read.csv("https://opendata.ecdc.europa.eu/covid19/casedistribution/csv"
+                     , na.strings = "", fileEncoding = "UTF-8-BOM")
+
 
 covid19_US <- raw_data %>% 
   #only look at USA 
