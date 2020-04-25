@@ -8,7 +8,7 @@ output:
 
 
 # {.tabset}
-Data available through: 2020-04-24  
+Data available through: 2020-04-25  
 Code last updated: 2020-04-24
 
 ## Charts
