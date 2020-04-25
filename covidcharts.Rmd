@@ -29,49 +29,47 @@ AccentCol01 <- "firebrick"
 knitr::opts_chunk$set(fig.width=10, fig.height=4, dpi=300)
 ```
 
-The data is taken from
+This data is downloaded directly from the 
+<a href="https://www.ecdc.europa.eu/en/publications-data/download-todays-data-geographic-distribution-covid-19-cases-worldwide" target="_blank" >
+European CDC</a>. This data requires formating the dates and calculating the cumulative totals.  If you want to the data already 'cleaned/wrangled', you can take it from 
 <a href="https://ourworldindata.org/coronavirus" target="_blank">
 Our World in Data </a> 
 who gets their data from the Eurpoean CDC.  They file can be found
 <a href="https://ourworldindata.org/coronavirus-source-data" target="_blank" >
 here </a>
-and is called `full_data.csv`; also called "All four metrics".  There is an option to download data directly from
-<a href="https://www.ecdc.europa.eu/en/publications-data/download-todays-data-geographic-distribution-covid-19-cases-worldwide" target="_blank" >
-European CDC </a>
-; however Our World in Data has "cleaned up" these data, making them easier to use.  
+and is called `full_data.csv`; also called "All four metrics".  
 
-Given that the data from Our World in Data is updated daily based on London time; the datas and values do not match up with the
+This data is from the ECDC and thus updated based on Eurpoean time zone days.  Because of this the datas and values do not match up with the
 <a href="https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/cases-in-us.html" target="_blank">
 American CDC </a> 
-values.  However, I am sticking with the OWID data set as it is available for download; where the CDC data is not.  
+values.  However, I am sticking with the EDC data set as it is available for download; where the CDC data is not.  
 
-```{r, eval=FALSE}
+```{r}
 #download data directly from European CDC
-library(utils)
-data <- read.csv("https://opendata.ecdc.europa.eu/covid19/casedistribution/csv", na.strings = "", fileEncoding = "UTF-8-BOM")
+raw_data <- read.csv("https://opendata.ecdc.europa.eu/covid19/casedistribution/csv", na.strings = "", fileEncoding = "UTF-8-BOM")
+max_date <- max(as.Date(raw_data$dateRep, format="%d/%m/%Y"))
+
+covid19_US <- raw_data %>% 
+  #only look at USA 
+  filter(countryterritoryCode  == "USA") %>%
+  #read date character into date format
+  mutate(date = as.Date(dateRep, format="%d/%m/%Y")) %>%
+  #order by date
+  arrange(date) %>%
+  #calculate cumulative sums
+  mutate(
+      total_cases = cumsum(cases)
+    , total_deaths = cumsum(deaths)
+  ) %>%
+  #only select date, new cases, new deaths
+  select(
+      date
+    , new_cases = cases
+    , new_deaths =deaths
+    , total_cases
+    , total_deaths
+    )
 ```
-
-
-```{r}
-#https://ourworldindata.org/coronavirus-source-data 
-covid19 <- read_csv("full_data.csv",
-                col_types = cols(
-                    date = col_date(format = ""),
-                    location = col_character(),
-                    new_cases = col_double(),
-                    new_deaths = col_double(),
-                    total_cases = col_double(),
-                    total_deaths = col_double()
-                    )
-                )
-```
-
-
-```{r}
-covid19_US <- covid19 %>%
-  filter(location == "United States")
-```
-
 
 One important calculation is the growth rate.  The growth rate is calculated as follows: 
 

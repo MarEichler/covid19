@@ -6,9 +6,14 @@ output:
     code_folding: "show"
 ---
 
+```{r, echo=FALSE}
+raw_data <- read.csv("https://opendata.ecdc.europa.eu/covid19/casedistribution/csv", na.strings = "", fileEncoding = "UTF-8-BOM")
+max_date <- max(as.Date(raw_data$dateRep, format="%d/%m/%Y"))
+```
+
 
 # {.tabset}
-Data available through: 2020-04-25  
+Data available through: `r max_date`  
 Code last updated: 2020-04-24
 
 ## Charts
