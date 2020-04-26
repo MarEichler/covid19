@@ -800,7 +800,10 @@ Mon, Apr 20, 2020
 <a class="sourceLine" id="cb3-21" title="21">  covid19_US<span class="op">$</span>death_percentage[r] &lt;-<span class="st"> </span></a>
 <a class="sourceLine" id="cb3-22" title="22"><span class="st">    </span><span class="co">#dealth percentage = total deaths / total cases </span></a>
 <a class="sourceLine" id="cb3-23" title="23"><span class="st">    </span>covid19_US<span class="op">$</span>total_deaths[r] <span class="op">/</span><span class="st">  </span>covid19_US<span class="op">$</span>total_cases[r] </a>
-<a class="sourceLine" id="cb3-24" title="24">}</a></code></pre></div>
+<a class="sourceLine" id="cb3-24" title="24">}</a>
+<a class="sourceLine" id="cb3-25" title="25"></a>
+<a class="sourceLine" id="cb3-26" title="26"><span class="co">#save copy of data </span></a>
+<a class="sourceLine" id="cb3-27" title="27"><span class="kw">write.csv</span>(covid19_US, <span class="st">&quot;data_ECDC.csv&quot;</span>)</a></code></pre></div>
 <p>I am restricted the charts to show values after March 17, 2020 (first date in data set is March 18, 2020). This is when preventative measures started to increase dramatically. In addition, given the small number of cases prior to this date caused great variability in the growth rate and has multiple instances where it’s NA or equal to infinity.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1">startdate &lt;-<span class="st"> &quot;2020-03-17&quot;</span></a>
 <a class="sourceLine" id="cb4-2" title="2"><span class="co">#3/18 - start &#39;lockdown&#39; ; after large growth factors↕</span></a>

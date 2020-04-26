@@ -107,6 +107,9 @@ for (r in 1:R){
     covid19_US$total_deaths[r] /  covid19_US$total_cases[r] 
 }
 
+#save copy of data 
+write.csv(covid19_US, "data_ECDC.csv")
+
 ```
 
 I am restricted the charts to show values after March 17, 2020 (first date in data set is March 18, 2020).  This is when preventative measures started to increase dramatically.  In addition, given the small number of cases prior to this date caused great variability in the growth rate and has multiple instances where it's  NA or equal to infinity.  
