@@ -15,7 +15,6 @@ max_date <- max(as.Date(raw_data$dateRep, format="%d/%m/%Y"))
 
 # {.tabset}
 Data available through: `r max_date`  
-Code last updated: 2020-04-24
 
 ## Charts
 
