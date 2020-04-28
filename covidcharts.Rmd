@@ -5,7 +5,7 @@ output:
     highlight: "tango"
 #    code_folding: "show"
 editor_options: 
-  chunk_output_type: inline
+  chunk_output_type: console
 ---
 
 ```{r, echo=FALSE, eval=FALSE}
@@ -326,27 +326,26 @@ grid.draw(rbind(gGF, gDC))
 ```
 
 ### Moving Average Growth Factor and New Cases 
-There can be a lot of variability in the daily points - this is due to many different variables.  On variable is the availability of tests, cases will go down if there is scarcity of tests and rise dramatically when more tests become available.  One way to help get a better sense over the overall trend is by smoothing the data.  I am using moving averages calcualted with $k = 5$.  
+There can be a lot of variability in the daily points - this is due to many different variables.  On variable is the availability of tests, cases will go down if there is scarcity of tests and rise dramatically when more tests become available.  One way to help get a better sense over the overall trend is by smoothing the data.  I am using moving averages calcualted with $k = 5$.
+
 
 ```{r}
 #MA growth factor by date line chart 
 
-caption <- "A growth factor above 1 means new cases are increasing"
+caption <- "A growth factor above 1 means new cases are increasing, i.e. the pandemic is growing"
 
-plot_MA_gf  <- ggplot(covid19_US_adj, aes(x=date, y=MA_growth_factor))+
-  #add red box to show growth rates that are above 1
+plot_gf_smooth  <- ggplot(covid19_US_adj, aes(x=date))+
   annotate(
-      "rect"
+      "rect" #add red box to show growth rates that are above 1
     , xmin = x_min
     , xmax = x_max
     , ymin =  1
     , ymax =  Inf
     , fill = AccentCol01
     , alpha = 0.2
-    ) +
-  #add line at 1 
+  ) +
   annotate(
-      "segment"
+      "segment" #add line at 1 
     , x     = x_min
     , xend  = x_max
     , y     =  1
@@ -354,40 +353,71 @@ plot_MA_gf  <- ggplot(covid19_US_adj, aes(x=date, y=MA_growth_factor))+
     , color = AccentCol01
     , linetype = "dotted"
     , size = 1
-    ) +
-  geom_line(size=1.1, alpha=0.6)+
- # geom_hline(yintercept = 1, linetype="dotted", color=AccentCol01, size=1)+
-  ggtitle("Moving Average of Growth Factor of COVID-19 in the United States by Day")+
+  ) +
+  #geom_line(aes(y = MA_growth_factor), size=1.1, alpha=0.6)+
+  geom_point(
+      aes(y = growth_factor)
+    , size=2
+    , alpha=0.3
+  )+
+  geom_smooth(
+      aes(y = growth_factor)
+    , size = 2
+    , color="grey35"
+    , se = FALSE 
+    , alpha = 0.6
+    , method = "loess"
+    , formula = y~x
+    , span = 0.9
+  )+
+  ggtitle("LOESS Smoothing of Growth Factor of COVID-19 in the United States by Day")+
   theme_minimal()+
   theme(
-   #  legend.position = "none"
-    ,axis.title.x=element_blank()
-    ,axis.title.y=element_blank()
+      axis.title.x=element_blank()
+    , axis.title.y=element_blank()
   )+
-  scale_x_date(breaks=date_breaks("7 days")
-              , labels = date_format("%b-%d")
-              , minor_breaks=date_breaks("1 day")
-              , limits = c(x_min, x_max) 
-              )+
-  #want growth rate to go to 0
-  ylim(0, NA)+
-  #add text 
-  annotate("text"
-           , x = x_min + 1
-           , y = gf_max
-           , label = caption
-           , vjust="inward"
-           , hjust= 0
-           )
+  scale_x_date(
+      breaks=date_breaks("7 days")
+    , labels = date_format("%b-%d")
+    , minor_breaks=date_breaks("1 day")
+    , limits = c(x_min, x_max) 
+    , expand = c(0, 0)
+  )+
+  ylim(0, NA)+ #want growth rate to go to 0
+  annotate(
+      "text"
+    , x = x_min + 1
+    , y = gf_max
+    , label = caption
+    , vjust="inward"
+    , hjust= 0
+  )
 ```
 
 ```{r}  
 #new cases by date bar chart    
 
-plot_MA_dc <- ggplot(covid19_US_adj, aes(x=date, y=MA_new_cases))+
-  #use geom_col because counts per day have alread been counted 
-  geom_line(alpha=0.6, size= 1.1)+
-  ggtitle("Moving Average New Cases of COVID-19 in the United States by Day")+
+plot_dc_smooth <- ggplot(covid19_US_adj, aes(x=date, new_cases))+
+  #geom_line(aes(y = MA_new_cases), alpha=0.6, size= 1.1)+
+#  geom_point(
+#      size=2
+#    , alpha=0.3
+#  )+
+  geom_col(alpha=0.3)+
+  geom_smooth(
+    size = 2
+    , color="grey35"
+    , alpha = 0.6
+    , se = FALSE
+    , method = "loess"
+    , formula = y ~x 
+    , span = 0.9
+  )+
+#  stat_smooth(
+#      method = "lm"
+#    , formula = y ~ x + I(x^2)
+#  ) +
+  ggtitle("LOESS Smoothing of New Cases of COVID-19 in the United States by Day")+
   theme_minimal()+
   theme(
     #remove all legents 
@@ -396,22 +426,27 @@ plot_MA_dc <- ggplot(covid19_US_adj, aes(x=date, y=MA_new_cases))+
     , axis.title.x = element_blank()
     , axis.title.y = element_blank()
   )+
-  scale_x_date(breaks=date_breaks("7 days")
-              , labels = date_format("%b-%d")
-              , minor_breaks=date_breaks("1 day")
-              , limits = c(x_min, x_max)   
-              )+
+  scale_x_date(
+      breaks=date_breaks("7 days")
+    , labels = date_format("%b-%d")
+    , minor_breaks=date_breaks("1 day")
+    , limits = c(x_min, x_max) 
+    , expand = c(0, 0)
+  )+
   #add commas to numbers in y axis; requires scales package
-  scale_y_continuous(labels=comma)
+  scale_y_continuous(
+      labels=comma
+    , limits = c(0, NA)
+  )
 ```
 
 ```{r, fig.height=8}  
 #Put the plots together and have the plot axes line up
 
-gMAGF <- ggplotGrob(plot_MA_gf)
-gMADC <- ggplotGrob(plot_MA_dc)
+gGFsmooth <- ggplotGrob(plot_gf_smooth)
+gDCsmooth <- ggplotGrob(plot_dc_smooth)
 grid.newpage()
-grid.draw(rbind(gMAGF, gMADC))
+grid.draw(rbind(gGFsmooth, gDCsmooth))
 ```
 
 ### New Deaths and Death Percentage   
