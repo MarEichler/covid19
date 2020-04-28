@@ -8,7 +8,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-```{r, echo=FALSE, eval=FALSE}
+```{r, echo=FALSE}
 #r chunks are not named
 #this is so the Rmd can be called twice in the index.Rmd file
 #     once for just the charts
@@ -209,7 +209,7 @@ ggplot(covid_tidy, aes(date, count)) +
   theme_minimal() +
   ggtitle("COVID-19 in the United States by Day") +
   theme(
-      plot.title = element_text(hjust = 0.5)
+      plot.title = element_text(size = 16, hjust = 0.5)
     , axis.text.x = element_text(hjust = 0.2)
     , strip.text.x = element_text(size = 12, face = "bold")
   )
@@ -221,14 +221,16 @@ ggplot(covid_tidy, aes(date, count)) +
 In order to see if the pandemic is slowing down, it is helpful to look at the growth factor and the daily new cases.  For both these values; we want to see a decrease in values from day to day - which indicates that less people are getting sick.  Recall that a growth factor less than 1 is a positive sign that the growth of cases is slowing down.  Growth factor is directly related to new cases - if daily new cases goes now the growth factor is less than 1; if daily cases goes up the growth factor is greater than one.  These two charts represent the same information in two differnt ways.  
 
 ```{r}
-#growth factor by date line chart 
-
+#captions 
 gf_max <- max(covid19_US_adj$growth_factor)
 
-caption <- "A growth factor above 1 means new cases are increasing"
+cap_gf <- "A growth factor above 1 means new cases are increasing,\ni.e. the pandemic is growing"
+```
 
-plot_gf  <- ggplot(covid19_US_adj, aes(x=date, y=growth_factor))+
-  #add red box to show growth rates that are above 1
+
+```{r}
+#plot set up 
+plot_gf_setup  <- ggplot(covid19_US_adj, aes(x=date, y=growth_factor))+
   annotate(
       "rect"
     , xmin = x_min
@@ -238,7 +240,6 @@ plot_gf  <- ggplot(covid19_US_adj, aes(x=date, y=growth_factor))+
     , fill = AccentCol01
     , alpha = 0.2
     ) +
-  #add line at 1 
   annotate(
       "segment"
     , x     = x_min
@@ -249,160 +250,130 @@ plot_gf  <- ggplot(covid19_US_adj, aes(x=date, y=growth_factor))+
     , linetype = "dotted"
     , size = 1
     ) +
-  geom_point(size=2, alpha=0.6)+
-  geom_line(size=1, alpha=0.6)+
- # geom_hline(yintercept = 1, linetype="dotted", color=AccentCol01, size=1)+
-  ggtitle("Growth Factor of COVID-19 in the United States by Day")+
-  # ADD LABEL 
-  geom_label(
-      data = current_values
-    , aes(label = round(growth_factor, 4))
-    , vjust=0
-    , nudge_y = 0.1
-    )+
+  annotate(
+      "text"
+    , x = x_min + 1
+    , y = gf_max
+    , label = cap_gf
+    , vjust="inward"
+    , hjust= 0
+  )+
+  scale_x_date(
+      labels = date_format("%b-%d")
+    , limits = c(x_min, x_max) 
+    , expand = c(0, 0)
+  #  , minor_breaks=date_breaks("1 day")
+  #  , breaks=date_breaks("7 days")
+  )+
+  ylim(0, NA)+
+  ggtitle("Growth Factor") + 
   theme_minimal()+
   theme(
-   #  legend.position = "none"
-    ,axis.title.x=element_blank()
-    ,axis.title.y=element_blank()
-  )+
-  scale_x_date(breaks=date_breaks("7 days")
-              , labels = date_format("%b-%d")
-              , minor_breaks=date_breaks("1 day")
-              , limits = c(x_min, x_max) 
-              )+
-  #want growth rate to go to 0
-  ylim(0, NA)+
-  #add text 
-  annotate("text"
-           , x = x_min + 1
-           , y = gf_max
-           , label = caption
-           , vjust="inward"
-           , hjust= 0
-           )
-
+      plot.title = element_text(hjust = 0.5, size = 12, face = "bold")
+    #, axis.text.x = element_text(hjust = 0.2)
+    , axis.title.x=element_blank()
+    , axis.title.y=element_blank()
+  )
 ```
+
+```{r}
+#growth factor plot  
+plot_gf <- plot_gf_setup +
+  geom_point(
+      size=2
+    , alpha=0.6
+  )+
+  geom_line(
+      size=1
+    , alpha=0.6
+  )
+```
+
 
 ```{r}  
-#new cases by date bar chart    
+#daily cases set up 
 
-plot_dc <- ggplot(covid19_US_adj, aes(x=date, y=new_cases))+
-  #use geom_col because counts per day have alread been counted 
-  geom_col(alpha=0.6)+
-  ggtitle("New Cases of COVID-19 in the United States by Day")+
-  # ADD LABEL 
-  geom_label(
-      data = current_values
-    #format label so there is a comma after three places 
-    , aes(label = formatC(new_cases, big.mark=",", format="d"))
-    , vjust = 0
-    , nudge_y = 1000
-    )+
+plot_dc_setup <- ggplot(covid19_US_adj, aes(x=date, y=new_cases))+
+  scale_x_date(
+      labels = date_format("%b-%d")
+    , limits = c(x_min, x_max) 
+    , expand = c(0, 0)
+  #  , minor_breaks=date_breaks("1 day")
+  #  , breaks=date_breaks("7 days")
+  )+
+  scale_y_continuous(
+      labels=scales::comma
+    , limits = c(0, NA)
+  )+
+  ggtitle("New Cases") + 
   theme_minimal()+
   theme(
-    #remove all legents 
-     legend.position = "none"
-     # remove x and y axes 
-    , axis.title.x = element_blank()
-    , axis.title.y = element_blank()
-  )+
-  scale_x_date(breaks=date_breaks("7 days")
-              , labels = date_format("%b-%d")
-              , minor_breaks=date_breaks("1 day")
-              , limits = c(x_min, x_max)   
-              )+
-  #add commas to numbers in y axis; requires scales package
-  scale_y_continuous(labels=comma)
+      plot.title = element_text(hjust = 0.5, size = 12, face = "bold")
+    , axis.title.x=element_blank()
+    , axis.title.y=element_blank()
+  )
 ```
+
+```{r}
+#daily cases plot 
+
+plot_dc <- plot_dc_setup +
+  geom_col(alpha=0.6)
+
+```
+
 
 ```{r, fig.height=8}  
 #Put the plots together and have the plot axes line up
 
-gGF <- ggplotGrob(plot_gf)
-gDC <- ggplotGrob(plot_dc)
-grid.newpage()
-grid.draw(rbind(gGF, gDC))
+#gGF <- ggplotGrob(plot_gf)
+#gDC <- ggplotGrob(plot_dc)
+#grid.newpage()
+#grid.draw(rbind(gGF, gDC))
+
+grid.arrange(
+    plot_gf
+  , plot_dc
+  , nrow = 1
+  ,top=textGrob(
+      "COVID-19 in the United States by Day"
+    , gp=gpar(fontsize=16)
+  )
+)
 ```
 
 ### Moving Average Growth Factor and New Cases 
 There can be a lot of variability in the daily points - this is due to many different variables.  On variable is the availability of tests, cases will go down if there is scarcity of tests and rise dramatically when more tests become available.  One way to help get a better sense over the overall trend is by smoothing the data.  I am using moving averages calcualted with $k = 5$.
 
 
-```{r}
-#MA growth factor by date line chart 
-
-caption <- "A growth factor above 1 means new cases are increasing, i.e. the pandemic is growing"
-
-plot_gf_smooth  <- ggplot(covid19_US_adj, aes(x=date))+
-  annotate(
-      "rect" #add red box to show growth rates that are above 1
-    , xmin = x_min
-    , xmax = x_max
-    , ymin =  1
-    , ymax =  Inf
-    , fill = AccentCol01
-    , alpha = 0.2
-  ) +
-  annotate(
-      "segment" #add line at 1 
-    , x     = x_min
-    , xend  = x_max
-    , y     =  1
-    , yend  =  1
-    , color = AccentCol01
-    , linetype = "dotted"
-    , size = 1
-  ) +
+```{r, warning = FALSE}
+plot_gf_smooth  <- plot_gf_setup +
   #geom_line(aes(y = MA_growth_factor), size=1.1, alpha=0.6)+
-  geom_point(
-      aes(y = growth_factor)
-    , size=2
+    geom_point(
+      size=2
     , alpha=0.3
   )+
+  geom_line(
+      size=1
+    , alpha=0.3
+  ) +
   geom_smooth(
-      aes(y = growth_factor)
-    , size = 2
+      size = 2
     , color="grey35"
     , se = FALSE 
     , alpha = 0.6
     , method = "loess"
     , formula = y~x
     , span = 0.9
-  )+
-  ggtitle("LOESS Smoothing of Growth Factor of COVID-19 in the United States by Day")+
-  theme_minimal()+
-  theme(
-      axis.title.x=element_blank()
-    , axis.title.y=element_blank()
-  )+
-  scale_x_date(
-      breaks=date_breaks("7 days")
-    , labels = date_format("%b-%d")
-    , minor_breaks=date_breaks("1 day")
-    , limits = c(x_min, x_max) 
-    , expand = c(0, 0)
-  )+
-  ylim(0, NA)+ #want growth rate to go to 0
-  annotate(
-      "text"
-    , x = x_min + 1
-    , y = gf_max
-    , label = caption
-    , vjust="inward"
-    , hjust= 0
   )
+  
 ```
 
-```{r}  
+```{r, warning = FALSE}  
 #new cases by date bar chart    
 
-plot_dc_smooth <- ggplot(covid19_US_adj, aes(x=date, new_cases))+
+plot_dc_smooth <- plot_dc_setup +
   #geom_line(aes(y = MA_new_cases), alpha=0.6, size= 1.1)+
-#  geom_point(
-#      size=2
-#    , alpha=0.3
-#  )+
   geom_col(alpha=0.3)+
   geom_smooth(
     size = 2
@@ -412,41 +383,33 @@ plot_dc_smooth <- ggplot(covid19_US_adj, aes(x=date, new_cases))+
     , method = "loess"
     , formula = y ~x 
     , span = 0.9
-  )+
+  )
 #  stat_smooth(
 #      method = "lm"
 #    , formula = y ~ x + I(x^2)
-#  ) +
-  ggtitle("LOESS Smoothing of New Cases of COVID-19 in the United States by Day")+
-  theme_minimal()+
-  theme(
-    #remove all legents 
-     legend.position = "none"
-     # remove x and y axes 
-    , axis.title.x = element_blank()
-    , axis.title.y = element_blank()
-  )+
-  scale_x_date(
-      breaks=date_breaks("7 days")
-    , labels = date_format("%b-%d")
-    , minor_breaks=date_breaks("1 day")
-    , limits = c(x_min, x_max) 
-    , expand = c(0, 0)
-  )+
-  #add commas to numbers in y axis; requires scales package
-  scale_y_continuous(
-      labels=comma
-    , limits = c(0, NA)
-  )
+#  ) 
+
 ```
 
-```{r, fig.height=8}  
+```{r, fig.height=8, warning = FALSE}  
 #Put the plots together and have the plot axes line up
 
-gGFsmooth <- ggplotGrob(plot_gf_smooth)
-gDCsmooth <- ggplotGrob(plot_dc_smooth)
-grid.newpage()
-grid.draw(rbind(gGFsmooth, gDCsmooth))
+#gGFsmooth <- ggplotGrob(plot_gf_smooth)
+#gDCsmooth <- ggplotGrob(plot_dc_smooth)
+#grid.newpage()
+#grid.draw(rbind(gGFsmooth, gDCsmooth))
+
+#grid.arrange(gGFsmooth, gDCsmooth, ncol=2)
+
+grid.arrange(
+    plot_gf_smooth
+  , plot_dc_smooth
+  , nrow = 1
+  ,top=textGrob(
+      "COVID-19 in the United States by Day, LOESS Smoothing"
+    , gp=gpar(fontsize=16)
+  )
+)
 ```
 
 ### New Deaths and Death Percentage   
