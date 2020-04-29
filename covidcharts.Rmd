@@ -239,7 +239,7 @@ cap_gf <- "A growth factor above 1 means new cases are increasing,\ni.e. the pan
 
 ```{r}
 #plot set up 
-plot_gf_setup  <- ggplot(covid19_US_adj, aes(x=date, y=growth_factor))+
+plot_gf  <- ggplot(covid19_US_adj, aes(x=date, y=growth_factor))+
   annotate(
       "rect"
     , xmin = x_min
@@ -266,7 +266,15 @@ plot_gf_setup  <- ggplot(covid19_US_adj, aes(x=date, y=growth_factor))+
     , label = cap_gf
     , vjust="inward"
     , hjust= 0
+  ) +
+  geom_point(
+      size=2
+    , alpha=0.3
   )+
+  geom_line(
+      size=1
+    , alpha=0.3
+  ) +
   date_scaling +
   ylim(0, NA)+
   ggtitle("Growth Factor") + 
@@ -282,7 +290,8 @@ plot_gf_setup  <- ggplot(covid19_US_adj, aes(x=date, y=growth_factor))+
 ```{r}  
 #daily cases set up 
 
-plot_dc_setup <- ggplot(covid19_US_adj, aes(x=date, y=new_cases))+
+plot_dc <- ggplot(covid19_US_adj, aes(x=date, y=new_cases))+
+  geom_col(alpha=0.3) +
   date_scaling + 
   thousands_scaling +
   ggtitle("New Cases") + 
@@ -297,19 +306,14 @@ plot_dc_setup <- ggplot(covid19_US_adj, aes(x=date, y=new_cases))+
 
 There can be a lot of variability in the daily points - this is due to many different variables.  On variable is the availability of tests, cases will go down if there is scarcity of tests and rise dramatically when more tests become available.  One way to help get a better sense over the overall trend is by smoothing the data.  
 
-```{r, warning = FALSE}
-plot_gf_smooth  <- plot_gf_setup +
-  #geom_line(aes(y = MA_growth_factor), size=1.1, alpha=0.6)+
-    geom_point(
-      size=2
-    , alpha=0.3
-  )+
-  geom_line(
-      size=1
-    , alpha=0.3
-  ) +
-  geom_smooth(
-      size = 2
+
+```{r, warning = FALSE}  
+#LOESS CURVE
+
+title_l <- "LOESS Smoothing "
+
+loess_smooth <- geom_smooth(
+      size = 1.5
     , color="grey35"
     , se = FALSE 
     , alpha = 0.6
@@ -317,44 +321,54 @@ plot_gf_smooth  <- plot_gf_setup +
     , formula = y~x
     , span = 0.9
   )
-  
-```
 
-```{r, warning = FALSE}  
-#new cases by date bar chart    
+plot_gf_l  <- plot_gf +
+  loess_smooth
 
-plot_dc_smooth <- plot_dc_setup +
-  #geom_line(aes(y = MA_new_cases), alpha=0.6, size= 1.1)+
-  geom_col(alpha=0.3)+
-  geom_smooth(
-    size = 2
-    , color="grey35"
-    , alpha = 0.6
-    , se = FALSE
-    , method = "loess"
-    , formula = y ~x 
-    , span = 0.9
-  )
-#  stat_smooth(
-#      method = "lm"
-#    , formula = y ~ x + I(x^2)
-#  ) 
-
-```
-
-```{r, fig.height=8, warning = FALSE}  
-#Put the plots together and have the plot axes line up
+plot_dc_l <- plot_dc +
+  loess_smooth
 
 grid.arrange(
-    plot_gf_smooth
-  , plot_dc_smooth
+    plot_gf_l
+  , plot_dc_l
   , nrow = 1
   ,top=textGrob(
-      "COVID-19 in the United States by Day\nLOESS Smoothing"
+      paste("COVID-19 in the United States by Day", title_l, sep = "\n")
     , gp=gpar(fontsize=title_size)
   )
 )
 ```
+
+```{r, warning = FALSE}  
+#MOVING AVERAGE 
+
+title_ma <- "Moving Average, k = 5"
+
+plot_gf_ma  <- plot_gf +
+  geom_line(
+      aes(y = MA_growth_factor)
+    , size = 1.5
+    , alpha = 0.6
+  )
+
+plot_dc_ma <- plot_dc +
+  geom_line(
+    aes(y = MA_new_cases)
+    , size = 1.5
+    , alpha = 0.6
+  )
+
+grid.arrange(
+    plot_gf_ma
+  , plot_dc_ma
+  , nrow = 1
+  ,top=textGrob(
+      paste("COVID-19 in the United States by Day", title_ma, sep = "\n")
+    , gp=gpar(fontsize=title_size)
+  )
+)
+```
+
 
 ### New Deaths and Death Percentage   
 
