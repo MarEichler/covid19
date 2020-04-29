@@ -276,20 +276,6 @@ plot_gf_setup  <- ggplot(covid19_US_adj, aes(x=date, y=growth_factor))+
   )
 ```
 
-```{r}
-#growth factor plot  
-plot_gf <- plot_gf_setup +
-  geom_point(
-      size=2
-    , alpha=0.6
-  )+
-  geom_line(
-      size=1
-    , alpha=0.6
-  )
-```
-
-
 ```{r}  
 #daily cases set up 
 
@@ -314,37 +300,8 @@ plot_dc_setup <- ggplot(covid19_US_adj, aes(x=date, y=new_cases))+
   )
 ```
 
-```{r}
-#daily cases plot 
 
-plot_dc <- plot_dc_setup +
-  geom_col(alpha=0.6)
-
-```
-
-
-```{r, fig.height=8}  
-#Put the plots together and have the plot axes line up
-
-#gGF <- ggplotGrob(plot_gf)
-#gDC <- ggplotGrob(plot_dc)
-#grid.newpage()
-#grid.draw(rbind(gGF, gDC))
-
-grid.arrange(
-    plot_gf
-  , plot_dc
-  , nrow = 1
-  ,top=textGrob(
-      "COVID-19 in the United States by Day"
-    , gp=gpar(fontsize=16)
-  )
-)
-```
-
-### Moving Average Growth Factor and New Cases 
-There can be a lot of variability in the daily points - this is due to many different variables.  On variable is the availability of tests, cases will go down if there is scarcity of tests and rise dramatically when more tests become available.  One way to help get a better sense over the overall trend is by smoothing the data.  I am using moving averages calcualted with $k = 5$.
-
+There can be a lot of variability in the daily points - this is due to many different variables.  On variable is the availability of tests, cases will go down if there is scarcity of tests and rise dramatically when more tests become available.  One way to help get a better sense over the overall trend is by smoothing the data.  
 
 ```{r, warning = FALSE}
 plot_gf_smooth  <- plot_gf_setup +
@@ -406,7 +363,7 @@ grid.arrange(
   , plot_dc_smooth
   , nrow = 1
   ,top=textGrob(
-      "COVID-19 in the United States by Day, LOESS Smoothing"
+      "COVID-19 in the United States by Day\nLOESS Smoothing"
     , gp=gpar(fontsize=16)
   )
 )
