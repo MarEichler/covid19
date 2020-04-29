@@ -159,6 +159,23 @@ current_US_newdeaths <- current_values$new_deaths
 
 x_min <- as.Date(startdate)-.5
 x_max <- as.Date(current_date)+1
+
+#ggplot set ups 
+date_scaling <- scale_x_date(
+      name = NULL
+    , labels = date_format("%b-%d")
+    , limits = c(x_min, x_max)
+    , expand = c(0, 0)
+  )
+
+thousands_scaling <- scale_y_continuous(
+      name = NULL
+    , limits = c(0, NA)
+    , labels = scales::unit_format(unit = "k", scale = 1e-3, accuracy = 1, big.mark = ",")
+  )
+
+title_size <- 16
+subtitle_size <- 12
 ```
 
 ###  Total Cases and Total Deaths  
@@ -189,16 +206,8 @@ ggplot(covid_tidy, aes(date, count)) +
     , ncol=2
     , scales = "free_y"
   ) + 
-  scale_x_date(
-      name = NULL
-    , labels = date_format("%b-%d")
-    , limits = c(x_min, x_max)    
-  ) +
-  scale_y_continuous(
-      name = NULL
-    #, labels=comma
-    , labels = scales::unit_format(unit = "k", scale = 1e-3, accuracy = 1, big.mark = ",")
-  ) +
+  date_scaling +
+  thousands_scaling +
   geom_text(
       data = covid_labels
     #format label so there is a comma after three places 
@@ -209,9 +218,9 @@ ggplot(covid_tidy, aes(date, count)) +
   theme_minimal() +
   ggtitle("COVID-19 in the United States by Day") +
   theme(
-      plot.title = element_text(size = 16, hjust = 0.5)
-    , axis.text.x = element_text(hjust = 0.2)
-    , strip.text.x = element_text(size = 12, face = "bold")
+      plot.title = element_text(size = title_size, hjust = 0.5)
+  #  , axis.text.x = element_text(hjust = 0.2)
+    , strip.text.x = element_text(size = subtitle_size, face = "bold")
   )
 
 ```
@@ -258,18 +267,12 @@ plot_gf_setup  <- ggplot(covid19_US_adj, aes(x=date, y=growth_factor))+
     , vjust="inward"
     , hjust= 0
   )+
-  scale_x_date(
-      labels = date_format("%b-%d")
-    , limits = c(x_min, x_max) 
-    , expand = c(0, 0)
-  #  , minor_breaks=date_breaks("1 day")
-  #  , breaks=date_breaks("7 days")
-  )+
+  date_scaling +
   ylim(0, NA)+
   ggtitle("Growth Factor") + 
   theme_minimal()+
   theme(
-      plot.title = element_text(hjust = 0.5, size = 12, face = "bold")
+      plot.title = element_text(hjust = 0.5, size = subtitle_size, face = "bold")
     #, axis.text.x = element_text(hjust = 0.2)
     , axis.title.x=element_blank()
     , axis.title.y=element_blank()
@@ -280,21 +283,12 @@ plot_gf_setup  <- ggplot(covid19_US_adj, aes(x=date, y=growth_factor))+
 #daily cases set up 
 
 plot_dc_setup <- ggplot(covid19_US_adj, aes(x=date, y=new_cases))+
-  scale_x_date(
-      labels = date_format("%b-%d")
-    , limits = c(x_min, x_max) 
-    , expand = c(0, 0)
-  #  , minor_breaks=date_breaks("1 day")
-  #  , breaks=date_breaks("7 days")
-  )+
-  scale_y_continuous(
-      labels=scales::comma
-    , limits = c(0, NA)
-  )+
+  date_scaling + 
+  thousands_scaling +
   ggtitle("New Cases") + 
   theme_minimal()+
   theme(
-      plot.title = element_text(hjust = 0.5, size = 12, face = "bold")
+      plot.title = element_text(hjust = 0.5, size = subtitle_size, face = "bold")
     , axis.title.x=element_blank()
     , axis.title.y=element_blank()
   )
@@ -351,20 +345,13 @@ plot_dc_smooth <- plot_dc_setup +
 ```{r, fig.height=8, warning = FALSE}  
 #Put the plots together and have the plot axes line up
 
-#gGFsmooth <- ggplotGrob(plot_gf_smooth)
-#gDCsmooth <- ggplotGrob(plot_dc_smooth)
-#grid.newpage()
-#grid.draw(rbind(gGFsmooth, gDCsmooth))
-
-#grid.arrange(gGFsmooth, gDCsmooth, ncol=2)
-
 grid.arrange(
     plot_gf_smooth
   , plot_dc_smooth
   , nrow = 1
   ,top=textGrob(
       "COVID-19 in the United States by Day\nLOESS Smoothing"
-    , gp=gpar(fontsize=16)
+    , gp=gpar(fontsize=title_size)
   )
 )
 ```
@@ -446,6 +433,7 @@ plot_dd <- ggplot(covid19_US_adj, aes(x=date))+
         label = formatC(new_deaths, big.mark=",", format="d")
       , y     = new_deaths
       )
+    , hjust = 0.75
     , nudge_y = 250
     )
 ```
@@ -477,7 +465,7 @@ plot_dd <- plot_dd +
       # remember to add the transform! 
       , y     = death_percentage*dd_transform 
       )
-    , hjust = 0.25
+    , hjust = 0.75
     , vjust = 0
     , nudge_y = .0020 * dd_transform 
     , color = AccentCol01
@@ -490,17 +478,13 @@ plot_dd <- plot_dd +
 plot_dd <- plot_dd + 
   #scale the date to be onece a week 
   #add specific limits so it will line up with geom_line 
-  scale_x_date(breaks=date_breaks("7 days")
-              , labels = date_format("%b-%d")
-              , minor_breaks=date_breaks("1 day")
-              , limits = c(x_min, x_max)    
-              )+
+  date_scaling +
   #add commas to numbers in y axis; requires scales package
   scale_y_continuous(
       limits = c(0, dd_y1lim)
     , breaks = dd_y1breaks
     #add commas to numbers in y axis; requires scales package
-    , labels = comma
+    , labels = scales::unit_format(unit = "k", scale = 1e-3, accuracy = 1, big.mark = ",")
     #this transformation MUST match the transformation above
     #divide by current_US_deaths leads to an axis of 0 to 1
     #divide by current_US_deaths*10 leads to an axis of 0 to 0.1
@@ -525,6 +509,8 @@ plot_dd <- plot_dd +
      # remove x and y axes 
     , axis.title.x = element_blank()
     , axis.title.y = element_blank()
+    #adjust plot title 
+    , plot.title = element_text(hjust = 0.5, size = title_size)
   )
 
 plot_dd
