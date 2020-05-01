@@ -110,8 +110,8 @@ for (r in 1:R){
 
 #calculate moving average 
 ma_k <- 5
-covid19_US$MA_growth_factor <- c(rep(NA, ma_k - 1), rollmean(covid19_US$growth_factor, k=5))
-covid19_US$MA_new_cases <- c(rep(NA, ma_k - 1), rollmean(covid19_US$new_cases, k=5))
+covid19_US$MA_growth_factor <- c(rep(NA, ma_k - 1), rollmean(covid19_US$growth_factor, k=ma_k))
+covid19_US$MA_new_cases <- c(rep(NA, ma_k - 1), rollmean(covid19_US$new_cases, k=ma_k))
 
 
 #save copy of data 
@@ -342,7 +342,7 @@ grid.arrange(
 ```{r, warning = FALSE}  
 #MOVING AVERAGE 
 
-title_ma <- "Moving Average, k = 5"
+title_ma <- paste("Moving Average, k =", ma_k)
 
 plot_gf_ma  <- plot_gf +
   geom_line(
