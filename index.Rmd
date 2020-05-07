@@ -16,14 +16,15 @@ max_date <- max(as.Date(raw_data$dateRep, format="%d/%m/%Y"))
 # {.tabset}
 Data available through: `r max_date`  
 
-## Charts
+## US Charts
 
 ```{r child="covidcharts.Rmd", echo=FALSE}
 
 ```
 
 
-## Charts and Code  
-```{r child="covidcharts.Rmd", echo=TRUE}
+## State Map of Growth Factor
+```{r child="state-map.Rmd", echo=FALSE}
 
 ```
+
