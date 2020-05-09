@@ -29,7 +29,8 @@ gf_state_tidy <- gf_state %>%
   mutate(date = as.Date(date))
 
 max_date <- max(gf_state_tidy$date)
-min_date <- max_date - 7 #7 day average 
+n_days <- 14 #14 day average
+min_date <- max_date - n_days  
 gf_labels <- c("0", "0-1", "1-2", "2+")
 
 gf_mean7df <- gf_state_tidy %>%
@@ -55,13 +56,13 @@ lightpink <- brewer.pal(11, "PiYG")[2]
 lightgreen <- brewer.pal(11, "PiYG")[10]
 lightgrey <- "grey60"
 
-if (gf_labels[1] %in% gf_mean7$growth_factor) {
+if (gf_labels[1] %in% gf_mean7df$growth_factor) {
   color_palette <- c(lightgrey, lightgreen, lightpink, darkpink)
 } else {
   color_palette <- c(lightgreen, lightpink, darkpink)
 }
   
-title <- paste("7 Day Average of Growth Rate from", min_date, "to", max_date)
+title <- paste(n_days, "Day Average of Growth Rate from", min_date, "to", max_date)
 
 
 ggplot() +

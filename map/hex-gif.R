@@ -67,15 +67,15 @@ goo <- ggplot() +
   ) +
   scale_fill_manual(
       name = "Growth Factor"
-    , values = colors
+    , values = color_palette
   ) +
   theme_void() +
   coord_map() +
-  transition_states(date, transition_length = 1, state_length = 4)+
+  transition_states(date, transition_length = 0.1, state_length = 1)+
   ggtitle('{closest_state}')
 
 
-hex_map <- animate(goo, nframes=2*length(unique(new$date)))
+hex_map <- animate(goo, nframes=2*length(unique(new$date)), fps=.5)
 
 anim_save("hex_gif.gif", hex_map)
 
