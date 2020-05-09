@@ -71,11 +71,14 @@ goo <- ggplot() +
   ) +
   theme_void() +
   coord_map() +
-  transition_states(date, transition_length = 0.1, state_length = 1)+
+  transition_states(date
+                  , transition_state = 0
+                   , state_length = 4
+                    )+
   ggtitle('{closest_state}')
 
 
-hex_map <- animate(goo, nframes=2*length(unique(new$date)), fps=.5)
+hex_map <-animate(goo, nframes=2*length(unique(new$date)), fps = 2)
 
 anim_save("hex_gif.gif", hex_map)
 

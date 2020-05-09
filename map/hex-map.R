@@ -64,6 +64,7 @@ if (gf_labels[1] %in% gf_mean7df$growth_factor) {
   
 title <- paste(n_days, "Day Average of Growth Rate from", min_date, "to", max_date)
 
+png("hex_map.png")
 
 ggplot() +
   geom_polygon(
@@ -91,3 +92,4 @@ ggplot() +
     plot.title = element_text(face = "bold", hjust = 0.5)
   )
 
+dev.off()
