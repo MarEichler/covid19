@@ -1,0 +1,30 @@
+---
+title: ""
+output:
+  html_document:
+    highlight: "tango"
+#    code_folding: "show"
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE, echo=FALSE, dpi = 300)
+```
+
+### Average Growth Factor - looking at states 
+
+```{r, code = readLines("script/hex-map.R")}
+```
+
+### Average Growth Factor - looking at counties
+
+```{r, code = readLines("script/county-map.R")}
+```
+
+
+
+
+![](hex_gif.gif)
+
