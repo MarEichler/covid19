@@ -19,18 +19,10 @@ names(total_cases)[s_date:last_col] <- format(as.Date(names(total_cases)[s_date:
 names(total_cases)[info_cols] <- c("countyFIPS", "county_name", "state", "stateFIPS")
 
 
-total_cases_state <- total_cases  %>% 
-  select(-c(1:2, 4)) %>% 
-  group_by(state) %>%
-  summarise_at(vars(-group_cols()), sum)
-
-
-vec <- total_cases_state[1,]
-vec
 
 f_GrowthFactor <- function(vec){
-  state <- vec[,1] #get state name
-  tc <- vec[,-1] #remove state name; just todal cases
+  id <- vec[,1] #get id name
+  tc <- vec[,-1] #remove id name; just todal cases
   n_days <- length(tc) #number of days available
   dates <- colnames(tc) #dates 
   
@@ -56,7 +48,7 @@ f_GrowthFactor <- function(vec){
   
   gf <- t(gf)
   colnames(gf) <- dates
-  growth_factor <- cbind(state, gf)
+  growth_factor <- cbind(id, gf)
   growth_factor
 }
 
@@ -65,14 +57,36 @@ f_DataFrame <- function(df, vec_func){
   datalist = list()
   for (i in 1:last_row){
     datalist[[i]] <- vec_func(df[i,])
-    #   print(i)
+       print(i)
   }
   new_df <- bind_rows(datalist)
   new_df
 }
 
-gf_state <- f_DataFrame(total_cases_state, f_GrowthFactor)
 
-save(gf_state,file="gf_state.Rda")
-write.csv(gf_state, file="gf_state.csv")
+total_cases_state <- total_cases  %>% 
+  select(-c(1:2, 4)) %>% 
+  group_by(state) %>%
+  summarise_at(vars(-group_cols()), sum)
+total_cases_state
+
+
+total_cases_county <- total_cases %>%
+  select(-c(2:4)) %>%
+  filter(countyFIPS != 0) %>%
+  as.tibble()
+
+total_cases_county
+
+test <- total_cases_county[1,]
+
+f_GrowthFactor(test)
+
+gf_county <- f_DataFrame(total_cases_county, f_GrowthFactor)
+save(gf_county, file = "data/gf_county.rda")
+
+gf_state <- f_DataFrame(total_cases_state, f_GrowthFactor)
+save(gf_state,file="data/gf_state.rda")
+
+
 
