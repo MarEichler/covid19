@@ -24,7 +24,7 @@ Data available through: `r max_date`
 
 
 ## State Map of Growth Factor
-```{r child="state-map.Rmd", echo=FALSE}
+```{r child="maps.Rmd", echo=FALSE}
 
 ```
 
