@@ -115,7 +115,7 @@ covid19_US$MA_new_cases <- c(rep(NA, ma_k - 1), rollmean(covid19_US$new_cases, k
 
 
 #save copy of data 
-write.csv(covid19_US, "data_ECDC.csv")
+write.csv(covid19_US, "data/data_ECDC.csv")
 
 ```
 
