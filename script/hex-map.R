@@ -115,4 +115,3 @@ ggsave(
   , dpi = 300
 )
 
-print(hex_map)
