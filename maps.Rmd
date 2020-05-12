@@ -9,22 +9,29 @@ editor_options:
 ---
 
 
-```{r}
+```{r, include = FALSE}
 knitr::opts_chunk$set(message = FALSE, warning = FALSE, echo=FALSE, dpi = 300)
 ```
 
-### Average Growth Factor - looking at states 
+### Growth Factor - looking at states 
 
-```{r, code = readLines("script/hex-map.R")}
-```
-
-### Average Growth Factor - looking at counties
-
-```{r, code = readLines("script/county-map.R")}
+```{r, out.width = "100%", eval = TRUE}
+knitr::include_graphics("img/hex_map.png")
 ```
 
 
+```{r, out.width = "100%", eval = TRUE}
+knitr::include_graphics("img/hex_gif.gif")
+```
 
 
-![](hex_gif.gif)
+
+
+```{r, code = readLines("script/county-map.R"), eval = FALSE}
+```
+
+
+
+
+
 
