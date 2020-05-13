@@ -158,6 +158,8 @@ current_US_deathperc   <- current_values$death_percentage
 current_US_newdeaths <- current_values$new_deaths
 ```
 
+
+
 ```{r}
 #set the limits for the x-axis
 #want the limits to be the same so the axes for different charts line up
