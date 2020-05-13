@@ -1,7 +1,6 @@
 
 library(tidyverse)
 library(geojsonio)
-library(RColorBrewer)
 library(rgdal)
 library(broom)
 library(tidyr)
@@ -15,7 +14,7 @@ library(gganimate)
 #     https://team.carto.com/u/andrew/tables/andrew.us_states_hexgrid/public/map.
 
 # Load this file. (Note: I stored in a folder called DATA)
-spdf <- geojson_read("map/us_states_hexgrid.geojson",  what = "sp")
+spdf <- geojson_read("data/us_states_hexgrid.geojson",  what = "sp")
 
 spdf@data <-  spdf@data %>% 
   mutate(
@@ -32,7 +31,7 @@ centers <- cbind.data.frame(data.frame(gCentroid(spdf, byid=TRUE), id=spdf@data$
 
 
 #DATA AND COLOR FOR STATE 
-load("gf_state.rda")
+load("data/gf_state.rda")
 gf_state_tidy <- gf_state %>%
   pivot_longer(cols = c(-1),  names_to = "date", values_to = "gf") %>%
   mutate(date = as.Date(date))
@@ -64,16 +63,13 @@ shp_gf_avg7 <- spdf_fortified %>%
 
 #set color palette
 
-darkpink <- brewer.pal(11, "PiYG")[1]
-lightpink <- brewer.pal(11, "PiYG")[2]
-lightgreen <- brewer.pal(11, "PiYG")[10]
-lightgrey <- "grey60"
+source("script/colors.R")
 
 #if "0" in set; start with grey; if not start with green 
 if (gf_labels[1] %in% gf_mean_df$growth_factor) {
-  color_palette <- c(lightgrey, lightgreen, lightpink, darkpink)
+  color_palette <- c(gf0, gf1_0, gf1_2, gf2plus)
 } else {
-  color_palette <- c(lightgreen, lightpink, darkpink)
+  color_palette <- c(gf1_0, gf1_2, gf2plus)
 }
 
 
@@ -94,7 +90,7 @@ hex_map <- ggplot() +
   geom_text(
     data = centers
     , aes(x=x, y=y, label=id)
-    , color = "grey80"
+    , color = state_abbrv_color
   )+
   theme_void() +
   coord_map() +
@@ -115,3 +111,4 @@ ggsave(
   , dpi = 300
 )
 
+hex_map

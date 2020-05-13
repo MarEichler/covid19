@@ -46,17 +46,12 @@ gf_bins_tidy <- gf_state_tidy %>%
             )
   )
 
-darkpink <- brewer.pal(11, "PiYG")[1]
-lightpink <- brewer.pal(11, "PiYG")[2]
-lightestpink <- brewer.pal(11, "PiYG")[3]
-lightgreen <- brewer.pal(11, "PiYG")[10]
-lightgrey <- "grey80"
+source("script/colors.R")
 
-color_palette <- c(lightgrey, lightestpink, lightpink, darkpink)
+color_palette <- c(gf0, gf1_0, gf1_2, gf2plus)
 
 
-
-new <- spdf_fortified %>%
+shp_gf <- spdf_fortified %>%
   left_join(. , gf_bins_tidy, by=c("id" = "state") )
 
 
@@ -64,14 +59,14 @@ new <- spdf_fortified %>%
 
 goo <- ggplot() +
   geom_polygon(
-    data = new
+    data = shp_gf
     , aes(fill =  growth_factor, x = long, y = lat, group = group)
     , color = "white"
   ) +
   geom_text(
       data = centers
     , aes(x=x, y=y, label=id)
-    , color = "grey90"
+    , color = state_abbrv_color
   ) +
   scale_fill_manual(
       name = "Growth Factor"
@@ -88,11 +83,11 @@ goo <- ggplot() +
     plot.title = element_text(face = "bold", hjust = 0.5)
   )
 
-
+#takes 3-5 minutes to run, depending on my machine's mood
 hex_map <- animate(
     goo
-  , nframes=2*length(unique(new$date))
-  , fps = 2
+  , nframes=2*length(unique(shp_gf$date))
+  , fps = 4
   , width = 7
   , height = 5
   , units = c("in")
