@@ -17,6 +17,7 @@ gf_county_tidy <- gf_county %>%
   pivot_longer(cols = c(-1),  names_to = "date", values_to = "gf") %>%
   mutate(date = as.Date(date))
 
+
 max_date <- max(gf_county_tidy$date)
 n_days <- 14 #14 day average
 min_date <- max_date - n_days  
@@ -40,21 +41,22 @@ gf_mean_df <- gf_county_tidy %>%
 
 #set color palette
 
-darkpink <- brewer.pal(11, "PiYG")[1]
-lightpink <- brewer.pal(11, "PiYG")[2]
-lightgreen <- brewer.pal(11, "PiYG")[10]
-lightgrey <- "grey60"
+source("script/colors.R")
 
-#if "0" in set; start with grey; if not start with green 
+
+#if "0" in set; start with grey
 if (gf_labels[1] %in% gf_mean_df$growth_factor) {
-  color_palette <- c(lightgrey, lightgreen, lightpink, darkpink)
+  color_palette <- c(gf0, gf1_0, gf1_2, gf2plus)
 } else {
-  color_palette <- c(lightgreen, lightpink, darkpink)
+  color_palette <- c(ggf1_0, gf1_2, gf2plus)
 }
 
 #join growth rate data with shape file data
 county_shp_gf <- counties_sf %>%
   left_join(. , gf_mean_df, by=c("county_fips" = "countyFIPS") )
+
+
+title <- paste(n_days, "Day Average of Growth Rate from", min_date, "to", max_date)
 
 county_map <- ggplot(county_shp_gf) +
   geom_sf(
@@ -64,10 +66,22 @@ county_map <- ggplot(county_shp_gf) +
   geom_sf(
       data = state_sf
     , fill = NA
+    , color = line_state
   ) +
-  scale_fill_manual(values = color_palette)
+  scale_fill_manual(
+      name = "Growth Factor"
+    , values = color_palette
+    , guide = guide_legend(reverse = TRUE)
+    ) +
+  theme_void() +
+  labs(
+    title = title
+    , caption = "Data Source: usafacts.org"
+  ) +
+  theme(
+    plot.title = element_text(face = "bold", hjust = 0.5)
+  )
 
-print(county_map)
 
 ggsave(
   "img/county_map.png"
@@ -79,6 +93,7 @@ ggsave(
 )
 
 
+print(county_map)
 
 #small_state_names <- c("NY", "CT", "NJ", "RI", "DE", "VT","NH", "MA")
 
