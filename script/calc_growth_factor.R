@@ -1,7 +1,8 @@
 library(tidyverse)
 
 #get total confirmed cases
-total_cases <- read.csv("map/covid_confirmed_usafacts.csv") 
+#download data here: https://usafacts.org/visualizations/coronavirus-covid-19-spread-map/
+total_cases <- read.csv("data/covid_confirmed_usafacts.csv") 
 
 #total number of columsn 
 last_col <- ncol(total_cases)
@@ -74,7 +75,7 @@ total_cases_state
 total_cases_county <- total_cases %>%
   select(-c(2:4)) %>%
   filter(countyFIPS != 0) %>%
-  as.tibble()
+  as_tibble()
 
 total_cases_county
 
