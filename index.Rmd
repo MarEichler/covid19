@@ -18,7 +18,7 @@ Data available through: `r max_date`
 
 ## US Charts
 
-```{r child="covidcharts.Rmd", echo=FALSE}
+```{r child="charts.Rmd", echo=FALSE}
 
 ```
 
