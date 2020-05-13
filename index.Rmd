@@ -6,25 +6,37 @@ output:
     code_folding: "show"
 ---
 
-```{r, echo=FALSE}
+```{r, include = FALSE}
+knitr::opts_chunk$set(echo=FALSE)
+```
+
+# {.tabset}
+
+
+## US Charts
+
+```{r}
 raw_data <- read.csv("https://opendata.ecdc.europa.eu/covid19/casedistribution/csv"
                      , na.strings = "", fileEncoding = "UTF-8-BOM")
 max_date <- max(as.Date(raw_data$dateRep, format="%d/%m/%Y"))
 ```
-
-
-# {.tabset}
 Data available through: `r max_date`  
 
-## US Charts
-
-```{r child="charts.Rmd", echo=FALSE}
+```{r child="charts.Rmd"}
 
 ```
 
 
+
+
 ## State Map of Growth Factor
-```{r child="maps.Rmd", echo=FALSE}
+
+```{r}
+load("data/gf_state.rda")
+max_date <- colnames(gf_state)[ncol(gf_state)]
+```
+Data available through: `r max_date` 
+```{r child="maps.Rmd"}
 
 ```
 
