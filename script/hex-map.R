@@ -78,24 +78,24 @@ title <- paste(n_days, "Day Average of Growth Rate from", min_date, "to", max_da
 
 hex_map <- ggplot() +
   geom_polygon(
-    data = shp_gf_avg7
+      data = shp_gf_avg7
     , aes(fill =  growth_factor, x = long, y = lat, group = group)
     , color = "white"
   ) +
   scale_fill_manual(
-    name = "Growth Factor"
+      name = "Growth Factor"
     , values = color_palette
     , guide = guide_legend(reverse = TRUE)
   ) +
   geom_text(
-    data = centers
+      data = centers
     , aes(x=x, y=y, label=id)
     , color = state_abbrv_color
   )+
   theme_void() +
   coord_map() +
   labs(
-    title = title
+      title = title
     , caption = "Data Source: usafacts.org"
   ) +
   theme(
@@ -105,10 +105,11 @@ hex_map <- ggplot() +
 
 ggsave(
   "img/hex_map.png"
+  , plot = hex_map
   , width = 7
   , height = 5
   , units = c("in")
   , dpi = 300
 )
 
-hex_map
+print(hex_map)
