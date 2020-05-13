@@ -30,6 +30,12 @@ AccentCol01 <- "firebrick"
 knitr::opts_chunk$set(fig.width=10, dpi=300)
 ```
 
+```{r}
+#read in colors 
+source("script/colors.R")
+```
+
+
 This data is downloaded directly from the 
 <a href="https://www.ecdc.europa.eu/en/publications-data/download-todays-data-geographic-distribution-covid-19-cases-worldwide" target="_blank" >
 European CDC</a>. This data requires formating the dates and calculating the cumulative totals.  If you want to the data already 'cleaned/wrangled', you can take it from 
@@ -241,24 +247,42 @@ cap_gf <- "A growth factor above 1 means new cases are increasing,\ni.e. the pan
 #plot set up 
 plot_gf  <- ggplot(covid19_US_adj, aes(x=date, y=growth_factor))+
   annotate(
-      "rect"
+      "rect" 
+    , xmin = x_min
+    , xmax = x_max
+    , ymin =  0
+    , ymax =  1
+    , fill = gf1_0
+    , alpha = 0.3
+    ) +
+  annotate(
+      "rect" 
     , xmin = x_min
     , xmax = x_max
     , ymin =  1
-    , ymax =  Inf
-    , fill = AccentCol01
-    , alpha = 0.2
+    , ymax =  2
+    , fill = gf1_2
+    , alpha = 0.3
     ) +
   annotate(
-      "segment"
-    , x     = x_min
-    , xend  = x_max
-    , y     =  1
-    , yend  =  1
-    , color = AccentCol01
-    , linetype = "dotted"
-    , size = 1
+      "rect" 
+    , xmin = x_min
+    , xmax = x_max
+    , ymin =  2
+    , ymax =  Inf
+    , fill = gf2plus
+    , alpha = 0.3
     ) +
+#  annotate(
+#      "segment"
+#    , x     = x_min
+#    , xend  = x_max
+#    , y     =  1
+#    , yend  =  1
+#    , color = gf1_2
+#    , linetype = "dotted"
+#    , size = 1
+#    ) +
   annotate(
       "text"
     , x = x_min + 1
@@ -460,7 +484,7 @@ plot_dd <- plot_dd +
     data = covid19_US_adj, 
     #transformatio to match secondary axis below
       aes(y=death_percentage*dd_transform)
-    , color=AccentCol01
+    , color=gf2plus
     , size= 1
     )+
   geom_point(
@@ -468,7 +492,7 @@ plot_dd <- plot_dd +
     #transformatio to match secondary axis below
       aes(y=death_percentage*dd_transform)
     #color 
-    , color=AccentCol01
+    , color=gf2plus
     , size= 2
     )+
   #add label to most recent value 
@@ -482,7 +506,7 @@ plot_dd <- plot_dd +
     , hjust = 0.75
     , vjust = 0
     , nudge_y = .0020 * dd_transform 
-    , color = AccentCol01
+    , color = gf2plus
     )
 ```
 
