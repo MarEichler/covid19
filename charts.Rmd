@@ -482,7 +482,7 @@ covid19_US_adj %>%
       Date = format(date, '%a, %b %d, %Y')
     , `Total Cases` = formatC(total_cases, big.mark=",", format="d")
     , `New Cases`  = formatC(new_cases, big.mark=",", format="d")
-    , `Growth Factor` = round(growth_factor, 4)
+    , `Growth Factor` = round(growth_factor, 2)
     , `Total Deaths` = formatC(total_deaths, big.mark=",", format="d")
     , `New Deaths` = formatC(new_deaths, big.mark=",", format="d")
     , `Death Percentage` = percent(death_percentage, accuracy=0.001)
