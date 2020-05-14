@@ -3,7 +3,6 @@ title: "Tracking COVID-19"
 output:
   html_document:
     highlight: "tango"
-    code_folding: "show"
 ---
 
 ```{r, include = FALSE}
@@ -29,7 +28,7 @@ Data available through: `r max_date`
 
 
 
-## State Map of Growth Factor
+## State Maps of Growth Factor
 
 ```{r}
 load("data/gf_state.rda")
