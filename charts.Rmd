@@ -476,7 +476,7 @@ cowplot::plot_grid(
 #transpose table; easier to read
 covid19_US_adj %>%
   arrange(desc(date)) %>%
-  top_n(7, wt=date) %>%
+  top_n(14, wt=date) %>%
   #format data for output tabe
   mutate(
       Date = format(date, '%a, %b %d, %Y')
