@@ -3,9 +3,9 @@ title: ""
 output:
   html_document:
     highlight: "tango"
-#    code_folding: "show"
+    code_folding: "hide"
 editor_options: 
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
 ```{r, echo=FALSE}
@@ -26,8 +26,7 @@ library(scales)
 library(ggrepel)
 library(kableExtra)
 library(zoo)
-AccentCol01 <- "firebrick"
-knitr::opts_chunk$set(fig.width=10, dpi=300)
+knitr::opts_chunk$set(fig.width=8, fig.height = 4, dpi=300)
 ```
 
 ```{r}
@@ -79,17 +78,9 @@ covid19_US <- raw_data %>%
     )
 ```
 
-One important calculation is the growth rate.  The growth rate is calculated as follows: 
-
-$$
-\text{Growth Rate} = \frac{ \text{New-Cases}_N}{\text{New-Cases}_{N-1}}
-$$
-where $N$ is a given day.  If the growth rate is below 1 that means the number of new cases is slowing down - this is a positive sign.  
-
-I also wanted to look at the dealth percentage which I calculated as the total number of dealths divided by the total number of cases for a given day.  
 
 ```{r}
-#number of rows; use for `for loop`  
+#number of rows; use in `for loop`  
 R <- nrow(covid19_US)
 
 #GROWTH FACTOR  
@@ -103,6 +94,10 @@ for (r in 2:R){
     covid19_US$new_cases[r] /  covid19_US$new_cases[r-1] 
 }
 
+covid19_US <- covid19_US %>%
+  mutate(
+    growth_factor = ifelse(growth_factor == Inf, new_cases, growth_factor)
+         )
 
 #DEATH PERCENTAGE  
 covid19_US$death_percentage <- NA
@@ -115,7 +110,7 @@ for (r in 1:R){
 }
 
 #calculate moving average 
-ma_k <- 5
+ma_k <- 14
 covid19_US$MA_growth_factor <- c(rep(NA, ma_k - 1), rollmean(covid19_US$growth_factor, k=ma_k))
 covid19_US$MA_new_cases <- c(rep(NA, ma_k - 1), rollmean(covid19_US$new_cases, k=ma_k))
 
@@ -125,18 +120,21 @@ write.csv(covid19_US, "data/data_ECDC.csv")
 
 ```
 
+```{r}
+```
+
+
 I am restricted the charts to show values after March 17, 2020 (first date in data set is March 18, 2020).  This is when preventative measures started to increase dramatically.  In addition, given the small number of cases prior to this date caused great variability in the growth rate and has multiple instances where it's  NA or equal to infinity.  
 
 ```{r}
-startdate <- "2020-03-17"
+startdate <- "2020-03-15"
 #3/18 - start 'lockdown' ; after large growth factors↕
 
 
 covid19_US_adj <- covid19_US  %>%
   #only look at data after a given start date
-  filter(date >= as.Date(startdate)) %>%
-  #remove any NA's that are still present 
-  drop_na()
+  filter(date >= as.Date(startdate))
+
 ```
 
 
@@ -158,7 +156,7 @@ current_US_deathperc   <- current_values$death_percentage
 current_US_newdeaths <- current_values$new_deaths
 ```
 
-
+ 
 
 ```{r}
 #set the limits for the x-axis
@@ -180,16 +178,17 @@ thousands_scaling <- scale_y_continuous(
       name = NULL
     , limits = c(0, NA)
     , labels = scales::unit_format(unit = "k", scale = 1e-3, accuracy = 1, big.mark = ",")
+    , expand = c(0, 0)
   )
 
-title_size <- 16
+title_size <- 14
 subtitle_size <- 12
 ```
 
 ###  Total Cases and Total Deaths  
 These show the cumulative total of cases and deaths.  
 
-```{r}
+```{r, fig.height=3}
 covid_tidy <- covid19_US_adj %>%
   select(date, total_cases, total_deaths) %>%
   pivot_longer(
@@ -198,10 +197,11 @@ covid_tidy <- covid19_US_adj %>%
     , values_to = "count"
   ) 
 
-covid_labels <- covid_tidy %>%
-  filter(date == current_date)
-
-
+total_labels <- covid_tidy %>%
+  filter(date == current_date) %>%
+  mutate(
+    label = paste("Current Total", formatC(count, big.mark=",", format="d"), sep = "\n")
+  )
 
 ggplot(covid_tidy, aes(date, count)) + 
   geom_area(alpha = 0.4)+
@@ -210,38 +210,64 @@ ggplot(covid_tidy, aes(date, count)) +
     , alpha = 0.6
   )+
   facet_wrap(
-    .~factor(type, labels = c("Total Cases", "Total Dealths"))
+    .~factor(type, labels = c("Total Cases by Day", "Total Dealths by Day"))
     , ncol=2
     , scales = "free_y"
   ) + 
   date_scaling +
   thousands_scaling +
   geom_text(
-      data = covid_labels
+      data = total_labels 
     #format label so there is a comma after three places 
-    , aes(label = formatC(count, big.mark=",", format="d"))
-    , vjust = -0.2
-    , hjust=1 
+    , aes(
+          label = label
+        , y = -Inf
+        , x = current_date
+      )
+    , vjust = -0.15
+    , hjust=1.05 
+    , size = 6
+    , fontface = "bold"
+    , color = "white"
     ) +
   theme_minimal() +
-  ggtitle("COVID-19 in the United States by Day") +
+#  ggtitle("COVID-19 in the United States by Day") +
   theme(
       plot.title = element_text(size = title_size, hjust = 0.5)
   #  , axis.text.x = element_text(hjust = 0.2)
-    , strip.text.x = element_text(size = subtitle_size, face = "bold")
+    , strip.text.x = element_text(size = subtitle_size)
+    , panel.spacing = unit(.5, "in")
+    , plot.margin  = margin(t=0, r=15, b=0, l=0)
+    , axis.ticks.length = unit(5, "pt")
   )
 
 ```
 
 
 ### Growth Factor and New Cases 
+One important calculation is the growth factor, as outline in <a href = "https://www.youtube.com/watch?v=Kas0tIxDvrg" target = "_blank"> 3Blue1Brown's youtube video on exponential growth </a>.  The growth rate is calculated as follows: 
+
+$$
+\text{Growth Factor} = \frac{ \text{New-Cases}_N}{\text{New-Cases}_{N-1}}
+$$
+where $N$ is a given day.  
+
 In order to see if the pandemic is slowing down, it is helpful to look at the growth factor and the daily new cases.  For both these values; we want to see a decrease in values from day to day - which indicates that less people are getting sick.  Recall that a growth factor less than 1 is a positive sign that the growth of cases is slowing down.  Growth factor is directly related to new cases - if daily new cases goes now the growth factor is less than 1; if daily cases goes up the growth factor is greater than one.  These two charts represent the same information in two differnt ways.  
 
 ```{r}
 #captions 
 gf_max <- max(covid19_US_adj$growth_factor)
 
-cap_gf <- "A growth factor above 1 means new cases are increasing,\ni.e. the pandemic is growing"
+
+cap_gf <- paste(
+  strwrap("A growth factor below 1 means new cases are decreasing,\ni.e. the pandemic is slowing"
+          , 30)
+  , collapse = "\n"
+)
+```
+
+```{r}
+
 ```
 
 
@@ -275,42 +301,33 @@ plot_gf  <- ggplot(covid19_US_adj, aes(x=date, y=growth_factor))+
     , fill = gf2plus
     , alpha = 0.3
     ) +
-#  annotate(
-#      "segment"
-#    , x     = x_min
-#    , xend  = x_max
-#    , y     =  1
-#    , yend  =  1
-#    , color = gf1_2
-#    , linetype = "dotted"
-#    , size = 1
-#    ) +
   annotate(
       "text"
     , x = x_min + 1
-    , y = gf_max
+    , y = 0
     , label = cap_gf
-    , vjust="inward"
+    , vjust=-0.15
     , hjust= 0
+    , size = 3
+    , color = "grey15"
   ) +
-#  geom_point(
-#      size=2
-#    , alpha=0.3
-#  )+
   geom_line(
       size=1
     , alpha=0.3
   ) +
   date_scaling +
-  ylim(0, NA)+
-  ggtitle("Growth Factor") + 
+  scale_y_continuous(limit = c(0, gf_max + 0.05), expand = c(0, 0)) +
+  ggtitle("Growth Factor per Day") + 
   theme_minimal()+
   theme(
-      plot.title = element_text(hjust = 0.5, size = subtitle_size, face = "bold")
+      plot.title = element_text(hjust = 0.5, size = subtitle_size)
     #, axis.text.x = element_text(hjust = 0.2)
     , axis.title.x=element_blank()
     , axis.title.y=element_blank()
-  )
+    , plot.margin  = margin(t=0, r=15, b=0, l=0)
+    , axis.ticks.length = unit(5, "pt")
+  ) 
+
 ```
 
 ```{r}  
@@ -320,12 +337,14 @@ plot_dc <- ggplot(covid19_US_adj, aes(x=date, y=new_cases))+
   geom_col(alpha=0.3) +
   date_scaling + 
   thousands_scaling +
-  ggtitle("New Cases") + 
+  ggtitle("New Cases per Day") + 
   theme_minimal()+
   theme(
-      plot.title = element_text(hjust = 0.5, size = subtitle_size, face = "bold")
+      plot.title = element_text(hjust = 0.5, size = subtitle_size)
     , axis.title.x=element_blank()
     , axis.title.y=element_blank()
+    , plot.margin  = margin(t=0, r=15, b=0, l=0)
+    , axis.ticks.length = unit(5, "pt")
   )
 ```
 
@@ -349,7 +368,7 @@ loess_smooth <- geom_smooth(
   )
 
 plot_gf_l  <- plot_gf +
-  loess_smooth
+  loess_smooth 
 
 plot_dc_l <- plot_dc +
   loess_smooth
@@ -359,8 +378,8 @@ grid.arrange(
   , plot_dc_l
   , nrow = 1
   ,top=textGrob(
-      paste("COVID-19 in the United States by Day", title_l, sep = "\n")
-    , gp=gpar(fontsize=title_size)
+      paste(title_l, sep = "\n")
+    , gp=gpar(fontsize=title_size, fontface = "bold")
   )
 )
 ```
@@ -389,8 +408,8 @@ grid.arrange(
   , plot_dc_ma
   , nrow = 1
   ,top=textGrob(
-      paste("COVID-19 in the United States by Day", title_ma, sep = "\n")
-    , gp=gpar(fontsize=title_size)
+      paste(title_ma, sep = "\n")
+    , gp=gpar(fontsize=title_size, fontface = "bold")
   )
 )
 ```
@@ -398,163 +417,57 @@ grid.arrange(
 
 ### New Deaths and Death Percentage   
 
-```{r}
-#start by defining two fucntion
-
-#round number to specific base  
-func_mround <- function(x, base){
-  base*round(x/base)
-}
-
-#round up to a certain base; this will be used for upper bound for primary axis 
-Ylim <- function(curr_val, base){
-round_curr_val <- func_mround(curr_val, base)
-if( round_curr_val - curr_val < 0 ){
-  lim <- round_curr_val + base
-} else {
-  lim <- round_curr_val
-}
-return(lim)
-}
-```
-
-```{r}
-#td = total deaths 
-#set base for primary axis 
-dd_base <- 1000
-
-#primary/main y-axis limit 
-dd_y1lim  <- Ylim(max(covid19_US_adj$new_deaths), dd_base)
-  #add an extra base to add more room 
-
-
-#TRANSFORM PRIMARY AXIS TO SECONDARY AXIS 
-#in order to have a secondary axis have to have a multiplier to transform primary axis to sec axis
-#find the Ylim of primary axis
-# next want to find an upper bound for seconday axis
-#     want both upper bounds to be divisible by the same number 
-#     i.e. if the primary axis is from 0 to 20 and it has 4 breaks (5, 10, 15, 20)
-#     I want to set the upper bound of the secondary axis to a value divisible by 4
-#     want teh break lines of the primary axis to match up with the breaks of the secondary axis 
-#what if I don't do this?
-#     the text breaks of the seconday axis will not line up with the line breaks of the primary axis 
-
-#find what the divisor is 
-divisor <- dd_y1lim/dd_base
-
-#max value for the secondary axis 
-maxdeathperc <- max(covid19_US_adj$death_percentage, na.rm=TRUE)
-
-
-dp_y2lim  <- Ylim(maxdeathperc, .01)+.01
-
-dp_base <- dp_y2lim/divisor
-
-#calculate the breaks 
-dd_y1breaks <- c(1:divisor)*dd_base
-dp_y2breaks <- c(1:divisor)*dp_base
-
-#calculate the transform multiplier 
-dd_transform <- dd_y1lim*(1/dp_y2lim)
-```
+I also wanted to look at the dealth percentage which I calculated as the total number of deaths divided by the total number of cases for a given day.  
 
 
 ```{r}
-#plot the primary data: new deaths by day bar chart    
-
-plot_dd <- ggplot(covid19_US_adj, aes(x=date))+
-  #use geom_col because counts per day have alread been counted 
-  geom_col(aes(y=new_deaths), alpha=0.6)+
-  #add total dealths label 
-  geom_label(
-      data = current_values
-    #format label so there is a comma after three places 
-    , aes(
-        label = formatC(new_deaths, big.mark=",", format="d")
-      , y     = new_deaths
-      )
-    , hjust = 0.75
-    , nudge_y = 250
-    )
-```
-
-```{r}
-#Then, plot the secondary data: death percentage.  
-
-plot_dd <- plot_dd + 
-  geom_line(
-    data = covid19_US_adj, 
-    #transformatio to match secondary axis below
-      aes(y=death_percentage*dd_transform)
-    , color=gf2plus
-    , size= 1
-    )+
-  geom_point(
-    data = covid19_US_adj, 
-    #transformatio to match secondary axis below
-      aes(y=death_percentage*dd_transform)
-    #color 
-    , color=gf2plus
-    , size= 2
-    )+
-  #add label to most recent value 
-  geom_label(
-      data = current_values
-    , aes(
-        label = percent(death_percentage, accuracy=0.001)
-      # remember to add the transform! 
-      , y     = death_percentage*dd_transform 
-      )
-    , hjust = 0.75
-    , vjust = 0
-    , nudge_y = .0020 * dd_transform 
-    , color = gf2plus
-    )
-```
-
-```{r }
-#It is imparative to add the scales.  
-
-plot_dd <- plot_dd + 
-  #scale the date to be onece a week 
-  #add specific limits so it will line up with geom_line 
-  date_scaling +
-  #add commas to numbers in y axis; requires scales package
+plot_dp <- ggplot(covid19_US_adj, aes(date, death_percentage)) + 
+  geom_line(color = "grey40", size = 1.5) + 
+  date_scaling + 
   scale_y_continuous(
-      limits = c(0, dd_y1lim)
-    , breaks = dd_y1breaks
-    #add commas to numbers in y axis; requires scales package
-    , labels = scales::unit_format(unit = "k", scale = 1e-3, accuracy = 1, big.mark = ",")
-    #this transformation MUST match the transformation above
-    #divide by current_US_deaths leads to an axis of 0 to 1
-    #divide by current_US_deaths*10 leads to an axis of 0 to 0.1
-    , sec.axis = sec_axis(
-        ~./dd_transform
-      ,  breaks = dp_y2breaks
-      )
-    )
-```
-
-```{r }
-#Finally, a title and other themes are specified.    
-
-plot_dd <- plot_dd + 
-  #add title 
-  ggtitle("New Deaths and Dealth Percentage of COVID-19 in the United States by Day")+
-  #minimal theme
+      name = "Total Dealths / Total Cases"
+    , limits = c(0, NA)
+    , labels = scales::percent
+  ) +
+  ggtitle("Dealth Percentage per Day") + 
   theme_minimal()+
   theme(
-    #remove all legents 
-     legend.position = "none"
-     # remove x and y axes 
-    , axis.title.x = element_blank()
-    , axis.title.y = element_blank()
-    #adjust plot title 
-    , plot.title = element_text(hjust = 0.5, size = title_size)
+      plot.title = element_text(hjust = 0.5, size = subtitle_size)
+    , axis.title.x=element_blank()
+    , plot.margin  = margin(t=0, r=15, b=15, l=0)
+    , axis.ticks.length = unit(5, "pt")
+  )
+```
+
+```{r}
+plot_nd <- ggplot(covid19_US_adj, aes(date, new_deaths)) + 
+  geom_col(alpha=0.6) +
+  date_scaling + 
+  thousands_scaling +
+  ggtitle("New Deaths per Day") + 
+  theme_minimal()+
+  theme(
+      plot.title = element_text(hjust = 0.5, size = subtitle_size)
+    , axis.title.x=element_blank()
+    , axis.title.y=element_blank()
+    , plot.margin  = margin(t=15, r=15, b=0, l=0)
+    , axis.ticks.length = unit(5, "pt")
   )
 
-plot_dd
 ```
+
+
+```{r}
+cowplot::plot_grid(
+    plot_dp
+  , plot_nd
+  , nrow = 1
+  , align = "h"
+)
+```
+
+
+
 
 
 ### Values for Past Week 
@@ -574,6 +487,16 @@ covid19_US_adj %>%
     , `New Deaths` = formatC(new_deaths, big.mark=",", format="d")
     , `Death Percentage` = percent(death_percentage, accuracy=0.001)
   ) %>%
+  #color Growth Factor based on value 
+  mutate(
+    `Growth Factor` = cell_spec(
+      `Growth Factor`, color = 
+          ifelse(
+            growth_factor > 2, gf2plus, ifelse(growth_factor > 1,  gf1_2, gf1_0)
+            )
+      , bold = T
+      )
+  ) %>%
   #re-order to group cases and death information together 
   select(
       Date
@@ -584,7 +507,10 @@ covid19_US_adj %>%
     , `New Deaths`
     , `Death Percentage`
     ) %>%
-  kable(align=c('l', rep('r', 5))) %>%
+  kable(
+    align=c('l', rep('r', 5))
+    , escape = F
+  ) %>%
   kable_styling(
     bootstrap_options = c(
       #adds stiped color to rows
