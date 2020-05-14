@@ -12,19 +12,23 @@ editor_options:
 
 ### Growth Factor - looking at states 
 
-```{r, out.width = "100%"}
+```{r, out.width = "80%", fig.align = 'center'}
 knitr::include_graphics("img/hex_map.png")
 ```
 
 
-```{r, out.width = "100%"}
-knitr::include_graphics("img/hex_gif.gif")
+```{r, out.width = "80%", fig.align = 'center'}
+knitr::include_graphics("img/hex_gif_recent.gif")
+```
+
+```{r, out.width = "80%", fig.align = 'center'}
+knitr::include_graphics("img/hex_gif_all.gif")
 ```
 
 
 ### Growth Factor - looking at counties 
 
-```{r, out.width = "100%"}
+```{r, out.width = "80%", fig.align = 'center'}
 knitr::include_graphics("img/county_map.png")
 ```
 
