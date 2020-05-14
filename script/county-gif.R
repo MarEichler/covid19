@@ -1,5 +1,6 @@
 library(tidyverse)
 library(urbnmapr)
+library(gganimate)
 
 # https://github.com/UrbanInstitute/urbnmapr
 
@@ -41,7 +42,7 @@ gf_bins_tidy <- gf_county_tidy %>%
 
 source("script/colors.R")
 
-color_palette <- c(gf1_0, gf1_2, gf2plus)
+color_palette <- c(gf0, gf1_0, gf1_2, gf2plus)
 
 
 #join growth rate data with shape file data
@@ -51,7 +52,10 @@ county_shp_gf <- counties_sf %>%
 
 title <- paste(n_days, "Day Average of Growth Rate from", min_date, "to", max_date)
 
-goo <- ggplot(county_shp_gf) +
+
+county_shp_gf %>%
+  filter(date >= max_date) %>%
+ggplot() +
   geom_sf(
       aes(fill = growth_factor)
     , color = NA
@@ -67,7 +71,7 @@ goo <- ggplot(county_shp_gf) +
     , guide = guide_legend(reverse = TRUE)
     ) +
   theme_void() +
-  transition_time(date)+
+#  transition_time(date)+
   labs(
     title = "Growth Factor on {frame_time}"
     , caption = "Data Source: usafacts.org"
@@ -76,15 +80,16 @@ goo <- ggplot(county_shp_gf) +
     plot.title = element_text(face = "bold", hjust = 0.5)
   )
 
+
 #takes 3-5 minutes to run, depending on my machine's mood
 county_gif <- animate(
   goo
-  , nframes=2*length(unique(shp_gf$date))
-  , fps = 4
+  , nframes=2*length(unique(county_shp_gf$date))
+  , fps = 1
   , width = 7
   , height = 5
   , units = c("in")
-  , res = 100
+  , res = 10
 )
 
 anim_save("img/county_gif.gif", county_gif)

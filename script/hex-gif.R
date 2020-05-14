@@ -57,7 +57,8 @@ shp_gf <- spdf_fortified %>%
 
 
 
-goo <- ggplot() +
+#### gif will all dates 
+all_gif <- ggplot() +
   geom_polygon(
     data = shp_gf
     , aes(fill =  growth_factor, x = long, y = lat, group = group)
@@ -71,29 +72,75 @@ goo <- ggplot() +
   scale_fill_manual(
       name = "Growth Factor"
     , values = color_palette
+    , guide = guide_legend(reverse = TRUE)
   ) +
   theme_void() +
   coord_map() +
-  transition_time(date)+
   labs(
-      title = "Growth Factor on {frame_time}"
+    title = "January to Present\nGrowth Factor on {frame_time}"
     , caption = "Data Source: usafacts.org"
   ) +
   theme(
     plot.title = element_text(face = "bold", hjust = 0.5)
-  )
+  ) +
+  transition_time(date) 
+
 
 #takes 3-5 minutes to run, depending on my machine's mood
-hex_map <- animate(
-    goo
-  , nframes=2*length(unique(shp_gf$date))
+hex_map_all <- animate(
+    all_gif
   , fps = 4
+  , nframes = length(unique(shp_gf$date))
   , width = 7
   , height = 5
   , units = c("in")
   , res = 100
   )
 
-anim_save("img/hex_gif.gif", hex_map)
+anim_save("img/hex_gif_all.gif", hex_map_all)
+##########################################
+
+### RECENT GIF, SLOWER 
+recent <- shp_gf %>%
+  filter(date >= max_date - 14)
+
+recent_gif <- ggplot() +
+  geom_polygon(
+    data = recent
+    , aes(fill =  growth_factor, x = long, y = lat, group = group)
+    , color = "white"
+  ) +
+  geom_text(
+    data = centers
+    , aes(x=x, y=y, label=id)
+    , color = state_abbrv_color
+  ) +
+  scale_fill_manual(
+    name = "Growth Factor"
+    , values = color_palette
+    , guide = guide_legend(reverse = TRUE)
+  ) +
+  theme_void() +
+  coord_map() +
+  labs(
+    title = "Recent 14 Days\nGrowth Factor on {frame_time}"
+    , caption = "Data Source: usafacts.org"
+  ) +
+  theme(
+    plot.title = element_text(face = "bold", hjust = 0.5)
+  ) +
+  transition_time(date) 
 
 
+#takes 3-5 minutes to run, depending on my machine's mood
+hex_map_recent <- animate(
+  recent_gif
+  , fps = 1
+  , nframes = length(unique(recent$date))
+  , width = 7
+  , height = 5
+  , units = c("in")
+  , res = 100
+)
+
+anim_save("img/hex_gif_recent.gif", hex_map_recent)
