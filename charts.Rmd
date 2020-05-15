@@ -280,7 +280,7 @@ plot_gf  <- ggplot(covid19_US_adj, aes(x=date, y=growth_factor))+
     , xmax = x_max
     , ymin =  0
     , ymax =  1
-    , fill = gf1_0
+    , fill = gf0_1
     , alpha = 0.3
     ) +
   annotate(
@@ -304,12 +304,20 @@ plot_gf  <- ggplot(covid19_US_adj, aes(x=date, y=growth_factor))+
   annotate(
       "text"
     , x = x_min + 1
-    , y = 0
+    , y = 0.85
     , label = cap_gf
-    , vjust=-0.15
+    , vjust=1
     , hjust= 0
     , size = 3
-    , color = "grey15"
+    , color = "grey10"
+  ) +
+  geom_segment(
+      x = x_min
+    , xend = x_max
+    , y = 1
+    , yend = 1
+    , color = "white"
+    , size = 1.25
   ) +
   geom_line(
       size=1
@@ -492,7 +500,9 @@ covid19_US_adj %>%
     `Growth Factor` = cell_spec(
       `Growth Factor`, color = 
           ifelse(
-            growth_factor > 2, gf2plus, ifelse(growth_factor > 1,  gf1_2, gf1_0)
+            growth_factor > 2, gf2plus, 
+              ifelse(growth_factor > 1,  gf1_2, gf0_1
+                     )
             )
       , bold = T
       )
