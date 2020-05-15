@@ -48,7 +48,7 @@ gf_bins_tidy <- gf_state_tidy %>%
 
 source("script/colors.R")
 
-color_palette <- c(gf0, gf1_0, gf1_2, gf2plus)
+color_palette <- c(gf0, gf0_1, gf1_2, gf2plus)
 
 
 shp_gf <- spdf_fortified %>%
@@ -77,11 +77,13 @@ all_gif <- ggplot() +
   theme_void() +
   coord_map() +
   labs(
-    title = "January to Present\nGrowth Factor on {frame_time}"
+      title = "Growth Rate from January to Present"
+    , subtitle = "{frame_time}"
     , caption = "Data Source: usafacts.org"
   ) +
   theme(
-    plot.title = element_text(face = "bold", hjust = 0.5)
+      plot.title = element_text(face = "bold", hjust = 0.5)
+    , plot.subtitle = element_text(hjust = 0.5, size = 12)
   ) +
   transition_time(date) 
 
@@ -123,12 +125,14 @@ recent_gif <- ggplot() +
   theme_void() +
   coord_map() +
   labs(
-    title = "Recent 14 Days\nGrowth Factor on {frame_time}"
+    title = "Growth Rate over last 14 days"
+    , subtitle = "{frame_time}"
     , caption = "Data Source: usafacts.org"
   ) +
   theme(
     plot.title = element_text(face = "bold", hjust = 0.5)
-  ) +
+    , plot.subtitle = element_text(hjust = 0.5, size = 12)
+  )+
   transition_time(date) 
 
 

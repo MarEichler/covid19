@@ -67,14 +67,14 @@ source("script/colors.R")
 
 #if "0" in set; start with grey; if not start with green 
 if (gf_labels[1] %in% gf_mean_df$growth_factor) {
-  color_palette <- c(gf0, gf1_0, gf1_2, gf2plus)
+  color_palette <- c(gf0, gf0_1, gf1_2, gf2plus)
 } else {
-  color_palette <- c(gf1_0, gf1_2, gf2plus)
+  color_palette <- c(gf0_1, gf1_2, gf2plus)
 }
 
 
-
-title <- paste(n_days, "Day Average of Growth Rate from", min_date, "to", max_date)
+title <- paste("Average Growth Rate over last", n_days, "days")
+subtitle <- paste(min_date, "to", max_date)
 
 hex_map <- ggplot() +
   geom_polygon(
@@ -96,10 +96,12 @@ hex_map <- ggplot() +
   coord_map() +
   labs(
       title = title
+    , subtitle = subtitle
     , caption = "Data Source: usafacts.org"
   ) +
   theme(
-    plot.title = element_text(face = "bold", hjust = 0.5)
+      plot.title = element_text(face = "bold", hjust = 0.5)
+    , plot.subtitle = element_text(hjust = 0.5, size = 12)
   )
 
 
