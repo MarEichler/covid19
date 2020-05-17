@@ -2,7 +2,13 @@ library(tidyverse)
 
 #get total confirmed cases
 #download data here: https://usafacts.org/visualizations/coronavirus-covid-19-spread-map/
-total_cases <- read.csv("data/covid_confirmed_usafacts.csv") 
+
+link <- "https://usafactsstatic.blob.core.windows.net/public/data/covid-19/covid_confirmed_usafacts.csv"
+
+total_cases <- read.csv(link)
+
+
+
 
 #total number of columsn 
 last_col <- ncol(total_cases)
@@ -19,7 +25,7 @@ names(total_cases)[s_date:last_col] <- format(as.Date(names(total_cases)[s_date:
 #rename columns 
 names(total_cases)[info_cols] <- c("countyFIPS", "county_name", "state", "stateFIPS")
 
-
+write.csv(total_cases, "data/covid_confirmed_usafacts.csv")
 
 f_GrowthFactor <- function(vec){
   id <- vec[,1] #get id name
