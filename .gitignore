@@ -3,6 +3,10 @@
 .RData
 .Ruserdata
 
+index_cache/
+index_files/
+maps_files/
+maps_cache/
 .rdb
 .rdx
 
