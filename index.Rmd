@@ -21,7 +21,7 @@ max_date <- max(as.Date(raw_data$dateRep, format="%d/%m/%Y"))
 ```
 Data available through: `r max_date`  
 
-```{r child="charts.Rmd"}
+```{r child="charts.Rmd", cache=TRUE}
 
 ```
 
@@ -35,7 +35,7 @@ usafacts_data <- read.csv(link <- "https://usafactsstatic.blob.core.windows.net/
 max_date <- as.Date(colnames(usafacts_data)[ncol(usafacts_data)], format = "X%m.%d.%y")
 ```
 Data available through: `r max_date` 
-```{r child="maps.Rmd"}
+```{r child="maps.Rmd", cache = TRUE}
 
 ```
 
