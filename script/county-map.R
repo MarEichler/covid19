@@ -96,7 +96,6 @@ ggsave(
 )
 
 
-print(county_map)
 
 #small_state_names <- c("NY", "CT", "NJ", "RI", "DE", "VT","NH", "MA")
 

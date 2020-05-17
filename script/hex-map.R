@@ -113,5 +113,3 @@ ggsave(
   , units = c("in")
   , dpi = 300
 )
-
-print(hex_map)
