@@ -31,8 +31,8 @@ Data available through: `r max_date`
 ## State Maps of Growth Factor
 
 ```{r}
-load("data/gf_state.rda")
-max_date <- colnames(gf_state)[ncol(gf_state)]
+usafacts_data <- read.csv(link <- "https://usafactsstatic.blob.core.windows.net/public/data/covid-19/covid_confirmed_usafacts.csv")
+max_date <- as.Date(colnames(usafacts_data)[ncol(usafacts_data)], format = "X%m.%d.%y")
 ```
 Data available through: `r max_date` 
 ```{r child="maps.Rmd"}
