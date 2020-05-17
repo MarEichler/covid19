@@ -9,19 +9,19 @@ editor_options:
 ---
 
 
-```{r calc-growth-factor, message = FALSE, results = FALSE, cache = TRUE}
+```{r calc-growth-factor, message = FALSE, results = FALSE}
 source("script/calc_growth_factor.R")
 ```
 
-```{r hex-map, message = FALSE, results = FALSE, warning = FALSE, cache = TRUE}
+```{r hex-map, message = FALSE, results = FALSE, warning = FALSE}
 source("script/hex-map.R")
 ```
 
-```{r hex-gif, message = FALSE, results = FALSE, warning = FALSE, cache = TRUE}
+```{r hex-gif, message = FALSE, results = FALSE, warning = FALSE}
 source("script/hex-gif.R")
 ```
 
-```{r county-map, message = FALSE, results = FALSE, warning = FALSE, cache = TRUE}
+```{r county-map, message = FALSE, results = FALSE, warning = FALSE}
 source("script/county-map.R")
 ```
 
