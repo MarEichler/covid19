@@ -79,8 +79,7 @@ if (gf_labels[1] %in% gf_mean_df$growth_factor) {
 title <- paste("Average Growth Rate over last", n_days, "days")
 subtitle <- paste(min_date, "to", max_date)
 
-#hex_map <- 
-ggplot() +
+hex_map <- ggplot() +
   geom_polygon(
     data = shp_gf_avg7
     , aes(fill =  growth_factor, x = long, y = lat, group = group)
@@ -114,9 +113,6 @@ ggplot() +
     plot.title = element_text(face = "bold", hjust = 0.5)
     , plot.subtitle = element_text(hjust = 0.5, size = 12)
   )
-
-
-print(hex_map)
 
 ggsave(
   "img/hex_map.png"
