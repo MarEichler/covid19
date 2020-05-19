@@ -1,10 +1,8 @@
-
 library(tidyverse)
 library(geojsonio)
 library(rgdal)
 library(broom)
 library(tidyr)
-library(gganimate)
 
 #HEX MAP SET UP
 
@@ -98,9 +96,9 @@ hex_map <- ggplot() +
   )+
   geom_text(
     data = labels
-    , aes(x=x, y=y-0.6, label=gf_label)
+    , aes(x=x, y=y-0.8, label=gf_label)
     , color = state_abbrv_color
-    , size = 3
+    , size = 2.5
   )+
   theme_void() +
   coord_map() +
@@ -113,6 +111,8 @@ hex_map <- ggplot() +
     plot.title = element_text(face = "bold", hjust = 0.5)
     , plot.subtitle = element_text(hjust = 0.5, size = 12)
   )
+
+hex_map
 
 ggsave(
   "img/hex_map.png"
