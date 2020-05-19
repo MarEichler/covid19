@@ -1,4 +1,5 @@
 #download data directly from European CDC
+#https://www.ecdc.europa.eu/en/publications-data/download-todays-data-geographic-distribution-covid-19-cases-worldwide
 raw_data <- read.csv("https://opendata.ecdc.europa.eu/covid19/casedistribution/csv"
                      , na.strings = "", fileEncoding = "UTF-8-BOM")
 
