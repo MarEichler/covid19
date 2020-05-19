@@ -9,16 +9,17 @@ output:
 knitr::opts_chunk$set(echo=FALSE)
 ```
 
+```{r}
+usafacts_data <- read.csv(link <- "https://usafactsstatic.blob.core.windows.net/public/data/covid-19/covid_confirmed_usafacts.csv")
+max_date <- as.Date(colnames(usafacts_data)[ncol(usafacts_data)], format = "X%m.%d.%y")
+```
+
 # {.tabset}
 
 
 ## US Charts
 
-```{r}
-raw_data <- read.csv("https://opendata.ecdc.europa.eu/covid19/casedistribution/csv"
-                     , na.strings = "", fileEncoding = "UTF-8-BOM")
-max_date <- max(as.Date(raw_data$dateRep, format="%d/%m/%Y"))
-```
+
 Data available through: `r max_date`  
 
 ```{r child="charts.Rmd"}
@@ -29,10 +30,6 @@ Data available through: `r max_date`
 
 ## State Maps of Growth Factor
 
-```{r}
-usafacts_data <- read.csv(link <- "https://usafactsstatic.blob.core.windows.net/public/data/covid-19/covid_confirmed_usafacts.csv")
-max_date <- as.Date(colnames(usafacts_data)[ncol(usafacts_data)], format = "X%m.%d.%y")
-```
 Data available through: `r max_date` 
 ```{r child="maps.Rmd"}
 
