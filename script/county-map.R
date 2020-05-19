@@ -67,7 +67,7 @@ county_map <- ggplot(county_shp_gf) +
   geom_sf(
       data = state_sf
     , fill = NA
-    , color = line_state
+    , color = "white" #line_state
   ) +
   scale_fill_manual(
       name = "Growth Factor"
@@ -94,28 +94,3 @@ ggsave(
   , units = c("in")
   , dpi = 300
 )
-
-
-
-#small_state_names <- c("NY", "CT", "NJ", "RI", "DE", "VT","NH", "MA")
-
-#small_county <- county_shp_gf %>%
-#  filter(state_abbv %in% small_state_names)
-
-#small_state <- state_sf %>%
-#  filter(state_abbv %in% small_state_names)
-
-
-#small_plot <- ggplot(small_county) +
-#  geom_sf(
-#    aes(fill = growth_factor)
-#    , color = NA
-#  ) +
-#  geom_sf(
-#    data = small_state
-#    , fill = NA
-#  ) +
-#  scale_fill_manual(values = color_palette) 
-
-
-
