@@ -23,11 +23,6 @@ spdf@data <-  spdf@data %>%
   )
 spdf_fortified <- tidy(spdf, region = "state_pc")
 
-#HEX MAP STATE LABELS 
-# Calculate the centroid of each hexagon to add the label:
-library(rgeos)
-centers <- cbind.data.frame(data.frame(gCentroid(spdf, byid=TRUE), id=spdf@data$iso3166_2))
-
 
 
 #DATA AND COLOR FOR STATE 
@@ -59,7 +54,15 @@ gf_mean_df <- gf_state_tidy %>%
 shp_gf_avg7 <- spdf_fortified %>%
   left_join(. , gf_mean_df, by=c("id" = "state") )
 
-
+#HEX MAP STATE LABELS 
+# Calculate the centroid of each hexagon to add the label:
+library(rgeos)
+centers <- cbind.data.frame(data.frame(gCentroid(spdf, byid=TRUE), id=spdf@data$iso3166_2))
+labels <- centers %>%
+  left_join(., gf_mean_df, by = c("id" = "state")) %>%
+  mutate(
+    gf_label = round(gf_mean, 2)
+  )
 
 #set color palette
 
@@ -76,34 +79,44 @@ if (gf_labels[1] %in% gf_mean_df$growth_factor) {
 title <- paste("Average Growth Rate over last", n_days, "days")
 subtitle <- paste(min_date, "to", max_date)
 
-hex_map <- ggplot() +
+#hex_map <- 
+ggplot() +
   geom_polygon(
-      data = shp_gf_avg7
+    data = shp_gf_avg7
     , aes(fill =  growth_factor, x = long, y = lat, group = group)
     , color = "white"
   ) +
   scale_fill_manual(
-      name = "Growth Factor"
+    name = "Growth Factor"
     , values = color_palette
     , guide = guide_legend(reverse = TRUE)
   ) +
   geom_text(
-      data = centers
-    , aes(x=x, y=y, label=id)
+    data = labels
+    , aes(x=x, y=y+0.5, label=id)
     , color = state_abbrv_color
+    , fontface = "bold"
+  )+
+  geom_text(
+    data = labels
+    , aes(x=x, y=y-0.6, label=gf_label)
+    , color = state_abbrv_color
+    , size = 3
   )+
   theme_void() +
   coord_map() +
   labs(
-      title = title
+    title = title
     , subtitle = subtitle
     , caption = "Data Source: usafacts.org"
   ) +
   theme(
-      plot.title = element_text(face = "bold", hjust = 0.5)
+    plot.title = element_text(face = "bold", hjust = 0.5)
     , plot.subtitle = element_text(hjust = 0.5, size = 12)
   )
 
+
+print(hex_map)
 
 ggsave(
   "img/hex_map.png"
