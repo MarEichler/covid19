@@ -1,14 +1,5 @@
 library(tidyverse)
-library(urbnmapr)
 library(gganimate)
-
-# https://github.com/UrbanInstitute/urbnmapr
-
-
-counties_sf <- get_urbn_map("counties", sf = TRUE) %>%
-  mutate(county_fips = as.numeric(county_fips))
-
-state_sf <- get_urbn_map("states", sf = TRUE) 
 
 
 #DATA AND COLOR FOR STATE 
@@ -34,62 +25,48 @@ gf_bins_tidy <- gf_county_tidy %>%
             )
   )
 
-
-
-
-
 #set color palette
 
 source("script/colors.R")
 
-color_palette <- c(gf0, gf1_0, gf1_2, gf2plus)
+color_palette <- c(gf0, gf0_1, gf1_2, gf2plus)
 
+
+library(urbnmapr) # https://github.com/UrbanInstitute/urbnmapr
+
+counties_sf <- get_urbn_map("counties", sf = TRUE) %>%
+  mutate(county_fips = as.numeric(county_fips))
+
+state_sf <- get_urbn_map("states", sf = TRUE) 
 
 #join growth rate data with shape file data
 county_shp_gf <- counties_sf %>%
   left_join(. , gf_bins_tidy, by=c("county_fips" = "countyFIPS") )
 
-
-title <- paste(n_days, "Day Average of Growth Rate from", min_date, "to", max_date)
-
-
-county_shp_gf %>%
-  filter(date >= max_date) %>%
-ggplot() +
-  geom_sf(
-      aes(fill = growth_factor)
-    , color = NA
-  ) +
-  geom_sf(
-      data = state_sf
-    , fill = NA
-    , color = line_state
-  ) +
-  scale_fill_manual(
-      name = "Growth Factor"
-    , values = color_palette
-    , guide = guide_legend(reverse = TRUE)
-    ) +
-  theme_void() +
-#  transition_time(date)+
-  labs(
-    title = "Growth Factor on {frame_time}"
-    , caption = "Data Source: usafacts.org"
-  ) +
-  theme(
-    plot.title = element_text(face = "bold", hjust = 0.5)
-  )
+ggplot(county_shp_gf) + 
+  geom_sf(aes(fill = growth_factor))
 
 
-#takes 3-5 minutes to run, depending on my machine's mood
-county_gif <- animate(
-  goo
-  , nframes=2*length(unique(county_shp_gf$date))
-  , fps = 1
-  , width = 7
-  , height = 5
-  , units = c("in")
-  , res = 10
-)
 
-anim_save("img/county_gif.gif", county_gif)
+
+library(maps)
+
+data(county.fips)
+
+county.fips <- county.fips %>%
+  separate(polyname, into = c("state", "county"), sep = ",")
+
+#the best state in the union 
+county_map <- map_data("county") %>% 
+  select(long, lat, group, state = region, county = subregion) %>%
+  left_join(county.fips, by = c("state" = "state", "county" = "county")) 
+
+county_map_gf <- county_map %>%
+  left_join(., gf_bins_tidy, by = c("fips" = "countyFIPS"))
+
+
+#county_map_gf %>%
+#ggplot(aes(x = long, y = lat)) +
+#  geom_polygon(aes(group = group, fill = growth_factor) , color = "grey35") +
+#  coord_quickmap() +
+#  theme_void() 
