@@ -8,15 +8,8 @@ editor_options:
   chunk_output_type: inline
 ---
 
-```{r, echo=FALSE}
-#r chunks are not named
-#this is so the Rmd can be called twice in the index.Rmd file
-#     once for just the charts
-#     once for the charts and the data (don't have to worky about putting into new file )
 
-```
-
-```{r, results="hide", warning=FALSE, message=FALSE}
+```{r packages-global-options, results="hide", warning=FALSE, message=FALSE}
 library(tidyverse)
 library(gridExtra)
 library(grid)
@@ -29,57 +22,29 @@ library(zoo)
 knitr::opts_chunk$set(fig.width=8, fig.height = 4, dpi=300)
 ```
 
-```{r}
+```{r import-colors}
 #read in colors 
 source("script/colors.R")
 ```
 
 
-This data is downloaded directly from the 
-<a href="https://www.ecdc.europa.eu/en/publications-data/download-todays-data-geographic-distribution-covid-19-cases-worldwide" target="_blank" >
-European CDC</a>. This data requires formating the dates and calculating the cumulative totals.  If you want to the data already 'cleaned/wrangled', you can take it from 
-<a href="https://ourworldindata.org/coronavirus" target="_blank">
-Our World in Data </a> 
-who gets their data from the Eurpoean CDC.  They file can be found
-<a href="https://ourworldindata.org/coronavirus-source-data" target="_blank" >
-here </a>
-and is called `full_data.csv`; also called "All four metrics".  
+This data is downloaded from 
+<a href="https://usafacts.org/visualizations/coronavirus-covid-19-spread-map/" target="_blank" >
+USA Facts CDC</a>. This data requires formating the dates and calculating the new cases and deaths by day.  USA Facts gets data by county on a daily basis, this is totaled to get values for each day for the entire US. 
 
-This data is from the ECDC and thus updated based on Eurpoean time zone days.  Because of this the datas and values do not match up with the
+The
 <a href="https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/cases-in-us.html" target="_blank">
 American CDC </a> 
-values.  However, I am sticking with the EDC data set as it is available for download; where the CDC data is not.  
-
-```{r}
-#download data directly from European CDC
-raw_data <- read.csv("https://opendata.ecdc.europa.eu/covid19/casedistribution/csv"
-                     , na.strings = "", fileEncoding = "UTF-8-BOM")
+links to USA Facts under Cases & Death by County.  Although for the below maps data per state/county is not used, information on that level is used on the next tab when ploting maps.    
 
 
-covid19_US <- raw_data %>% 
-  #only look at USA 
-  filter(countryterritoryCode  == "USA") %>%
-  #read date character into date format
-  mutate(date = as.Date(dateRep, format="%d/%m/%Y")) %>%
-  #order by date
-  arrange(date) %>%
-  #calculate cumulative sums
-  mutate(
-      total_cases = cumsum(cases)
-    , total_deaths = cumsum(deaths)
-  ) %>%
-  #only select date, new cases, new deaths
-  select(
-      date
-    , new_cases = cases
-    , new_deaths =deaths
-    , total_cases
-    , total_deaths
-    )
+```{r download-process-data}
+source("script/usafacts_data.R")
 ```
 
 
-```{r}
+```{r load-wrangle-data}
+load("data/covid19_US.rda")
 #number of rows; use in `for loop`  
 R <- nrow(covid19_US)
 
@@ -100,14 +65,7 @@ covid19_US <- covid19_US %>%
          )
 
 #DEATH PERCENTAGE  
-covid19_US$death_percentage <- NA
-
-# calculate dealth percentage  
-for (r in 1:R){
-  covid19_US$death_percentage[r] <- 
-    #dealth percentage = total deaths / total cases 
-    covid19_US$total_deaths[r] /  covid19_US$total_cases[r] 
-}
+covid19_US <- mutate(covid19_US, death_percentage = total_deaths / total_cases)
 
 #calculate moving average 
 ma_k <- 14
@@ -116,29 +74,23 @@ covid19_US$MA_new_cases <- c(rep(NA, ma_k - 1), rollmean(covid19_US$new_cases, k
 
 
 #save copy of data 
-write.csv(covid19_US, "data/data_ECDC.csv")
-
-```
-
-```{r}
+write.csv(covid19_US, "data/data_usafacts.csv")
 ```
 
 
-I am restricted the charts to show values after March 17, 2020 (first date in data set is March 18, 2020).  This is when preventative measures started to increase dramatically.  In addition, given the small number of cases prior to this date caused great variability in the growth rate and has multiple instances where it's  NA or equal to infinity.  
+I am restricted the charts to show values on March 15, 2020 and after.  This is when preventative measures started to increase dramatically.  In addition, given the small number of cases prior to this date caused great variability in the growth rate and has multiple instances where it's  NA or equal to infinity.  
 
-```{r}
+```{r start-date}
 startdate <- "2020-03-15"
 #3/18 - start 'lockdown' ; after large growth factors↕
-
 
 covid19_US_adj <- covid19_US  %>%
   #only look at data after a given start date
   filter(date >= as.Date(startdate))
-
 ```
 
 
-```{r}
+```{r current-values}
 #find current values to use as labels 
 
 current_date <- max(covid19_US_adj$date)
@@ -158,7 +110,7 @@ current_US_newdeaths <- current_values$new_deaths
 
  
 
-```{r}
+```{r gen-scaling}
 #set the limits for the x-axis
 #want the limits to be the same so the axes for different charts line up
 #need to add extra for the bar charts 
@@ -186,9 +138,9 @@ subtitle_size <- 12
 ```
 
 ###  Total Cases and Total Deaths  
-These show the cumulative total of cases and deaths.  
+These show the cumulative total of cases and deaths.  These total values are important; however they are not helpful for figuring out whether the pandemic is slowing down or growing.  
 
-```{r, fig.height=3}
+```{r tc-td-plot, fig.height=3}
 covid_tidy <- covid19_US_adj %>%
   select(date, total_cases, total_deaths) %>%
   pivot_longer(
@@ -254,7 +206,7 @@ where $N$ is a given day.
 
 In order to see if the pandemic is slowing down, it is helpful to look at the growth factor and the daily new cases.  For both these values; we want to see a decrease in values from day to day - which indicates that less people are getting sick.  Recall that a growth factor less than 1 is a positive sign that the growth of cases is slowing down.  Growth factor is directly related to new cases - if daily new cases goes now the growth factor is less than 1; if daily cases goes up the growth factor is greater than one.  These two charts represent the same information in two differnt ways.  
 
-```{r}
+```{r gf-plot-setup, fig.width=4, fig.height=4}
 #captions 
 gf_max <- max(covid19_US_adj$growth_factor)
 
@@ -264,14 +216,7 @@ cap_gf <- paste(
           , 30)
   , collapse = "\n"
 )
-```
 
-```{r}
-
-```
-
-
-```{r}
 #plot set up 
 plot_gf  <- ggplot(covid19_US_adj, aes(x=date, y=growth_factor))+
   annotate(
@@ -289,7 +234,7 @@ plot_gf  <- ggplot(covid19_US_adj, aes(x=date, y=growth_factor))+
     , xmax = x_max
     , ymin =  1
     , ymax =  2
-    , fill = gf1_2
+    , fill =  gf1_2
     , alpha = 0.3
     ) +
   annotate(
@@ -304,9 +249,9 @@ plot_gf  <- ggplot(covid19_US_adj, aes(x=date, y=growth_factor))+
   annotate(
       "text"
     , x = x_min + 1
-    , y = 0.85
+    , y = 0
     , label = cap_gf
-    , vjust=1
+    , vjust=-0.25
     , hjust= 0
     , size = 3
     , color = "grey10"
@@ -320,11 +265,10 @@ plot_gf  <- ggplot(covid19_US_adj, aes(x=date, y=growth_factor))+
     , size = 1.25
   ) +
   geom_line(
-      size=1
     , alpha=0.3
   ) +
   date_scaling +
-  scale_y_continuous(limit = c(0, gf_max + 0.05), expand = c(0, 0)) +
+  scale_y_continuous(limit = c(0, 2.1), expand = c(0, 0)) +
   ggtitle("Growth Factor per Day") + 
   theme_minimal()+
   theme(
@@ -335,10 +279,9 @@ plot_gf  <- ggplot(covid19_US_adj, aes(x=date, y=growth_factor))+
     , plot.margin  = margin(t=0, r=15, b=0, l=0)
     , axis.ticks.length = unit(5, "pt")
   ) 
-
 ```
 
-```{r}  
+```{r dc-plot-setup}  
 #daily cases set up 
 
 plot_dc <- ggplot(covid19_US_adj, aes(x=date, y=new_cases))+
@@ -360,13 +303,13 @@ plot_dc <- ggplot(covid19_US_adj, aes(x=date, y=new_cases))+
 There can be a lot of variability in the daily points - this is due to many different variables.  On variable is the availability of tests, cases will go down if there is scarcity of tests and rise dramatically when more tests become available.  One way to help get a better sense over the overall trend is by smoothing the data.  
 
 
-```{r, warning = FALSE}  
+```{r loess-plots, warning = FALSE}  
 #LOESS CURVE
 
 title_l <- "LOESS Smoothing "
 
 loess_smooth <- geom_smooth(
-      size = 1.5
+      size = 1
     , color="grey35"
     , se = FALSE 
     , alpha = 0.6
@@ -392,7 +335,7 @@ grid.arrange(
 )
 ```
 
-```{r, warning = FALSE}  
+```{r ma-plot, warning = FALSE}  
 #MOVING AVERAGE 
 
 title_ma <- paste("Moving Average, k =", ma_k)
@@ -400,14 +343,14 @@ title_ma <- paste("Moving Average, k =", ma_k)
 plot_gf_ma  <- plot_gf +
   geom_line(
       aes(y = MA_growth_factor)
-    , size = 1.5
+    , size = 1
     , alpha = 0.6
   )
 
 plot_dc_ma <- plot_dc +
   geom_line(
     aes(y = MA_new_cases)
-    , size = 1.5
+    , size = 1
     , alpha = 0.6
   )
 
@@ -428,9 +371,9 @@ grid.arrange(
 I also wanted to look at the dealth percentage which I calculated as the total number of deaths divided by the total number of cases for a given day.  
 
 
-```{r}
+```{r dp-plot}
 plot_dp <- ggplot(covid19_US_adj, aes(date, death_percentage)) + 
-  geom_line(color = "grey40", size = 1.5) + 
+  geom_line(color = "grey40", size = 1) + 
   date_scaling + 
   scale_y_continuous(
       name = "Total Dealths / Total Cases"
@@ -447,9 +390,9 @@ plot_dp <- ggplot(covid19_US_adj, aes(date, death_percentage)) +
   )
 ```
 
-```{r}
+```{r nd-plot}
 plot_nd <- ggplot(covid19_US_adj, aes(date, new_deaths)) + 
-  geom_col(alpha=0.6) +
+  geom_col(alpha=0.3) +
   date_scaling + 
   thousands_scaling +
   ggtitle("New Deaths per Day") + 
@@ -465,7 +408,7 @@ plot_nd <- ggplot(covid19_US_adj, aes(date, new_deaths)) +
 ```
 
 
-```{r}
+```{r dp-nd-plot}
 cowplot::plot_grid(
     plot_dp
   , plot_nd
@@ -478,9 +421,9 @@ cowplot::plot_grid(
 
 
 
-### Values for Past Week 
+### Values for Past 14 Days 
 
-```{r}
+```{r values-table}
 #transpose table; easier to read
 covid19_US_adj %>%
   arrange(desc(date)) %>%
