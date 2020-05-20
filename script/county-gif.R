@@ -21,7 +21,7 @@ gf_bins_tidy <- gf_county_tidy %>%
                 gf
               , breaks = c(-Inf, 0,1, 2, Inf)
               , labels = gf_labels 
-              , right = TRUE
+              , right = FALSE
             )
   )
 
@@ -43,30 +43,56 @@ state_sf <- get_urbn_map("states", sf = TRUE)
 county_shp_gf <- counties_sf %>%
   left_join(. , gf_bins_tidy, by=c("county_fips" = "countyFIPS") )
 
-ggplot(county_shp_gf) + 
-  geom_sf(aes(fill = growth_factor))
+title <- paste("Average Growth Rate over last", n_days, "days")
+subtitle <- paste(min_date, "to", max_date)
+
+gif_data <- county_shp_gf %>%
+  filter(date >= as.Date("2020-03-01"))
 
 
 
+all_gif <- ggplot(gif_data) + 
+  geom_sf(aes(fill = growth_factor), color = NA) +
+  geom_sf(
+    data = state_sf
+    , fill = NA
+    , color = "white" #line_state
+  ) +
+  scale_fill_manual(
+    name = "Growth Factor"
+    , values = color_palette
+    , guide = guide_legend(reverse = TRUE)
+  ) +
+  theme_void() +
+  labs(
+    title = title
+    , subtitle = subtitle
+    , caption = "Data Source: usafacts.org"
+  ) +
+  labs(
+    title = "Growth Rate from January to Present"
+    , subtitle = "{frame_time}"
+    , caption = "Data Source: usafacts.org"
+  ) +
+  theme(
+    plot.title = element_text(face = "bold", hjust = 0.5)
+    , plot.subtitle = element_text(hjust = 0.5, size = 12)
+  ) +
+  transition_time(date) 
 
-library(maps)
-
-data(county.fips)
-
-county.fips <- county.fips %>%
-  separate(polyname, into = c("state", "county"), sep = ",")
-
-#the best state in the union 
-county_map <- map_data("county") %>% 
-  select(long, lat, group, state = region, county = subregion) %>%
-  left_join(county.fips, by = c("state" = "state", "county" = "county")) 
-
-county_map_gf <- county_map %>%
-  left_join(., gf_bins_tidy, by = c("fips" = "countyFIPS"))
 
 
-#county_map_gf %>%
-#ggplot(aes(x = long, y = lat)) +
-#  geom_polygon(aes(group = group, fill = growth_factor) , color = "grey35") +
-#  coord_quickmap() +
-#  theme_void() 
+county_gif <- animate(
+  all_gif
+  , fps = 1
+  , nframes = length(unique(gif_data$date))
+  , width = 7
+  , height = 5
+  , units = c("in")
+  , res = 100
+)
+
+ anim_save("img/county_gif.gif", county_gif)
+
+
+
