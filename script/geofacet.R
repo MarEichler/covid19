@@ -46,14 +46,10 @@ title <- paste("Daily Growth Rate over last", n_days, "days")
 subtitle <- paste(x_min, "to", x_max)
 
 facet_map <- ggplot(facet_data, aes(date, gf)) +
-  annotate("rect", xmin = x_min, xmax = x_max, ymin =  0, ymax =  1,   fill = "white",   alpha = 0.45) +
-  annotate("rect", xmin = x_min, xmax = x_max, ymin =  1, ymax =  Inf,   fill = gf1_2,   alpha = 0.45) +
-#  annotate("rect", xmin = x_min, xmax = x_max, ymin =  0, ymax =  1,   fill = gf0_1,   alpha = 0.45) +
-#  annotate("rect", xmin = x_min, xmax = x_max, ymin =  1, ymax =  2,   fill = gf1_2,   alpha = 0.45) +
-#  annotate("rect", xmin = x_min, xmax = x_max, ymin =  2, ymax =  Inf, fill = gf2plus, alpha = 0.45) +
- # geom_segment(x = x_min, xend = x_max, y = 1, yend = 1, color = "white", size = 1) +
+  annotate("rect", xmin = x_min, xmax = x_max, ymin =  0, ymax =  1,   fill = "white") +
+  annotate("rect", xmin = x_min, xmax = x_max, ymin =  1, ymax =  Inf,   fill = gf2plus,   alpha = 0.45) +
   geom_line( color = "grey35") +
-  geom_area(color = "grey35", alpha = 0.6) +
+  geom_area(color = "grey35" , alpha = 0.6) +
   geom_point( data = plus3, aes(date, gf), color = "grey35", size = 1.5) + 
   scale_y_continuous(
       name = "Growth Factor"
