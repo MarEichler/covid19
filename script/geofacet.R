@@ -46,7 +46,6 @@ title <- paste("Daily Growth Rate over last", n_days, "days")
 subtitle <- paste(x_min, "to", x_max)
 
 facet_map <- ggplot(facet_data, aes(date, gf)) +
-  annotate("rect", xmin = x_min, xmax = x_max, ymin =  0, ymax =  1,   fill = "white") +
   annotate("rect", xmin = x_min, xmax = x_max, ymin =  1, ymax =  Inf,   fill = gf2plus,   alpha = 0.45) +
   geom_line( color = "grey35") +
   geom_area(color = "grey35" , alpha = 0.6) +
