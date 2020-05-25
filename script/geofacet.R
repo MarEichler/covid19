@@ -5,8 +5,9 @@ library(ggmap)
 library(statebins)
 library(sf)
 library(lubridate)
-library(geofacet)
+library(geofacet) #https://hafen.github.io/geofacet/
 library(moderndive)
+library(cowplot) 
 
 # https://github.com/clauswilke/dataviz/blob/master/geospatial_data.Rmd
 
@@ -44,6 +45,7 @@ source("script/colors.R")
 
 caption <- "Points represent a growth rate greater than 2 on a given day."
 
+
 title <- paste("Daily Growth Rate over last", n_days, "days")
 subtitle <- paste(x_min, "to", x_max)
 
@@ -52,7 +54,7 @@ facet_map <- ggplot(facet_data, aes(date, gf)) +
   annotate("rect", xmin = x_min, xmax = x_max, ymin =  1, ymax =  Inf,   fill = gf2plus,   alpha = 0.45) +
   geom_line( color = "grey35") +
   geom_area(color = "grey35" , alpha = 0.6) +
-  geom_point( data = plus3, aes(date, gf), color = "grey35", size = 1.5) + 
+  geom_point( data = plus3, aes(date, gf), color = "grey35", size = 1.5) +
   scale_y_continuous(
       name = "Growth Factor"
     , limits = c(0, 2)
@@ -62,12 +64,12 @@ facet_map <- ggplot(facet_data, aes(date, gf)) +
     , oob = scales::squish
   ) +
   scale_x_date(
-      expand = c(0, 0)
+      name = NULL
+    , expand = c(0, 0)
     , breaks = NULL
   ) +
-  xlab("Points represent a growth rate greater than 3 on a given day.") +
   coord_cartesian(clip = "off") +
-  facet_geo(~state, grid = "us_state_grid1", labeller = adjust_labels) +
+  facet_geo(~state, grid = "us_state_grid2" , labeller = adjust_labels) +
   labs(
     title = title
     , subtitle = subtitle
@@ -86,13 +88,31 @@ facet_map <- ggplot(facet_data, aes(date, gf)) +
     , plot.subtitle = element_text(hjust = 0.5, size = 12)
   ) 
 
-facet_map
 
-ggsave(
-  "img/facet_map.png"
-  , plot = facet_map
-  , width = 7
-  , height = 5
-  , units = c("in")
-  , dpi = 300
-)
+ggsave("img/facet_map.png", plot = facet_map, width = 7, height = 5, units = c("in"), dpi = 300)
+
+library(png)
+
+img <- readPNG("img/facet_map.png")
+
+#get size
+h<-dim(img)[1]
+w<-dim(img)[2]
+
+#open new file for output
+png("img/facet_map.png", width=w, height=h)
+par(mar=c(0,0,0,0), xpd=NA, mgp=c(0,0,0), oma=c(0,0,0,0), ann=F)
+plot.new()
+plot.window(0:1, 0:1)
+
+#fill plot with image
+usr<-par("usr")    
+rasterImage(img, usr[1], usr[3], usr[2], usr[4])
+
+#add text
+text(.4,.8, caption, cex=3, col=rgb(0,0,0,.65))
+
+#close image
+dev.off()
+
+
