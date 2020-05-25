@@ -14,25 +14,59 @@ usafacts_data <- read.csv(link <- "https://usafactsstatic.blob.core.windows.net/
 max_date <- as.Date(colnames(usafacts_data)[ncol(usafacts_data)], format = "X%m.%d.%y")
 ```
 
+```{r, message = FALSE, results = "hide", warning = FALSE}
+#SCRIPTS THAT NEED TO BE RUN 
+source("script/calc_growth_factor.R") #clean up data; calc gf for state & counties
+source("script/recent_n_days.R") #seperates out n_days 
+source("script/hex-map.R") #creates hex map of state avg gf for past n days
+#source("script/hex-gif.R") #creates gifs of hex map; all data and recent n days 
+source("script/geofacet.R") #creates facet_map of states' raw gf for past 14 days 
+source("script/county-map.R") #creates hex map of county avg gf for past n days
+```
+
+
 # {.tabset}
 
 
-## US Charts
+## Overview of US 
+Data available through: `r max_date`  
 
+```{r child="overview_US.Rmd"}
+```
+
+
+## Growth Factor 
+
+Data available through: `r max_date` 
+
+```{r child="growth_factor_US.Rmd"}
+```
+
+
+## Growth Factor Average (States)
+
+Data available through: `r max_date` 
+
+```{r, out.width = "100%", fig.align = 'center'}
+knitr::include_graphics("img/hex_map.png")
+```
+
+## Growth Factor Average (Counties)
+Data available through: `r max_date`  
+
+```{r, out.width = "100%", fig.align = 'center'}
+knitr::include_graphics("img/county_map.png")
+```
+
+## Hex Map Gifs  
 
 Data available through: `r max_date`  
 
-```{r child="charts.Rmd"}
+```{r, out.width = "100%", fig.align = 'center'}
+knitr::include_graphics("img/hex_gif_recent.gif")
 ```
 
-
-
-
-## State Maps of Growth Factor
-
-Data available through: `r max_date` 
-```{r child="maps.Rmd"}
-
+```{r, out.width = "100%", fig.align = 'center'}
+knitr::include_graphics("img/hex_gif_all.gif")
 ```
-
 
