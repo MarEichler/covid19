@@ -3,7 +3,6 @@ title: ""
 output:
   html_document:
     highlight: "tango"
-    code_folding: "hide"
 editor_options: 
   chunk_output_type: inline
 ---
@@ -442,5 +441,4 @@ covid19_US_adj %>%
       )
     ) %>%
   row_spec(1, bold=T, color="white", background = "rgba(0, 0, 0, .5)")
-
 ```
