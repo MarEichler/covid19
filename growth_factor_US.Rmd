@@ -1,0 +1,154 @@
+---
+title: ""
+output:
+  html_document:
+    highlight: "tango"
+#    code_folding: "show"
+editor_options: 
+  chunk_output_type: console
+---
+
+
+### Is the pandemic slowing? 
+
+One important calculation is the growth factor, as outline in <a href = "https://www.youtube.com/watch?v=Kas0tIxDvrg" target = "_blank"> 3Blue1Brown's youtube video on exponential growth </a>.  The growth rate is calculated as follows: 
+
+$$
+\text{Growth Factor} = \frac{ \text{New-Cases}_N}{\text{New-Cases}_{N-1}}
+$$
+where $N$ is a given day.  
+
+In order to see if the pandemic is slowing down, it is helpful to look at the growth factor and the daily new cases.  For both these values; we want to see a decrease in values from day to day - which indicates that less people are getting sick.  Recall that a growth factor less than 1 is a positive sign that the growth of cases is slowing down.  Growth factor is directly related to new cases - if daily new cases goes now the growth factor is less than 1; if daily cases goes up the growth factor is greater than one.  These two charts represent the same information in two differnt ways.  
+
+
+```{r gf-plot-setup, fig.width=4, fig.height=4}
+#captions 
+gf_max <- max(covid19_US_adj$growth_factor)
+
+
+cap_gf <- paste(
+  strwrap("A growth factor below 1 means new cases are decreasing,\ni.e. the pandemic is slowing"
+          , 30)
+  , collapse = "\n"
+)
+
+#plot set up 
+plot_gf  <- ggplot(covid19_US_adj, aes(x=date, y=growth_factor))+
+  #annotate("rect", xmin = x_min, xmax = x_max, ymin =  0, ymax =  1, fill = gf0_1, alpha = 0.3) +
+  #annotate("rect", xmin = x_min, xmax = x_max, ymin =  1, ymax =  2, fill = gf1_2, alpha = 0.3) +
+  annotate("rect", xmin = x_min, xmax = x_max, ymin = 1, ymax =  Inf, fill = gf2plus, alpha = 0.45) +
+  geom_line(alpha=0.3) +
+  geom_area(alpha = 0.6) +
+  annotate("text", x = x_min + 1, y = 0, label = cap_gf, vjust=-0.25, hjust= 0, size = 3, color = "grey95") +
+  date_scaling +
+  scale_y_continuous(limit = c(0, 2.1), expand = c(0, 0)) +
+  theme_minimal()+
+  theme(
+      plot.title = element_text(hjust = 0.5, size = subtitle_size)
+    , axis.title.x=element_blank()
+    , axis.title.y=element_blank()
+    , plot.margin  = margin(t=0, r=15, b=0, l=0)
+    , axis.ticks.length = unit(5, "pt")
+  ) 
+```
+
+
+There can be a lot of variability in the daily points - this is due to many different variables.  On variable is the availability of tests, cases will go down if there is scarcity of tests and rise dramatically when more tests become available.  One way to help get a better sense over the overall trend is by smoothing the data.  
+
+```{r}
+title_l <- "LOESS Smoothing "
+
+loess_smooth <- stat_smooth(
+      geom="line"
+    , size = 1.25
+    , color = blue_comp
+    , se = FALSE 
+    , alpha = 0.6
+    , method = "loess"
+    , formula = y~x
+    , span = 0.9
+  )
+
+plot_gf_l  <- plot_gf +
+  loess_smooth +
+  ggtitle(title_l)
+
+title_ma <- paste("Moving Average, k =", ma_k)
+
+
+plot_gf_ma  <- plot_gf + 
+  geom_line(
+      aes(y = MA_growth_factor)
+    , size = 1.25
+    , color = blue_comp
+    , alpha = 0.6
+  ) + 
+  ggtitle(title_ma)
+
+
+
+grid.arrange(
+    plot_gf_l
+  , plot_gf_ma
+  , nrow = 1
+  ,top=textGrob(
+      paste("Growth Factor per Day", sep = "\n")
+    , gp=gpar(fontsize=title_size, fontface = "bold")
+  )
+)
+```
+
+### Recent Values by Day for US
+
+```{r values-table-gf}
+#transpose table; easier to read
+covid19_US_adj %>%
+  arrange(desc(date)) %>%
+  top_n(14, wt=date) %>%
+  #format data for output tabe
+  mutate(
+      Date = format(date, '%a, %b %d, %Y')
+    , `Total Cases` = formatC(total_cases, big.mark=",", format="d")
+    , `New Cases`  = formatC(new_cases, big.mark=",", format="d")
+    , `Growth Factor` = round(growth_factor, 2)
+  ) %>%
+  #color Growth Factor based on value 
+  mutate(
+    `Growth Factor` = cell_spec(
+      `Growth Factor`, color = 
+          ifelse( growth_factor > 1, gf2plus, colorspace::lighten(gf2plus, 0.4))
+      , bold = T
+      )
+  ) %>%
+  #re-order to group cases and death information together 
+  select(
+      Date
+    , `Total Cases`
+    , `New Cases`
+    , `Growth Factor`
+    ) %>%
+  kable(
+    align=c('l', rep('r', 5))
+    , escape = F
+  ) %>%
+  kable_styling(
+    bootstrap_options = c(
+      #adds stiped color to rows
+        "striped"
+      #highlight row when hover over it 
+      , "hover"
+      #table doesn't have to be full width 
+      , full_width = FALSE
+      #make it horizontally scrollable
+      , "responsive"
+      )
+    ) %>%
+  row_spec(1, bold=T, color="white", background = "rgba(0, 0, 0, .5)")
+```
+
+
+### Recent Growth Factor for each state 
+```{r, out.width = "100%", fig.align = 'center'}
+knitr::include_graphics("img/facet_map.png")
+```
+
