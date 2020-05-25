@@ -67,7 +67,7 @@ f_DataFrame <- function(df, vec_func){
   datalist = list()
   for (i in 1:last_row){
     datalist[[i]] <- vec_func(df[i,])
-       print(i)
+   #    print(i)
   }
   new_df <- bind_rows(datalist)
   new_df
