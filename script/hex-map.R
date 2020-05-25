@@ -24,29 +24,23 @@ spdf_fortified <- tidy(spdf, region = "state_pc")
 
 
 #DATA AND COLOR FOR STATE 
-load("data/gf_state.rda")
-gf_state_tidy <- gf_state %>%
-  pivot_longer(cols = c(-1),  names_to = "date", values_to = "gf") %>%
-  mutate(date = as.Date(date))
+load("data/gf_state_ndays.rda")
 
-max_date <- max(gf_state_tidy$date)
-n_days <- 14 #14 day average
-min_date <- max_date - n_days  
-gf_labels <- c("0", "0-1", "1-2", "2+")
+max_date <- max(gf_state_ndays$date)
+min_date <- min(gf_state_ndays$date)
+ndays <- length(unique(gf_state_ndays$date))
+
+source("script/gf_cut_info.R")
 
 #create grwothrate average for 14 days 
-gf_mean_df <- gf_state_tidy %>%
-  filter(date > min_date) %>%
+gf_mean_df <- gf_state_ndays %>%
   group_by(state) %>%
   summarize(gf_mean = mean(gf)) %>%
-  mutate( growth_factor = 
-            cut(
-              gf_mean
-              , breaks = c(-Inf, 0,1, 2, Inf)
-              , labels = gf_labels 
-              , right = TRUE
-            )
-  )
+  mutate( growth_factor = cut(gf_mean, breaks = gf_breaks , labels = gf_labels , right = gf_right))
+
+
+# gf_state_ndays %>% filter(state == "MN")
+# gf_state_ndays %>% filter(state == "MN") %>% group_by(state) %>% summarize(mean(gf))
 
 #join growth rate data with shape file data
 shp_gf_avg7 <- spdf_fortified %>%
@@ -74,7 +68,7 @@ if (gf_labels[1] %in% gf_mean_df$growth_factor) {
 }
 
 
-title <- paste("Average Growth Rate over last", n_days, "days")
+title <- paste("Average Growth Rate over last", ndays, "days")
 subtitle <- paste(min_date, "to", max_date)
 
 hex_map <- ggplot() +
@@ -105,14 +99,12 @@ hex_map <- ggplot() +
   labs(
     title = title
     , subtitle = subtitle
-    , caption = "Data Source: usafacts.org"
   ) +
   theme(
     plot.title = element_text(face = "bold", hjust = 0.5)
     , plot.subtitle = element_text(hjust = 0.5, size = 12)
   )
 
-hex_map
 
 ggsave(
   "img/hex_map.png"

@@ -12,32 +12,19 @@ state_sf <- get_urbn_map("states", sf = TRUE)
 
 
 #DATA AND COLOR FOR STATE 
-load("data/gf_county.rda")
-gf_county_tidy <- gf_county %>%
-  pivot_longer(cols = c(-1),  names_to = "date", values_to = "gf") %>%
-  mutate(date = as.Date(date))
+load("data/gf_county_ndays.rda")
 
+max_date <- max(gf_county_ndays$date)
+min_date <- min(gf_county_ndays$date)
+ndays <- length(unique(gf_county_ndays$date))
 
-max_date <- max(gf_county_tidy$date)
-n_days <- 14 #14 day average
-min_date <- max_date - n_days  
-gf_labels <- c("0", "0-1", "1-2", "2+")
+source("script/gf_cut_info.R")
 
 #create grwothrate average for 14 days 
-gf_mean_df <- gf_county_tidy %>%
-  filter(date > min_date) %>%
+gf_mean_df <- gf_county_ndays %>%
   group_by(countyFIPS) %>%
   summarize(gf_mean = mean(gf)) %>%
-  mutate( growth_factor = 
-            cut(
-              gf_mean
-              , breaks = c(-Inf, 0,1, 2, Inf)
-              , labels = gf_labels 
-              , right = TRUE
-            )
-  )
-
-
+  mutate( growth_factor = cut(gf_mean, breaks = gf_breaks , labels = gf_labels , right = gf_right))
 
 #set color palette
 
@@ -56,7 +43,7 @@ county_shp_gf <- counties_sf %>%
   left_join(. , gf_mean_df, by=c("county_fips" = "countyFIPS") )
 
 
-title <- paste("Average Growth Rate over last", n_days, "days")
+title <- paste("Average Growth Rate over last", ndays, "days")
 subtitle <- paste(min_date, "to", max_date)
 
 county_map <- ggplot(county_shp_gf) +
@@ -78,7 +65,6 @@ county_map <- ggplot(county_shp_gf) +
   labs(
     title = title
     , subtitle = subtitle
-    , caption = "Data Source: usafacts.org"
   ) +
   theme(
     plot.title = element_text(face = "bold", hjust = 0.5)
