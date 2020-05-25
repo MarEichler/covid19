@@ -11,10 +11,7 @@ library(cowplot)
 
 # https://github.com/clauswilke/dataviz/blob/master/geospatial_data.Rmd
 
-load("data/gf_state.rda")
-gf_state_tidy <- gf_state %>%
-  pivot_longer(cols = c(-1),  names_to = "date", values_to = "gf") %>%
-  mutate(date = as.Date(date))
+load("data/gf_state_ndays.rda")
 
 
 
@@ -28,12 +25,11 @@ adjust_labels <- as_labeller(
   }
 )
 
-n_days <- 14
-x_max <- max(gf_state_tidy$date)
-x_min <- x_max - n_days
 
-facet_data <- gf_state_tidy %>% 
-  filter(date > x_min)
+x_max <- max(gf_state_ndays$date)
+x_min <- min(gf_state_ndays$date)
+
+facet_data <- gf_state_ndays 
 
 plus3 <- facet_data %>%
   filter(gf > 2) 
