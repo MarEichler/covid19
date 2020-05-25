@@ -34,8 +34,6 @@ cap_gf <- paste(
 
 #plot set up 
 plot_gf  <- ggplot(covid19_US_adj, aes(x=date, y=growth_factor))+
-  #annotate("rect", xmin = x_min, xmax = x_max, ymin =  0, ymax =  1, fill = gf0_1, alpha = 0.3) +
-  #annotate("rect", xmin = x_min, xmax = x_max, ymin =  1, ymax =  2, fill = gf1_2, alpha = 0.3) +
   annotate("rect", xmin = x_min, xmax = x_max, ymin = 1, ymax =  Inf, fill = gf2plus, alpha = 0.45) +
   geom_line(alpha=0.3) +
   geom_area(alpha = 0.6) +
