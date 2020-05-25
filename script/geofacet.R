@@ -28,6 +28,7 @@ adjust_labels <- as_labeller(
 
 x_max <- max(gf_state_ndays$date)
 x_min <- min(gf_state_ndays$date)
+ndays <- length(unique(gf_state_ndays$date))
 
 facet_data <- gf_state_ndays 
 
@@ -42,7 +43,7 @@ source("script/colors.R")
 caption <- "Points represent a growth rate greater than 2 on a given day."
 
 
-title <- paste("Daily Growth Rate over last", n_days, "days")
+title <- paste("Daily Growth Rate over last", ndays, "days")
 subtitle <- paste(x_min, "to", x_max)
 
 facet_map <- ggplot(facet_data, aes(date, gf)) +
