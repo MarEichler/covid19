@@ -219,61 +219,18 @@ cap_gf <- paste(
 
 #plot set up 
 plot_gf  <- ggplot(covid19_US_adj, aes(x=date, y=growth_factor))+
-  annotate(
-      "rect" 
-    , xmin = x_min
-    , xmax = x_max
-    , ymin =  0
-    , ymax =  1
-    , fill = gf0_1
-    , alpha = 0.3
-    ) +
-  annotate(
-      "rect" 
-    , xmin = x_min
-    , xmax = x_max
-    , ymin =  1
-    , ymax =  2
-    , fill =  gf1_2
-    , alpha = 0.3
-    ) +
-  annotate(
-      "rect" 
-    , xmin = x_min
-    , xmax = x_max
-    , ymin =  2
-    , ymax =  Inf
-    , fill = gf2plus
-    , alpha = 0.3
-    ) +
-  annotate(
-      "text"
-    , x = x_min + 1
-    , y = 0
-    , label = cap_gf
-    , vjust=-0.25
-    , hjust= 0
-    , size = 3
-    , color = "grey10"
-  ) +
-  geom_segment(
-      x = x_min
-    , xend = x_max
-    , y = 1
-    , yend = 1
-    , color = "white"
-    , size = 1.25
-  ) +
-  geom_line(
-    , alpha=0.3
-  ) +
+  #annotate("rect", xmin = x_min, xmax = x_max, ymin =  0, ymax =  1, fill = gf0_1, alpha = 0.3) +
+  #annotate("rect", xmin = x_min, xmax = x_max, ymin =  1, ymax =  2, fill = gf1_2, alpha = 0.3) +
+  annotate("rect", xmin = x_min, xmax = x_max, ymin = 1, ymax =  Inf, fill = gf2plus, alpha = 0.45) +
+  geom_line(alpha=0.3) +
+  geom_area(alpha = 0.6) +
+  annotate("text", x = x_min + 1, y = 0, label = cap_gf, vjust=-0.25, hjust= 0, size = 3, color = "grey95") +
   date_scaling +
   scale_y_continuous(limit = c(0, 2.1), expand = c(0, 0)) +
   ggtitle("Growth Factor per Day") + 
   theme_minimal()+
   theme(
       plot.title = element_text(hjust = 0.5, size = subtitle_size)
-    #, axis.text.x = element_text(hjust = 0.2)
     , axis.title.x=element_blank()
     , axis.title.y=element_blank()
     , plot.margin  = margin(t=0, r=15, b=0, l=0)
@@ -308,9 +265,10 @@ There can be a lot of variability in the daily points - this is due to many diff
 
 title_l <- "LOESS Smoothing "
 
-loess_smooth <- geom_smooth(
-      size = 1
-    , color="grey35"
+loess_smooth <- stat_smooth(
+      geom="line"
+    , size = 1.25
+    , color = blue_comp
     , se = FALSE 
     , alpha = 0.6
     , method = "loess"
@@ -335,22 +293,29 @@ grid.arrange(
 )
 ```
 
+
+
+
 ```{r ma-plot, warning = FALSE}  
 #MOVING AVERAGE 
 
 title_ma <- paste("Moving Average, k =", ma_k)
 
-plot_gf_ma  <- plot_gf +
+
+plot_gf_ma  <- plot_gf + 
   geom_line(
       aes(y = MA_growth_factor)
-    , size = 1
+    , size = 1.25
+    , color = blue_comp
     , alpha = 0.6
   )
+  
 
 plot_dc_ma <- plot_dc +
   geom_line(
     aes(y = MA_new_cases)
-    , size = 1
+    , size = 1.25
+    , color = blue_comp
     , alpha = 0.6
   )
 
