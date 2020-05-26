@@ -45,11 +45,11 @@ Data available through: `r max_date`
 
 Data available through: `r max_date` 
 
-```{r county-map, message = FALSE, results = "hide", warning = FALSE}
+```{r hex-map, message = FALSE, results = "hide", warning = FALSE}
 source("script/plot/hex-map.R") #creates hex map of state avg gf for past n days
 ```
 
-```{r hex-map, out.width = "100%", fig.align = 'center'}
+```{r hex-map-img, out.width = "100%", fig.align = 'center'}
 knitr::include_graphics("img/hex_map.png")
 ```
 
@@ -60,7 +60,7 @@ Data available through: `r max_date`
 source("script/plot/county-map.R") #creates hex map of county avg gf for past n days
 ```
 
-```{r, out.width = "100%", fig.align = 'center'}
+```{r county-map-img, out.width = "100%", fig.align = 'center'}
 
 knitr::include_graphics("img/county_map.png")
 ```
