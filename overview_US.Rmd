@@ -8,7 +8,7 @@ editor_options:
 ---
 
 
-```{r packages-global-options, results="hide", warning=FALSE, message=FALSE}
+```{r packages-global-options, results="hide", warning=FALSE, message=FALSE, include = FALSE}
 library(tidyverse)
 library(gridExtra)
 library(grid)
@@ -18,12 +18,14 @@ library(scales)
 library(ggrepel)
 library(kableExtra)
 library(zoo)
-knitr::opts_chunk$set(fig.width=8, fig.height = 4, dpi=300)
+knitr::opts_chunk$set(fig.width=8, fig.height = 4, dpi=300, echo=FALSE)
 ```
 
-```{r import-colors}
+```{r outside-scripts}
 #read in colors 
-source("script/colors.R")
+source("script/colors.R") #colors 
+source("script/parameters.R")
+source("script/df-covid19_US.R") #run script for covid19 df 
 ```
 
 
@@ -37,54 +39,16 @@ American CDC </a>
 links to USA Facts under Cases & Death by County.  Although for the below maps data per state/county is not used, information on that level is used on the next tab when ploting maps.    
 
 
-```{r download-process-data}
-source("script/usafacts_data.R")
-```
 
 
-```{r load-wrangle-data}
+```{r load-data}
 load("data/covid19_US.rda")
-#number of rows; use in `for loop`  
-R <- nrow(covid19_US)
-
-#GROWTH FACTOR  
-covid19_US$growth_factor <- NA
-
-#calculate growth rate
-#start with 2 because when r=1; 1-1= 0 (don't have a 0th row)
-for (r in 2:R){
-  covid19_US$growth_factor[r] <- 
-    #Growth Factor = New Cases Today / New Cases Yesterday 
-    covid19_US$new_cases[r] /  covid19_US$new_cases[r-1] 
-}
-
-covid19_US <- covid19_US %>%
-  mutate(
-    growth_factor = ifelse(growth_factor == Inf, new_cases, growth_factor)
-         )
-
-#DEATH PERCENTAGE  
-covid19_US <- mutate(covid19_US, death_percentage = total_deaths / total_cases)
-
-#calculate moving average 
-ma_k <- 14
-covid19_US$MA_growth_factor <- c(rep(NA, ma_k - 1), rollmean(covid19_US$growth_factor, k=ma_k))
-covid19_US$MA_new_cases <- c(rep(NA, ma_k - 1), rollmean(covid19_US$new_cases, k=ma_k))
-
-
-#save copy of data 
-write.csv(covid19_US, "data/data_usafacts.csv")
-save(covid19_US, file = "data/covid19_US.rda")
-
 ```
 
 
 I am restricted the charts to show values on March 15, 2020 and after.  This is when preventative measures started to increase dramatically.  In addition, given the small number of cases prior to this date caused great variability in the growth rate and has multiple instances where it's  NA or equal to infinity.  
 
 ```{r start-date}
-startdate <- "2020-03-15"
-#3/18 - start 'lockdown' ; after large growth factors↕
-
 covid19_US_adj <- covid19_US  %>%
   #only look at data after a given start date
   filter(date >= as.Date(startdate))
@@ -133,9 +97,6 @@ thousands_scaling <- scale_y_continuous(
     , labels = scales::unit_format(unit = "k", scale = 1e-3, accuracy = 1, big.mark = ",")
     , expand = c(0, 0)
   )
-
-title_size <- 14
-subtitle_size <- 12
 ```
 
 ###  Total Cases and Total Deaths  
