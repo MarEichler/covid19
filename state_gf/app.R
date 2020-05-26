@@ -39,7 +39,7 @@ library(shiny)
 ui <- fluidPage(
 
     # Application title
-    titlePanel("Growth Rate per Day"),
+    titlePanel("COVID-19: Growth Factor per Day"),
 
     # Sidebar with a slider input for number of bins 
     sidebarLayout(
@@ -61,8 +61,11 @@ ui <- fluidPage(
 
         # Show a plot of the generated distribution
         mainPanel(
-            "Points Represent a growth rate greater than 2 on a given day", 
+            p("Recall that the growth factor = new cases today / new cases yesterday."),
+            "Points Represent a growth factor greater than 2 on a given day", 
            plotOutput("Plot"),
+           br(), 
+           p("Large variations in growth factor may be due to other variables such as testing capabilities")
         )
     )
 )
@@ -107,3 +110,6 @@ server <- function(input, output) {
 
 # Run the application 
 shinyApp(ui = ui, server = server)
+
+
+# rsconnect::deployApp('state_gf', account = 'mareichler')
