@@ -6,7 +6,6 @@ load("covid19_US.rda")
 us_all <- covid19_US %>%
     mutate(state = "Entire US") %>%
     select(state, date, gf = growth_factor)
-us_all
 
 data <- rbind(gf_state_tidy, us_all)
 
@@ -25,6 +24,12 @@ date_scaling <- scale_x_date(
 )
 
 
+state_pc <- unique(data$state)
+
+state_names <- state.name[match(x, state.abb)]
+state_names[52] <- "Entire USA"
+
+names(state_pc) <- state_names
 
 
 
@@ -43,7 +48,8 @@ ui <- fluidPage(
     
         #input state 
         selectInput("state", label = "Select State", 
-                    choices = data$state, selected = "Entire US"
+                    choices = state_pc #data$state
+                    , selected = "Entire US"
                     ),  # end of select input 
         #input date 
         dateRangeInput("dates", label = "Select Date Range",
