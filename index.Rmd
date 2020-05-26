@@ -16,12 +16,17 @@ max_date <- as.Date(colnames(usafacts_data)[ncol(usafacts_data)], format = "X%m.
 
 ```{r, message = FALSE, results = "hide", warning = FALSE}
 #SCRIPTS THAT NEED TO BE RUN 
-source("script/calc_growth_factor.R") #clean up data; calc gf for state & counties
-source("script/recent_n_days.R") #seperates out n_days 
-source("script/hex-map.R") #creates hex map of state avg gf for past n days
-#source("script/hex-gif.R") #creates gifs of hex map; all data and recent n days 
-source("script/geofacet.R") #creates facet_map of states' raw gf for past 14 days 
-source("script/county-map.R") #creates hex map of county avg gf for past n days
+
+source("script/dataframe/total_cases.R") #import data 
+source("script/dataframe/growth_factor.R") #calculate growth rate 
+source("script/dataframe/recent_n_days.R") #seperates out n_days 
+
+
+
+source("script/plot/hex-map.R") #creates hex map of state avg gf for past n days
+source("script/plot/hex-gif.R") #creates gifs of hex map; all data and recent n days 
+source("script/plot/geofacet.R") #creates facet_map of states' raw gf for past 14 days 
+source("script/plot/county-map.R") #creates hex map of county avg gf for past n days
 ```
 
 
