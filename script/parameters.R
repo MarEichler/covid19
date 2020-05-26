@@ -1,3 +1,5 @@
+#global parameters 
+
 #moving average - pick two weeks
 ma_k <- 14
 
