@@ -1,6 +1,6 @@
 library(tidyverse)
 
-source("script/parameters.R")
+source("script/variable/parameters.R")
 
 #get total confirmed cases
 #download data here: https://usafacts.org/visualizations/coronavirus-covid-19-spread-map/
