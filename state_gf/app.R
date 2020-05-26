@@ -26,7 +26,7 @@ date_scaling <- scale_x_date(
 
 state_pc <- unique(data$state)
 
-state_names <- state.name[match(x, state.abb)]
+state_names <- state.name[match(state_pc, state.abb)]
 state_names[52] <- "Entire USA"
 
 names(state_pc) <- state_names
