@@ -38,7 +38,7 @@ plus3 <- facet_data %>%
 
 x_min <- min(facet_data$date)
 x_max <- max(facet_data$date)
-source("script/colors.R")
+source("script/variable/colors.R")
 
 caption <- "Points represent a growth rate greater than 2 on a given day."
 

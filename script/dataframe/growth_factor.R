@@ -1,7 +1,7 @@
 library(tidyverse)
 
 load("data/total_cases.rda")
-source("script/calc_growth_factor.R")
+source("script/function/calc_growth_factor.R")
 
 
 ### STATES 

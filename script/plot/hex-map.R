@@ -30,7 +30,7 @@ max_date <- max(gf_state_ndays$date)
 min_date <- min(gf_state_ndays$date)
 ndays <- length(unique(gf_state_ndays$date))
 
-source("script/gf_cut_info.R")
+source("script/variable/gf_cut_info.R")
 
 #create grwothrate average for 14 days 
 gf_mean_df <- gf_state_ndays %>%
@@ -58,7 +58,7 @@ labels <- centers %>%
 
 #set color palette
 
-source("script/colors.R")
+source("script/variable/colors.R")
 
 #if "0" in set; start with grey; if not start with green 
 if (gf_labels[1] %in% gf_mean_df$growth_factor) {

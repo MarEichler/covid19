@@ -18,7 +18,7 @@ max_date <- max(gf_county_ndays$date)
 min_date <- min(gf_county_ndays$date)
 ndays <- length(unique(gf_county_ndays$date))
 
-source("script/gf_cut_info.R")
+source("script/variable/gf_cut_info.R")
 
 #create grwothrate average for 14 days 
 gf_mean_df <- gf_county_ndays %>%
@@ -28,7 +28,7 @@ gf_mean_df <- gf_county_ndays %>%
 
 #set color palette
 
-source("script/colors.R")
+source("script/variable/colors.R")
 
 
 #if "0" in set; start with grey

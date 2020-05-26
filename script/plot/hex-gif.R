@@ -46,7 +46,7 @@ gf_bins_tidy <- gf_state_tidy %>%
             )
   )
 
-source("script/colors.R")
+source("script/variable/colors.R")
 
 color_palette <- c(gf0, gf0_1, gf1_2, gf2plus)
 
