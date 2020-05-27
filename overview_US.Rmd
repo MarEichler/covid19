@@ -34,7 +34,7 @@ load("data/covid19_US.rda")
 ```
 
 
-I am restricted the charts to show values on March 15, 2020 and after.  This is when preventative measures started to increase dramatically.  In addition, given the small number of cases prior to this date caused great variability in the growth rate and has multiple instances where it's  NA or equal to infinity.  
+I am restricted the charts to show values on March 15, 2020 and after.  This is when preventative measures started to increase dramatically.  
 
 ```{r start-date}
 covid19_US_adj <- covid19_US  %>%
@@ -88,7 +88,7 @@ thousands_scaling <- scale_y_continuous(
 ```
 
 ###  Total Cases and Total Deaths  
-These show the cumulative total of cases and deaths.  These total values are important; however they are not helpful for figuring out whether the pandemic is slowing down or growing.  
+These show the cumulative total of cases and deaths for each day - also denoting the current totals.  These total values are important; however they are not helpful for figuring out whether the pandemic is slowing down or growing.
 
 ```{r tc-td-plot, fig.height=3}
 covid_tidy <- covid19_US_adj %>%
@@ -145,10 +145,11 @@ ggplot(covid_tidy, aes(date, count)) +
 
 ```
 
+<br>
 
 ### New Cases 
 
-Looking at new cases each day can help us see if the pandemic is slowing (new cases per day is decreasing). 
+Looking at new cases each day can help us see if the pandemic is slowing.  If the new cases per day is decreasing then the pandemic is slowing.  
 
 
 ```{r dc-plot-setup}  
@@ -169,7 +170,9 @@ plot_dc <- ggplot(covid19_US_adj, aes(x=date, y=new_cases))+
 ```
 
 
-There can be a lot of variability in the daily points - this is due to many different variables.  On variable is the availability of tests, cases will go down if there is scarcity of tests and rise dramatically when more tests become available.  One way to help get a better sense over the overall trend is by smoothing the data.  
+There can be a lot of variability in the daily case totals due to a variety of variable.  One variable is the availability of tests; cases will go down if there is scarcity of tests and rise dramatically when more tests become available.  One way to help get a better sense over the overall trend is by smoothing the data.  I have choosen two types of smoothing: LOESS smoothing (with a span = 0.9) and a 14 day moving average.  
+
+Both trends show a peak around mid-April and have been moving downward.  This may be due to inacting stricter social distancing and lock-downs accross the country.  
 
 
 ```{r loess-plots, warning = FALSE}  
@@ -218,11 +221,15 @@ grid.arrange(
 )
 ```
 
+<br>
 
 ### New Deaths and Death Percentage   
 
-I also wanted to look at the dealth percentage which I calculated as the total number of deaths divided by the total number of cases for a given day.  
+COVID-19 is much deadlier than the common flu.  One way to measure the impact is to look at the death percentage which is the total number of deaths divided by the total number of cases.  
 
+A big concern during April was that the death percentage was continually increasing; even when actual deaths per day were not increasing.  Starting in early May the death percentage started to plateau around 6%. 
+
+Similar to new cases per day, deaths per day has been trending downward since about mid-April, although there are still spikes.  These spikes may be do to reporting times - spikes seem cyclical on a weekly with lower counts generally occuring on the weekends and higher counts happening during the week.  
 
 ```{r dp-plot}
 plot_dp <- ggplot(covid19_US_adj, aes(date, death_percentage)) + 
@@ -270,11 +277,11 @@ cowplot::plot_grid(
 )
 ```
 
+<br>
 
+### Values for Past 14 Days  
 
-
-
-### Values for Past 14 Days 
+The actual values for the pervious 14 days are detailed in the table below for those who are interested in actual values.  
 
 ```{r values-table}
 #transpose table; easier to read
