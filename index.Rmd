@@ -49,6 +49,10 @@ Data available through: `r max_date`
 source("script/plot/hex-map.R") #creates hex map of state avg gf for past n days
 ```
 
+This plot is a quick overview of the last two weeks for each state.  Which states have seen an average decrease in daily cases for 14 days and may be ready to start the re-opening process?  Which states are not ready to reopen and finally which states may need additional social-distancing and lock-down measures?  
+
+As mentioned in the Growth Factor tab, some states will have very large growth rates.  This is mostly due to having 0 cases on one day and then a large amount the next day - likely caused by test availability or reporting.  
+
 ```{r hex-map-img, out.width = "100%", fig.align = 'center'}
 knitr::include_graphics("img/hex_map.png")
 ```
@@ -56,9 +60,33 @@ knitr::include_graphics("img/hex_map.png")
 ## GF Average (Counties)
 Data available through: `r max_date`  
 
-```{r county-map, message = FALSE, results = "hide", warning = FALSE}
-source("script/plot/county-map.R") #creates hex map of county avg gf for past n days
+```{r not-assigned}
+load("data/total_cases.rda")
+C <- ncol(total_cases)
+total_cases <- total_cases[c(1, C)]
+not_assigned <-total_cases %>% 
+  filter(countyFIPS == "0") %>%
+  select(-countyFIPS) %>%
+  summarize_all(sum) 
+
+current_total <- total_cases %>% 
+  summarise(sum(total_cases[,2]))
+
+perc_not_assigned <- not_assigned/current_total
+
+
+na_print <- formatC(as.numeric(not_assigned), format="f", big.mark=",", digits=0)
+pna_print <- percent(as.numeric(perc_not_assigned), accuracy = 0.001)
 ```
+
+It is also interesting to look at the growth factor on the county level.  Although since most lock-down measures are enacted at the state level, this plot may not be that helpful.  In addition there are `r na_print` cases that have been not assigned to a county.  Although that only accounts for `r pna_print` of the total cases; it could have a big impact on a given state or county.  
+
+```{r county-map, message = FALSE, results = "hide", warning = FALSE}
+source("script/plot/county-map.R") #creates hex map of county avg gf for past n day
+
+```
+
+
 
 ```{r county-map-img, out.width = "100%", fig.align = 'center'}
 
@@ -68,6 +96,8 @@ knitr::include_graphics("img/county_map.png")
 ## Hex Map Gifs  
 
 Data available through: `r max_date`  
+
+These gifs are not as helpful as I hoped they would be and do not do a great job of showing trends.  This may be to the large fluctuations in growth factor and so getting a clear trend is difficult.  I'm keeping theme here because they look nice and they took me a long time to create; even though they don't provide much intellectual value.  
 
 ```{r hex-gif, message = FALSE, results = "hide", warning = FALSE}
 source("script/plot/hex-gif.R") #creates gifs of hex map; all data and recent n days 
@@ -86,9 +116,11 @@ knitr::include_graphics("img/hex_gif_all.gif")
 
 This data is downloaded from 
 <a href="https://usafacts.org/visualizations/coronavirus-covid-19-spread-map/" target="_blank" >
-USA Facts CDC</a>. I use two of the three spreadsheets, one with total cases and one with total deaths - both broken down by state and county.  This data requires additional formating, calculation, and aggregation.  USA Facts gets data by county on a daily basis, this is totaled to get values for each day for the entire US. 
+USA Facts CDC</a>. I use two of the three spreadsheets, one with total cases and one with total deaths - both broken down by state and county.  This data requires additional formatting, calculation, and aggregation.  USA Facts gets data by county on a daily basis, this is totaled to get values for each day for the entire US. 
 
 The
 <a href="https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/cases-in-us.html" target="_blank">
 American CDC </a> 
 links to USA Facts under Cases & Death by County, which is how I found the data source.  
+
+

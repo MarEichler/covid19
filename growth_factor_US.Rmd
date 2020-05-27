@@ -8,16 +8,31 @@ editor_options:
 ---
 
 
+
+I am restricted the charts to show values on March 15, 2020 and after.  This is when preventative measures started to increase dramatically.  
+
 ### Is the pandemic slowing? 
 
-One important calculation is the growth factor, as outline in <a href = "https://www.youtube.com/watch?v=Kas0tIxDvrg" target = "_blank"> 3Blue1Brown's youtube video on exponential growth </a>.  The growth rate is calculated as follows: 
+One important calculation is the growth factor, as outlined in <a href = "https://www.youtube.com/watch?v=Kas0tIxDvrg" target = "_blank"> 3Blue1Brown's youtube video on exponential growth </a>.  The growth rate is calculated as follows: 
 
 $$
 \text{Growth Factor} = \frac{ \text{New-Cases}_N}{\text{New-Cases}_{N-1}}
 $$
-where $N$ is a given day.  
+where $N$ is a given day.  Essentialy this is taking the amount new cases today and dividing them by the amount of new cases yesterday.  
 
-In order to see if the pandemic is slowing down, it is helpful to look at the growth factor and the daily new cases.  For both these values; we want to see a decrease in values from day to day - which indicates that less people are getting sick.  Recall that a growth factor less than 1 is a positive sign that the growth of cases is slowing down.  Growth factor is directly related to new cases - if daily new cases goes now the growth factor is less than 1; if daily cases goes up the growth factor is greater than one.  These two charts represent the same information in two differnt ways.  
+The growth factor can be very helpful in determining if the pandemic is slowing.  If the growth factor is less than 1, this means that the amount of new cases today is less than yesterday.  Once there are multiple days with a growth factor less than 1 - this is a strong sign that the pandemic is slowing down.  
+
+**Adjustment to Growth Factor**  
+What if there were 0 cases yesterday?  This would make the growth factor undefined (or $\infty$ according to R).  This makes it difficult to look at trends.  I have adjusted the growth factor so that if the pervious day had 0 cases; the current day's growth factor is equal to the number of new cases: 
+
+$$
+\text{Growth Factor} = \begin{cases}
+\frac{ \text{New-Cases}_N}{\text{New-Cases}_{N-1}} & \text{if } \text{New-Cases}_{N_1} \neq 0 
+\\[1ex]
+\text{New-Cases}_N & \text{if } \text{New-Cases}_{N_1} = 0 
+\end{cases}
+$$
+When I made this adjustment I was thinking about the early stages of the pandemic when the number of cases per day are 0, 1, or 2.  However, given the test scarcity and reporting times there are situations in counties or states where there were 0 cases one day and then hundred or thousands the next day.  This is why some of growth factors are much larger.  
 
 
 ```{r gf-plot-setup, fig.width=4, fig.height=4}
@@ -50,7 +65,7 @@ plot_gf  <- ggplot(covid19_US_adj, aes(x=date, y=growth_factor))+
 ```
 
 
-There can be a lot of variability in the daily points - this is due to many different variables.  On variable is the availability of tests, cases will go down if there is scarcity of tests and rise dramatically when more tests become available.  One way to help get a better sense over the overall trend is by smoothing the data.  
+Similar to the new cases per day; there can be a lot of variability in growth rates.  In order to get a better sense of the trend I am showing two smoothing curves: LOESS smoothing (with span = 0.9) and a 14 day moving average.   
 
 ```{r}
 title_l <- "LOESS Smoothing "
@@ -95,6 +110,7 @@ grid.arrange(
 )
 ```
 
+<br>  
 ### Recent Values by Day for US
 
 ```{r values-table-gf}
@@ -143,8 +159,11 @@ covid19_US_adj %>%
   row_spec(1, bold=T, color="white", background = "rgba(0, 0, 0, .5)")
 ```
 
+<br>  
 
 ### Recent Growth Factor for each state 
+
+Since most of the COVID-19 measures are enacted by the state; it may be more helpful for the individual to see the growth factor for the last 14 days in a specific state.  
 
 ```{r geofacet, message = FALSE, results = "hide", warning = FALSE}
 source("script/plot/geofacet.R") #creates facet_map of states' raw gf for past 14 days 
@@ -154,4 +173,10 @@ source("script/plot/geofacet.R") #creates facet_map of states' raw gf for past 1
 ```{r, out.width = "100%", fig.align = 'center'}
 knitr::include_graphics("img/facet_map.png")
 ```
+<br>
+
+### Still want to look at more plots? 
+
+Build your own growth factor plot for a given state and time period by using a shiny app:  
+<a href="https://mareichler.shinyapps.io/state_gf/" target = "_blank">https://mareichler.shinyapps.io/state_gf/</a> 
 
