@@ -1,5 +1,5 @@
 ---
-title: "Tracking COVID-19"
+title: "Tracking COVID-19 in the United States"
 output:
   html_document:
     highlight: "tango"
@@ -26,7 +26,7 @@ source("script/dataframe/recent_n_days.R") #seperates out n_days
 # {.tabset}
 
 
-## Overview of US 
+## Overview 
 Data available through: `r max_date`  
 
 ```{r child="overview_US.Rmd"}
