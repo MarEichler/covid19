@@ -322,5 +322,5 @@ covid19_US_adj %>%
       , "responsive"
       )
     ) %>%
-  row_spec(1, bold=T, color="white", background = "rgba(0, 0, 0, .5)")
+  row_spec(1, bold=T, color="white", background = "rgba(0, 0, 0, .3)")
 ```
