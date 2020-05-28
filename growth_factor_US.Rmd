@@ -10,6 +10,23 @@ editor_options:
 
 
 I am restricted the charts to show values on March 15, 2020 and after.  This is when preventative measures started to increase dramatically.  
+```{r packages-global-options, results="hide", warning=FALSE, message=FALSE, include = FALSE}
+#not needed for knitting with other rmd 
+library(tidyverse)
+library(gridExtra)
+library(grid)
+library(knitr)
+library(lubridate)
+library(scales)
+library(ggrepel)
+library(kableExtra)
+library(latex2exp)
+knitr::opts_chunk$set(fig.width=8, fig.height = 4, dpi=300, echo=FALSE)
+source("script/dataframe/covid19_US.R") #run script for covid19 df 
+source("script/variable/colors.R") #colors 
+source("script/variable/parameters.R") #global parameters 
+```
+
 
 ### Is the pandemic slowing? 
 
@@ -67,7 +84,7 @@ plot_gf  <- ggplot(covid19_US_adj, aes(x=date, y=growth_factor))+
 
 Similar to the new cases per day; there can be a lot of variability in growth rates.  In order to get a better sense of the trend I am showing two smoothing curves: LOESS smoothing (with span = 0.9) and a 14 day moving average.   
 
-The growth rate shows a different trend than new cases.  Here, the growth rate has stayed around 1 since mid-April.  Compare that to the new cases plot on the Overview tab, which shows a downward trends.  The the growth factor not decreasing people 1 due may be due to the cyclical nature of new cases reporting (high during the week, low during the weekends) - but it could also be showing that although the decrease in new cases is positive we are not out of the woods yet.  
+The growth rate shows a different trend than new cases.  Here, the growth rate has stayed around 1 since mid-April.  Compare that to the new cases plot on the Overview tab, which shows a downward trends.  The the growth factor remaining around 1 due may be due to the cyclical nature of new cases reporting (high during the week, low during the weekends) - but it could also be showing that although the decrease in new cases is positive we are not out of the woods yet.  
 
 ```{r}
 title_l <- "LOESS Smoothing "
@@ -112,6 +129,98 @@ grid.arrange(
 )
 ```
 
+
+What if instead of looking at the growth rate and average of the growth rate - we calculated the growth rate on the average of new cases?  I'm going to call this $\text{GF}_{14}$ to represent that it's the growth rate based on the 14-dayy moving average of new cases.  
+
+
+$$
+\text{GF}_{14} = \frac{
+ \frac{1}{14}\sum_{N-14}^N \text{New-Cases}_i
+}{
+ \frac{1}{14}\sum_{N-15}^{N - 1} \text{New-Cases}_i
+}
+$$
+
+
+```{r}
+#plot set up 
+plot_gf_14 <- ggplot(covid19_US_adj, aes(x=date, y=gf_14))+
+  annotate("rect", xmin = x_min, xmax = x_max, ymin = 1, ymax =  Inf, fill = gf2plus, alpha = 0.2) +
+#  geom_line(alpha=0.6) +
+  geom_area(alpha = 0.3) +
+  annotate("text", x = x_min + 1, y = 0, label = cap_gf, vjust=-0.3, hjust= -0.1, size = 3, color = "grey35") +
+  date_scaling +
+  scale_y_continuous(limit = c(0, 2.1), expand = c(0, 0)) +
+  ggtitle(TeX("$GF_{14}$")) +
+  theme_minimal()+
+  theme(
+      plot.title = element_text(hjust = 0.5, size = subtitle_size)
+    , axis.title.x=element_blank()
+    , axis.title.y=element_blank()
+    , plot.margin  = margin(t=0, r=15, b=0, l=0)
+    , axis.ticks.length = unit(5, "pt")
+  ) 
+
+plot_ma_nc_14 <- ggplot(covid19_US_adj, aes(x=date, y=ma_nc_14))+
+#  geom_line(alpha=0.6) +
+  geom_area(alpha = 0.3) +
+  date_scaling +
+  thousands_scaling +
+  ggtitle("New Cases 14-Day Moving Average") +
+  theme_minimal()+
+  theme(
+      plot.title = element_text(hjust = 0.5, size = subtitle_size)
+    , axis.title.x=element_blank()
+    , axis.title.y=element_blank()
+    , plot.margin  = margin(t=0, r=15, b=0, l=0)
+    , axis.ticks.length = unit(5, "pt")
+  ) 
+
+grid.arrange(
+   plot_ma_nc_14
+  , plot_gf_14
+  , nrow = 1
+  ,top=textGrob(
+      paste("Moving Average", sep = "\n")
+    , gp=gpar(fontsize=title_size, fontface = "bold")
+  )
+)
+```
+
+
+```{r}
+df1 <- covid19_US %>% 
+  select(growth_factor, MA_growth_factor, gf_14)
+
+df2 <- covid19_US_adj %>% 
+  select(growth_factor, MA_growth_factor, gf_14)
+
+df3 <- covid19_US %>% 
+  filter(date > current_date - 14) %>%
+  select(growth_factor, MA_growth_factor, gf_14)
+
+sd1 <- mapply(sd, na.rm = TRUE, df1)
+sd2 <- mapply(sd, na.rm = TRUE, df2)
+sd3 <- mapply(sd, na.rm = TRUE, df3)
+
+sd_df <- rbind(sd1, sd2, sd3)
+rownames(sd_df) <- c("All dates", "Since 2020-03-15", "Last 14 days")
+colnames(sd_df) <- c("Growth Rate", "Growth Factor 14-day MA", "GF_14")
+
+kable(sd_df,  caption = "Standard Deviations") %>%
+  kable_styling(bootstrap_options = "striped", full_width = F, position = "float_right", font_size = 12)
+
+```
+
+Turns out it doesn't make a significant difference!  Even when looking the growth rate based on the 14-day moving average of new cases (smoothing over the cyclical nature of new cases reporting) - results is a growth factor, $\text{GF}_{14}$ that is not deviating from 1.  This leads be to believe that although the trends of new cases appear to be moving downward, we are not in a stable recovery right now.  
+
+Looking at the standard deviations, it's unsurpising that the $\text{GF}_{14}$ has the least amount of deviation, followed by the Growth Rate 14-day Moiving average, and the raw Growth Rate has the most deviation.  
+
+Since there isn't a large difference between $\text{GF}_{14}$ and Growth Rate 14-Day Moving Average, I'm going to use the Growth Rate 14-Day Moving Average instead of $\text{GF}_{14}$.  When possible, I want to keep the calculations as simple and close to the raw data as possible.  
+
+
+
+
 <br>  
   
 ### Recent Values by Day for US
@@ -127,7 +236,8 @@ covid19_US_adj %>%
     , `Total Cases` = formatC(total_cases, big.mark=",", format="d")
     , `New Cases`  = formatC(new_cases, big.mark=",", format="d")
     , `Growth Factor` = round(growth_factor, 2)
-    , `GF 14-day Moving Average` = round(MA_growth_factor, 2)
+    , `Growth Factor 14-day MA` = round(MA_growth_factor, 2)
+    , `New Cases 14-Day MA` = formatC(ma_nc_14, big.mark=",", format="d")
   ) %>%
   #color Growth Factor based on value 
   mutate(
@@ -136,9 +246,9 @@ covid19_US_adj %>%
           ifelse( growth_factor > 1, gf2plus, colorspace::lighten(gf2plus, 0.4))
       , bold = T
       ), 
-    `GF 14-day Moving Average` = cell_spec(
-      `GF 14-day Moving Average`, color = 
-          ifelse( growth_factor > 1, gf2plus, colorspace::lighten(gf2plus, 0.4))
+    `Growth Factor 14-day MA` = cell_spec(
+      `Growth Factor 14-day MA`, color = 
+          ifelse( MA_growth_factor > 1, gf2plus, colorspace::lighten(gf2plus, 0.4))
       , bold = T
       )
   ) %>%
@@ -147,11 +257,12 @@ covid19_US_adj %>%
       Date
     , `Total Cases`
     , `New Cases`
+    , `New Cases 14-Day MA`
     , `Growth Factor`
-    , `GF 14-day Moving Average`
+    , `Growth Factor 14-day MA`
     ) %>%
   kable(
-    align=c('l', rep('r', 5))
+    align=c('l', rep('r', 6))
     , escape = F
   ) %>%
   kable_styling(
