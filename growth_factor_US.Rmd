@@ -113,6 +113,7 @@ grid.arrange(
 ```
 
 <br>  
+  
 ### Recent Values by Day for US
 
 ```{r values-table-gf}
@@ -126,11 +127,17 @@ covid19_US_adj %>%
     , `Total Cases` = formatC(total_cases, big.mark=",", format="d")
     , `New Cases`  = formatC(new_cases, big.mark=",", format="d")
     , `Growth Factor` = round(growth_factor, 2)
+    , `GF 14-day Moving Average` = round(MA_growth_factor, 2)
   ) %>%
   #color Growth Factor based on value 
   mutate(
     `Growth Factor` = cell_spec(
       `Growth Factor`, color = 
+          ifelse( growth_factor > 1, gf2plus, colorspace::lighten(gf2plus, 0.4))
+      , bold = T
+      ), 
+    `GF 14-day Moving Average` = cell_spec(
+      `GF 14-day Moving Average`, color = 
           ifelse( growth_factor > 1, gf2plus, colorspace::lighten(gf2plus, 0.4))
       , bold = T
       )
@@ -141,6 +148,7 @@ covid19_US_adj %>%
     , `Total Cases`
     , `New Cases`
     , `Growth Factor`
+    , `GF 14-day Moving Average`
     ) %>%
   kable(
     align=c('l', rep('r', 5))
@@ -158,7 +166,7 @@ covid19_US_adj %>%
       , "responsive"
       )
     ) %>%
-  row_spec(1, bold=T, color="white", background = "rgba(0, 0, 0, .5)")
+  row_spec(1, bold=T, color="white", background = "rgba(0, 0, 0, .3)")
 ```
 
 <br>  
