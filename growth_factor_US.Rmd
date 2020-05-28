@@ -10,7 +10,7 @@ editor_options:
 
 
 I am restricted the charts to show values on March 15, 2020 and after.  This is when preventative measures started to increase dramatically.  
-```{r packages-global-options, results="hide", warning=FALSE, message=FALSE, include = FALSE}
+```{r packages-global-options, results="hide", warning=FALSE, message=FALSE, include = FALSE, echo = FALSE }
 #not needed for knitting with other rmd 
 library(tidyverse)
 library(gridExtra)
