@@ -51,7 +51,7 @@ plot_gf  <- ggplot(covid19_US_adj, aes(x=date, y=growth_factor))+
   annotate("rect", xmin = x_min, xmax = x_max, ymin = 1, ymax =  Inf, fill = gf2plus, alpha = 0.2) +
 #  geom_line(alpha=0.6) +
   geom_area(alpha = 0.3) +
-  annotate("text", x = x_min + 1, y = 0, label = cap_gf, vjust=-0.25, hjust= 0, size = 3, color = "grey95") +
+  annotate("text", x = x_min + 1, y = 0, label = cap_gf, vjust=-0.3, hjust= -0.1, size = 3, color = "grey35") +
   date_scaling +
   scale_y_continuous(limit = c(0, 2.1), expand = c(0, 0)) +
   theme_minimal()+
