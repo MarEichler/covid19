@@ -8,7 +8,7 @@ editor_options:
 ---
 
 
-```{r packages-global-options, results="hide", warning=FALSE, message=FALSE, include = FALSE}
+```{r, results="hide", warning=FALSE, message=FALSE, include = FALSE}
 library(tidyverse)
 library(gridExtra)
 library(grid)
@@ -18,6 +18,7 @@ library(scales)
 library(ggrepel)
 library(kableExtra)
 library(zoo)
+library(latex2exp)
 knitr::opts_chunk$set(fig.width=8, fig.height = 4, dpi=300, echo=FALSE)
 ```
 
@@ -29,24 +30,14 @@ source("script/variable/parameters.R") #global parameters
 ```
 
 
-```{r load-data}
-load("data/covid19_US.rda")
-```
 
 
 I am restricted the charts to show values on March 15, 2020 and after.  This is when preventative measures started to increase dramatically.  
 
-```{r start-date}
-covid19_US_adj <- covid19_US  %>%
-  #only look at data after a given start date
-  filter(date >= as.Date(startdate))
-```
 
 
 ```{r current-values}
 #find current values to use as labels 
-
-current_date <- max(covid19_US_adj$date)
 
 current_values <- covid19_US_adj %>%
     #return row that has current date
@@ -62,30 +53,6 @@ current_US_newdeaths <- current_values$new_deaths
 ```
 
  
-
-```{r gen-scaling}
-#set the limits for the x-axis
-#want the limits to be the same so the axes for different charts line up
-#need to add extra for the bar charts 
-
-x_min <- as.Date(startdate)-.5
-x_max <- as.Date(current_date)+1
-
-#ggplot set ups 
-date_scaling <- scale_x_date(
-      name = NULL
-    , labels = date_format("%b-%d")
-    , limits = c(x_min, x_max)
-    , expand = c(0, 0)
-  )
-
-thousands_scaling <- scale_y_continuous(
-      name = NULL
-    , limits = c(0, NA)
-    , labels = scales::unit_format(unit = "k", scale = 1e-3, accuracy = 1, big.mark = ",")
-    , expand = c(0, 0)
-  )
-```
 
 ###  Total Cases and Total Deaths  
 These show the cumulative total of cases and deaths for each day - also denoting the current totals.  These total values are important; however they are not helpful for figuring out whether the pandemic is slowing down or growing.
