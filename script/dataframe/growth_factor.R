@@ -21,7 +21,7 @@ gf_state_tidy <- gf_state %>%
   pivot_longer(cols = c(-1),  names_to = "date", values_to = "gf") %>%
   mutate(date = as.Date(date)) 
 save(gf_state_tidy, file = "data/gf_state_tidy.rda")
-
+save(gf_state_tidy, file = "state_gf/gf_state_tidy.rda") #send data to app
 
 ### COUNTIES 
 county_total_cases <- total_cases %>%
