@@ -19,6 +19,7 @@ library(ggrepel)
 library(kableExtra)
 library(zoo)
 library(latex2exp)
+library(cowplot)
 knitr::opts_chunk$set(fig.width=8, fig.height = 4, dpi=300, echo=FALSE)
 ```
 
@@ -32,7 +33,7 @@ source("script/variable/parameters.R") #global parameters
 
 
 
-I am restricted the charts to show values on March 15, 2020 and after.  This is when preventative measures started to increase dramatically.  
+I am restricted the charts to show values on March 15, 2020 and after.  This is when cases numbers started to rise and preventative measures started to increase dramatically.  
 
 
 
@@ -137,36 +138,13 @@ plot_dc <- ggplot(covid19_US_adj, aes(x=date, y=new_cases))+
 ```
 
 
-There can be a lot of variability in the daily case totals due to a variety of variable.  One variable is the availability of tests; cases will go down if there is scarcity of tests and rise dramatically when more tests become available.  One way to help get a better sense over the overall trend is by smoothing the data.  I have choosen two types of smoothing: LOESS smoothing (with a span = 0.9) and a 14 day moving average.  
+There can be a lot of variability in the daily case totals due to a variety of variable.  One variable is the availability of tests; cases will go down if there is scarcity of tests and rise dramatically when more tests become available.  One way to help get a better sense over the overall trend is by smoothing the data using a moving average.  
 
-Both trends show a peak around mid-April and have been moving downward.  This may be due to inacting stricter social distancing and lock-downs accross the country.  
-
-
-```{r loess-plots, warning = FALSE}  
-#LOESS CURVE
-
-title_l <- "LOESS Smoothing "
-
-loess_smooth <- stat_smooth(
-      geom="line"
-    , size = 1.25
-    , color = blue_comp
-    , se = FALSE 
-    , alpha = 0.6
-    , method = "loess"
-    , formula = y~x
-    , span = 0.9
-  )
+The trends and raw data show a peak around mid-April and have been moving downward.  This may be due to inacting stricter social distancing and lock-downs accross the country.  There is also a cyclical nature to the daily new cases with counts often being lower on weekends and higher on weekdays.  
 
 
-
-plot_dc_l <- plot_dc +
-  loess_smooth +
-  ggtitle(title_l) 
-
-
-title_ma <- paste("Moving Average, k =", ma_k)
-
+```{r , warning = FALSE}  
+labels_dc <- covid19_US %>% filter(date == as.Date("2020-05-04"))
 
 plot_dc_ma <- plot_dc +
   geom_line(
@@ -175,17 +153,17 @@ plot_dc_ma <- plot_dc +
     , color = blue_comp
     , alpha = 0.6
   ) +
-  ggtitle(title_ma)
+  geom_text_repel(
+      seed = 100
+    , data = labels_dc
+    , aes(y = MA_new_cases, label = "14-Day\nMoving Average")
+    , color = blue_comp
+    , nudge_y = 5000
+    , nudge_x = 5
+  ) +
+  ggtitle("New Cases per Day") 
 
-grid.arrange(
-    plot_dc_l
-  , plot_dc_ma
-  , nrow = 1
-  ,top=textGrob(
-      paste("New Cases per Day", sep = "\n")
-    , gp=gpar(fontsize=title_size, fontface = "bold")
-  )
-)
+plot_dc_ma
 ```
 
 <br>
@@ -218,10 +196,26 @@ plot_dp <- ggplot(covid19_US_adj, aes(date, death_percentage)) +
 ```
 
 ```{r nd-plot}
+labels_nd <- covid19_US %>% filter(date == as.Date("2020-05-01"))
+
 plot_nd <- ggplot(covid19_US_adj, aes(date, new_deaths)) + 
   geom_col(alpha=0.3) +
+  geom_line(
+    aes(y = MA_new_deaths)
+    , size = 1.25
+    , color = blue_comp
+    , alpha = 0.6
+  )  +
   date_scaling + 
   thousands_scaling +
+  geom_text_repel(
+      seed = 100
+    , data = labels_nd
+    , aes(y = MA_new_deaths, label = "14-Day\nMoving Average")
+    , color = blue_comp
+    , nudge_y = 2000
+    , nudge_x = 2
+  ) +
   ggtitle("New Deaths per Day") + 
   theme_minimal()+
   theme(
