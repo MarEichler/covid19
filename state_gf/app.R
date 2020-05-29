@@ -1,16 +1,23 @@
+library(shiny)
 library(tidyverse)
 library(knitr)
 library(zoo)
-library(shiny)
+library(cowplot)
+library(scales)
 load("gf_state_tidy.rda")
+load("nc_state_tidy.rda")
 load("covid19_US.rda")
 source("func_plot.R")
 
+
+state_tidy <- left_join(gf_state_tidy, nc_state_tidy, by = c("state" = "state", "date" = "date"))
+
+
 us_all <- covid19_US %>%
     mutate(state = "Entire US") %>%
-    select(state, date, gf = growth_factor)
+    select(state, date, gf = growth_factor, nc = new_cases)
 
-data <- rbind(gf_state_tidy, us_all)
+data <- rbind(state_tidy, us_all)
 
 state_pc <- unique(data$state)
 names(state_pc) <- unique(data$state)
@@ -35,8 +42,6 @@ state_names[52] <- "Entire USA"
 names(state_pc) <- state_names
 
 
-
-library(shiny)
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -95,11 +100,14 @@ server <- function(input, output) {
         
         plot_data <- data %>%
             filter(state == input$state) %>%
-            mutate(ma = c(rep(NA, ma_k - 1), rollmean(gf, k=ma_k, na.rm=TRUE))) %>%
+            mutate(
+                ma_gf = c(rep(NA, ma_k - 1), rollmean(gf, k=ma_k, na.rm=TRUE))
+                , ma_nc = c(rep(NA, ma_k - 1), rollmean(nc, k=ma_k, na.rm=TRUE))
+            ) %>%
             filter(date >= min_date & date <= max_date) %>%
             mutate(
                 gf_2plus = ifelse(gf > 2, 2, -1), 
-                ma_2plus = ifelse(ma > 2, 2, -1)
+                ma_2plus = ifelse(ma_gf > 2, 2, -1)
             )
             
         
