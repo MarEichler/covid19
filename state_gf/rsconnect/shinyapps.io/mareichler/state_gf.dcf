@@ -5,6 +5,6 @@ account: mareichler
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 2359020
-bundleId: 3191846
+bundleId: 3206364
 url: https://mareichler.shinyapps.io/state_gf/
-when: 1590510839.98809
+when: 1590787065.54122

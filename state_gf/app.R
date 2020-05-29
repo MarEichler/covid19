@@ -1,5 +1,7 @@
 library(tidyverse)
+library(knitr)
 library(zoo)
+library(shiny)
 load("gf_state_tidy.rda")
 load("covid19_US.rda")
 source("func_plot.R")
@@ -74,13 +76,15 @@ ui <- fluidPage(
             "Points Represent a growth factor or moving average greater than 2 on a given day", 
            plotOutput("Plot"),
            br(), 
-           p("Large variations in growth factor may be due to other variables such as testing capabilities")
-        )
+           p("Large variations in growth factor may be due to other variables such as testing capabilities") 
+           
+        ) #end main panel 
     )
 )
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
+    
     
     output$Plot <- renderPlot({
         
@@ -92,13 +96,19 @@ server <- function(input, output) {
         plot_data <- data %>%
             filter(state == input$state) %>%
             mutate(ma = c(rep(NA, ma_k - 1), rollmean(gf, k=ma_k, na.rm=TRUE))) %>%
-            filter(date >= min_date & date <= max_date)
+            filter(date >= min_date & date <= max_date) %>%
+            mutate(
+                gf_2plus = ifelse(gf > 2, 2, -1), 
+                ma_2plus = ifelse(ma > 2, 2, -1)
+            )
             
         
        if (input$show_ma == TRUE) {gf_plot_ma(plot_data, min_date, max_date) } 
        else {gf_plot(plot_data, min_date, max_date)}
         
-    })
+    }) # end render output 
+    
+
 }
 
 # Run the application 
