@@ -1,7 +1,8 @@
 library(tidyverse)
+library(zoo)
 load("gf_state_tidy.rda")
 load("covid19_US.rda")
-
+source("func_plot.R")
 
 us_all <- covid19_US %>%
     mutate(state = "Entire US") %>%
@@ -45,6 +46,8 @@ ui <- fluidPage(
     sidebarLayout(
         position = "right", 
         sidebarPanel(
+        
+        helpText("Build your own growth factor plot using the variables below."), 
     
         #input state 
         selectInput("state", label = "Select State", 
@@ -53,16 +56,22 @@ ui <- fluidPage(
                     ),  # end of select input 
         #input date 
         dateRangeInput("dates", label = "Select Date Range",
-                       start = "2020-03-15",  end = x_max,
+                       start = x_max - 28,  end = x_max,
                        min = x_min, max = x_max
-                       ) #end of date range input 
+                       ), #end of date range input 
+        
+        #yes/no show moving average
+        checkboxInput("show_ma", "Show Moving-Average", value = TRUE), 
+        
+        #k for moving average 
+        numericInput("ma_k", "Moving Average k (i.e. number of days for moving average)", value =14)
         
         ), #end of side par PANEL 
 
         # Show a plot of the generated distribution
         mainPanel(
             p("Recall that the growth factor = new cases today / new cases yesterday."),
-            "Points Represent a growth factor greater than 2 on a given day", 
+            "Points Represent a growth factor or moving average greater than 2 on a given day", 
            plotOutput("Plot"),
            br(), 
            p("Large variations in growth factor may be due to other variables such as testing capabilities")
@@ -75,35 +84,19 @@ server <- function(input, output) {
     
     output$Plot <- renderPlot({
         
+        ma_k <- input$ma_k
+        
         min_date <- input$dates[1]
         max_date <- input$dates[2]
         
         plot_data <- data %>%
             filter(state == input$state) %>%
+            mutate(ma = c(rep(NA, ma_k - 1), rollmean(gf, k=ma_k, na.rm=TRUE))) %>%
             filter(date >= min_date & date <= max_date)
+            
         
-        plus3 <- plot_data %>%
-            filter(gf > 2 )
-
-        ggplot(plot_data, aes(date, gf)) + 
-            annotate("rect", xmin = min_date, xmax = max_date, ymin = 1, ymax =  2, fill = "#F03B20", alpha = 0.45) +
-            geom_line(alpha=0.3) +
-            geom_area(alpha = 0.6) +
-            scale_y_continuous(
-                name = "Growth Factor"
-                , limits = c(0, 2)
-                , breaks = c(0, 1, 2)
-                , labels = c("0", "1", "2")
-                , oob = scales::squish
-            ) +
-            scale_x_date(
-                name = NULL
-                , labels = scales::date_format("%b-%d")
-                , expand = c(0, 0)
-            ) + 
-            geom_point( data = plus3, aes(date, gf), color = "grey35", size = 2) +
-            theme_minimal() 
-     
+       if (input$show_ma == TRUE) {gf_plot_ma(plot_data, min_date, max_date) } 
+       else {gf_plot(plot_data, min_date, max_date)}
         
     })
 }
