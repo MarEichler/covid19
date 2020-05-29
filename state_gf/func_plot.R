@@ -50,7 +50,10 @@ gf_plot_ma <- function(plot_data, min_date, max_date){
       , alpha = 0.6
     ) +
     ggtitle("New Cases") +
-    date_scaling + 
+    scale_x_date(
+      name = NULL
+      , labels = scales::date_format("%b-%d")
+    ) + 
     scale_y_continuous(
       expand = c(0, .02)
       , labels = comma
@@ -86,10 +89,14 @@ gf_plot <- function(plot_data, min_date, max_date){
   plot_nc <- ggplot(plot_data, aes(x=date, y=nc))+
     geom_col(alpha=0.3) +
     ggtitle("New Cases") +
-    date_scaling + 
+    scale_x_date(
+      name = NULL
+      , labels = scales::date_format("%b-%d")
+    ) + 
     scale_y_continuous(
       expand = c(0, .02)
-    ) +
+      , labels = comma
+    )+
     theme_minimal()+
     theme( plot.title = element_text(hjust = 0.5), axis.title = element_blank())
   
