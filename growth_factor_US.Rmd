@@ -7,9 +7,6 @@ editor_options:
   chunk_output_type: console
 ---
 
-
-
-I am restricted the charts to show values on March 15, 2020 and after.  This is when preventative measures started to increase dramatically.  
 ```{r packages-global-options, results="hide", warning=FALSE, message=FALSE, include = FALSE, echo = FALSE }
 #not needed for knitting with other rmd 
 library(tidyverse)
@@ -27,6 +24,9 @@ source("script/dataframe/covid19_US.R") #run script for covid19 df
 source("script/variable/colors.R") #colors 
 source("script/variable/parameters.R") #global parameters 
 ```
+
+
+I am restricted the charts to show values on March 15, 2020 and after.  This is when cases numbers started to rise and preventative measures started to increase dramatically.  
 
 
 ### Is the pandemic slowing? 
@@ -83,7 +83,7 @@ plot_gf  <- ggplot(covid19_US_adj, aes(x=date, y=growth_factor))+
 ```
 
 
-Similar to the new cases per day; there can be a lot of variability in growth rates.  In order to get a better sense of the trend I am showing two smoothing curves: LOESS smoothing (with span = 0.9) and a 14 day moving average.   
+Similar to the new cases per day; there can be a lot of variability in growth rates.  In order to get a better sense of the trend I am showing a 14-day moving average of the growth factor.  
 
 The growth rate shows a different trend than new cases.  Here, the growth rate has stayed around 1 since mid-April.  Compare that to the new cases plot on the Overview tab, which shows a downward trends.  The the growth factor remaining around 1 due may be due to the cyclical nature of new cases reporting (high during the week, low during the weekends) - but it could also be showing that although the decrease in new cases is positive we are not out of the woods yet.  
 
