@@ -7,7 +7,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-```{r packages-global-options, results="hide", warning=FALSE, message=FALSE, include = FALSE, echo = FALSE }
+```{r packages-global-options, results="hide", warning=FALSE, message=FALSE, include = FALSE, eval = TRUE }
 #not needed for knitting with other rmd 
 library(tidyverse)
 library(gridExtra)
@@ -113,8 +113,30 @@ plot_gf_ma
 ```
 
 
-What if instead of looking at the growth rate and average of the growth rate - we calculated the growth rate on the average of new cases?  I'm going to call this $\text{GF}_{14}$ to represent that it's the growth rate based on the 14-dayy moving average of new cases.  
+What if instead of looking at the growth rate and average of the growth rate - we calculated the growth rate on the average of new cases?  I'm going to call this $\text{GF}_{14}$ to represent that it's the growth rate based on the 14-day moving average of new cases.  
 
+Looking at the new cases 14-day moving average, it is clearly smoother than the raw new cases.  
+
+```{r, fig.height = 2.5}
+plot_ma_nc <- ggplot(covid19_US_adj, aes(x=date, y=MA_new_cases))+
+  geom_line(alpha=0.6, color = blue_comp) +
+  geom_area(alpha = 0.3, fill = blue_comp) +
+  date_scaling +
+  thousands_scaling +
+  ggtitle("New Cases 14-Day Moving Average") +
+  theme_minimal()+
+  theme(
+      plot.title = element_text(hjust = 0.5, size = subtitle_size)
+    , axis.title.x=element_blank()
+    , axis.title.y=element_blank()
+    , plot.margin  = margin(t=15, r=15, b=15, l=0)
+    , axis.ticks.length = unit(5, "pt")
+  ) 
+plot_ma_nc
+```
+
+
+Using the new cases 14-day moving average, calculate the $\text{GF}_{14}$: 
 
 $$
 \text{GF}_{14} = \frac{
@@ -124,6 +146,7 @@ $$
 }
 $$
 
+I am showing both the growth factor 14-day moving average and the $\text{GF}_{14}$ for comparison.  
 
 ```{r}
 plot_gf_14 <- ggplot(covid19_US_adj, aes(x=date, y=gf_14))+
@@ -139,7 +162,7 @@ plot_gf_14 <- ggplot(covid19_US_adj, aes(x=date, y=gf_14))+
       plot.title = element_text(hjust = 0.5, size = subtitle_size)
     , axis.title.x=element_blank()
     , axis.title.y=element_blank()
-    , plot.margin  = margin(t=15, r=15, b=0, l=0)
+    , plot.margin  = margin(t=0, r=15, b=0, l=0)
     , axis.ticks.length = unit(5, "pt")
   ) 
 
@@ -160,29 +183,18 @@ plot_ma_gf <- ggplot(covid19_US_adj, aes(x=date, y=MA_growth_factor))+
     , axis.ticks.length = unit(5, "pt")
   )
 
-plot_ma_nc <- ggplot(covid19_US_adj, aes(x=date, y=MA_new_cases))+
-  geom_line(alpha=0.6, color = blue_comp) +
-  geom_area(alpha = 0.3, fill = blue_comp) +
-  date_scaling +
-  thousands_scaling +
-  ggtitle("New Cases 14-Day Moving Average") +
-  theme_minimal()+
-  theme(
-      plot.title = element_text(hjust = 0.5, size = subtitle_size)
-    , axis.title.x=element_blank()
-    , axis.title.y=element_blank()
-    , plot.margin  = margin(t=0, r=15, b=0, l=0)
-    , axis.ticks.length = unit(5, "pt")
-  ) 
 
+#plot_grid(
+#    plot_ma_nc
+#  , plot_grid(plot_ma_gf, plot_gf_14, ncol = 1, align = "v")
+#  , ncol = 2)
 
-
-plot_grid(
-    plot_ma_nc
-  , plot_grid(plot_ma_gf, plot_gf_14, ncol = 1, align = "v")
-  , ncol = 2)
+plot_grid(plot_ma_gf, plot_gf_14, ncol = 2, align = "h")
 ```
 
+Turns out it doesn't make a significant difference!  Even when looking the growth rate based on the 14-day moving average of new cases (smoothing over the cyclical nature of new cases reporting) - results is a growth factor, $\text{GF}_{14}$ that is not deviating from 1.  
+
+ 
 
 ```{r}
 df1 <- covid19_US %>% 
@@ -208,7 +220,6 @@ kable(sd_df,  caption = "Standard Deviations") %>%
 
 ```
 
-Turns out it doesn't make a significant difference!  Even when looking the growth rate based on the 14-day moving average of new cases (smoothing over the cyclical nature of new cases reporting) - results is a growth factor, $\text{GF}_{14}$ that is not deviating from 1.  This leads be to believe that although the trends of new cases appear to be moving downward, we are not in a stable recovery right now.  
 
 Looking at the standard deviations, it's unsurpising that the $\text{GF}_{14}$ has the least amount of deviation, followed by the Growth Rate 14-day Moiving average, and the raw Growth Rate has the most deviation.  
 
