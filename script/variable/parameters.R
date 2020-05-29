@@ -19,14 +19,13 @@ subtitle_size <- 12
 
 current_date <- max(covid19_US_adj$date)
 
-x_min <- as.Date(startdate)-.5
-x_max <- as.Date(current_date)+1
+x_min <- as.Date(startdate) #-.5
+x_max <- as.Date(current_date) #+1
 
 #ggplot set ups 
 date_scaling <- scale_x_date(
   name = NULL
   , labels = date_format("%b-%d")
-  , limits = c(x_min, x_max)
   , expand = c(0, 0)
 )
 
