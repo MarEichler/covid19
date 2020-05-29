@@ -71,7 +71,7 @@ plot_gf  <- ggplot(covid19_US_adj, aes(x=date, y=growth_factor))+
   geom_area(alpha = 0.3) +
   annotate("text", x = x_min + 1, y = 0, label = cap_gf, vjust=-0.3, hjust= -0.1, size = 3, color = "grey15") +
   date_scaling +
-  scale_y_continuous(limit = c(0, 2.1), expand = c(0, 0)) +
+  scale_y_continuous(limit = c(0, 2), expand = c(0, 0)) +
   theme_minimal()+
   theme(
       plot.title = element_text(hjust = 0.5, size = subtitle_size)
@@ -155,7 +155,7 @@ plot_gf_14 <- ggplot(covid19_US_adj, aes(x=date, y=gf_14))+
   geom_area(alpha = 0.3, fill = blue_comp) +
   annotate("text", x = x_min + 1, y = 0, label = cap_gf, vjust=-0.3, hjust= -0.1, size = 3, color = "grey35") +
   date_scaling +
-  scale_y_continuous(limit = c(0, 2.1), expand = c(0, 0)) +
+  scale_y_continuous(limit = c(0, 2), expand = c(0, 0)) +
   ggtitle(TeX("$GF_{14}$")) +
   theme_minimal()+
   theme(
@@ -172,7 +172,7 @@ plot_ma_gf <- ggplot(covid19_US_adj, aes(x=date, y=MA_growth_factor))+
   geom_area(alpha = 0.3, fill = blue_comp) +
   annotate("text", x = x_min + 1, y = 0, label = cap_gf, vjust=-0.3, hjust= -0.1, size = 3, color = "grey35") +
   date_scaling +
-  scale_y_continuous(limit = c(0, 2.1), expand = c(0, 0)) +
+  scale_y_continuous(limit = c(0, 2), expand = c(0, 0)) +
   ggtitle(TeX("Growth Factor 14-Day Moving Average")) +
   theme_minimal()+
   theme(
