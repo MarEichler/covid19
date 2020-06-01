@@ -24,16 +24,16 @@ spdf_fortified <- tidy(spdf, region = "state_pc")
 
 
 #DATA AND COLOR FOR STATE 
-load("data/gf_state_ndays.rda")
+load("data/covid19_state_ndays.rda")
 
-max_date <- max(gf_state_ndays$date)
-min_date <- min(gf_state_ndays$date)
-ndays <- length(unique(gf_state_ndays$date))
+max_date <- max(covid19_state_ndays$date)
+min_date <- min(covid19_state_ndays$date)
+ndays <- length(unique(covid19_state_ndays$date))
 
 source("script/variable/gf_cut_info.R")
 
 #create grwothrate average for 14 days 
-gf_mean_df <- gf_state_ndays %>%
+gf_mean_df <- covid19_state_ndays %>%
   group_by(state) %>%
   summarize(gf_mean = mean(gf)) %>%
   mutate( growth_factor = cut(gf_mean, breaks = gf_breaks , labels = gf_labels , right = gf_right))

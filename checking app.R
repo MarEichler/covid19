@@ -3,18 +3,17 @@ library(knitr)
 library(zoo)
 library(cowplot)
 library(scales)
-load("data/gf_state_tidy.rda")
 load("data/covid19_US.rda")
-load("data/nc_state_tidy.rda")
+load("data/covid19_state.rda")
+source("script/variable/colors.R")
 
-state_tidy <- left_join(gf_state_tidy, nc_state_tidy, by = c("state" = "state", "date" = "date"))
 
 
 us_all <- covid19_US %>%
   mutate(state = "Entire US") %>%
   select(state, date, gf = growth_factor, nc = new_cases)
 
-data <- rbind(state_tidy, us_all)
+data <- rbind(covid19_state, us_all)
 
 state_pc <- unique(data$state)
 names(state_pc) <- unique(data$state)
@@ -35,7 +34,7 @@ min_date <- x_max -28
 max_date <- x_max
 
 plot_data <- data %>%
-  filter(state == "Entire US") %>%
+  filter(state == "MN") %>%
   mutate(
       ma_gf = c(rep(NA, ma_k - 1), rollmean(gf, k=ma_k, na.rm=TRUE))
     , ma_nc = c(rep(NA, ma_k - 1), rollmean(nc, k=ma_k, na.rm=TRUE))
@@ -91,5 +90,7 @@ plot_nc <- ggplot(plot_data, aes(x=date, y=nc))+
 plot_grid(plot_gf, plot_nc, align = "h")
 ##############################
 
+plot_data %>%
+  arrange(desc(date))
 
 

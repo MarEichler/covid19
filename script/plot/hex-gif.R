@@ -6,6 +6,13 @@ library(rgdal)
 library(broom)
 library(tidyr)
 library(gganimate)
+library(rgeos)
+
+#data
+load("data/covid19_state.rda")
+
+#outside scripts 
+source("script/variable/colors.R")
 
 # Download the Hexagones boundaries at geojson format here: 
 #   https://team.carto.com/u/andrew/tables/andrew.us_states_hexgrid/public/map.
@@ -21,22 +28,16 @@ spdf@data <-  spdf@data %>%
 spdf_fortified <- tidy(spdf, region = "state_pc")
 
 # Calculate the centroid of each hexagon to add the label:
-library(rgeos)
 centers <- cbind.data.frame(data.frame(gCentroid(spdf, byid=TRUE), id=spdf@data$iso3166_2))
 
 
 
-load("data/gf_state.rda")
-gf_state_tidy <- gf_state %>%
-  pivot_longer(cols = c(-1),  names_to = "date", values_to = "gf") %>%
-  mutate(date = as.Date(date))
-
-min_date <- min(gf_state_tidy$date)
-max_date <- max(gf_state_tidy$date)
+min_date <- min(covid19_state$date)
+max_date <- max(covid19_state$date)
   
 gf_labels <- c("0", "0-1", "1-2", "2+")
 
-gf_bins_tidy <- gf_state_tidy %>%
+gf_bins_tidy <- covid19_state %>%
   mutate( growth_factor = 
             cut(
                 gf
@@ -46,10 +47,7 @@ gf_bins_tidy <- gf_state_tidy %>%
             )
   )
 
-source("script/variable/colors.R")
-
 color_palette <- c(gf0, gf0_1, gf1_2, gf2plus)
-
 
 shp_gf <- spdf_fortified %>%
   left_join(. , gf_bins_tidy, by=c("id" = "state") )
@@ -79,7 +77,6 @@ all_gif <- ggplot() +
   labs(
       title = "Growth Rate from January to Present"
     , subtitle = "{frame_time}"
-    , caption = "Data Source: usafacts.org"
   ) +
   theme(
       plot.title = element_text(face = "bold", hjust = 0.5)
@@ -127,7 +124,6 @@ recent_gif <- ggplot() +
   labs(
     title = "Growth Rate over last 14 days"
     , subtitle = "{frame_time}"
-    , caption = "Data Source: usafacts.org"
   ) +
   theme(
     plot.title = element_text(face = "bold", hjust = 0.5)

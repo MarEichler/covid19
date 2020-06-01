@@ -12,16 +12,16 @@ state_sf <- get_urbn_map("states", sf = TRUE)
 
 
 #DATA AND COLOR FOR STATE 
-load("data/gf_county_ndays.rda")
+load("data/covid19_county_ndays.rda")
 
-max_date <- max(gf_county_ndays$date)
-min_date <- min(gf_county_ndays$date)
-ndays <- length(unique(gf_county_ndays$date))
+max_date <- max(covid19_county_ndays$date)
+min_date <- min(covid19_county_ndays$date)
+ndays <- length(unique(covid19_county_ndays$date))
 
 source("script/variable/gf_cut_info.R")
 
 #create grwothrate average for 14 days 
-gf_mean_df <- gf_county_ndays %>%
+gf_mean_df <- covid19_county_ndays %>%
   group_by(countyFIPS) %>%
   summarize(gf_mean = mean(gf)) %>%
   mutate( growth_factor = cut(gf_mean, breaks = gf_breaks , labels = gf_labels , right = gf_right))

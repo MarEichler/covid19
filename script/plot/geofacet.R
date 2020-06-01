@@ -1,5 +1,4 @@
 library(tidyverse)
-
 library(forcats)
 library(ggmap)
 library(statebins)
@@ -8,10 +7,11 @@ library(lubridate)
 library(geofacet) #https://hafen.github.io/geofacet/
 library(moderndive)
 library(cowplot) 
+library(png)
 
 # https://github.com/clauswilke/dataviz/blob/master/geospatial_data.Rmd
 
-load("data/gf_state_ndays.rda")
+load("data/covid19_state_ndays.rda")
 
 
 
@@ -26,11 +26,11 @@ adjust_labels <- as_labeller(
 )
 
 
-x_max <- max(gf_state_ndays$date)
-x_min <- min(gf_state_ndays$date)
-ndays <- length(unique(gf_state_ndays$date))
+x_max <- max(covid19_state_ndays$date)
+x_min <- min(covid19_state_ndays$date)
+ndays <- length(unique(covid19_state_ndays$date))
 
-facet_data <- gf_state_ndays 
+facet_data <- covid19_state_ndays 
 
 plus3 <- facet_data %>%
   filter(gf > 2) 
@@ -87,7 +87,10 @@ facet_map <- ggplot(facet_data, aes(date, gf)) +
 
 ggsave("img/facet_map.png", plot = facet_map, width = 7, height = 5, units = c("in"), dpi = 300)
 
-library(png)
+
+#cant add annotation to plot using gLabel (bug for geo_facet)
+#save the image; import image and add label and then resave 
+
 
 img <- readPNG("img/facet_map.png")
 

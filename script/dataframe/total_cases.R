@@ -17,7 +17,7 @@ names(total_cases)[5:last_col] <- format(as.Date(names(total_cases)[5:last_col],
 names(total_cases)[1:4] <- c("countyFIPS", "county_name", "state", "stateFIPS")
 
 #save unedited version of csv 
-write.csv(total_cases, "data/covid_confirmed_usafacts.csv")
+write.csv(total_cases, "data/covid_confirmed_usafacts.csv") #save a verson of original data in csv form 
 save(total_cases, file = "data/total_cases.rda")
 
 
