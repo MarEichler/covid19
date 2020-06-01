@@ -26,28 +26,25 @@ adjust_labels <- as_labeller(
 )
 
 
-x_max <- max(covid19_state_ndays$date)
-x_min <- min(covid19_state_ndays$date)
-ndays <- length(unique(covid19_state_ndays$date))
-
 facet_data <- covid19_state_ndays 
 
 plus3 <- facet_data %>%
   filter(gf > 2) 
 
 
-x_min <- min(facet_data$date)
-x_max <- max(facet_data$date)
+x_min_recent <- min(facet_data$date)
+x_max_recent <- max(facet_data$date)
+ndays <- length(unique(facet_data$date))
 source("script/variable/colors.R")
 
 caption <- "Points represent a growth rate greater than 2 on a given day."
 
 
 title <- paste("Daily Growth Rate over last", ndays, "days")
-subtitle <- paste(x_min, "to", x_max)
+subtitle <- paste(x_min_recent, "to", x_max_recent)
 
 facet_map <- ggplot(facet_data, aes(date, gf)) +
-  annotate("rect", xmin = x_min, xmax = x_max, ymin =  1, ymax =  Inf,   fill = gf2plus,   alpha = 0.45) +
+  annotate("rect", xmin = x_min_recent, xmax = x_max_recent, ymin =  1, ymax =  Inf,   fill = gf2plus,   alpha = 0.45) +
   geom_line( color = "grey35") +
   geom_area(color = "grey35" , alpha = 0.6) +
   geom_point( data = plus3, aes(date, gf), color = "grey35", size = 1.5) +
