@@ -99,4 +99,4 @@ covid19_US <- covid19_US %>%
 #glimpse(covid19_US)
 
 save(covid19_US, file = "data/covid19_US.rda")
-save(covid19_US, file = "state_gf/covid19_US.rda") #send data to app
+save(covid19_US, file = "diy-covid19-plots/covid19_US.rda") #send data to app

@@ -25,4 +25,4 @@ covid19_state <- inner_join(gf_state, nc_state, by = c("state" = "state", "date"
 
 
 save(covid19_state, file = "data/covid19_state.rda") # send to data folder 
-save(covid19_state, file = "state_gf/covid19_state.rda") #send data to app
+save(covid19_state, file = "diy-covid19-plots/covid19_state.rda") #send data to app
