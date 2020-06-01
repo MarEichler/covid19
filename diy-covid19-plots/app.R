@@ -119,4 +119,4 @@ server <- function(input, output) {
 shinyApp(ui = ui, server = server)
 
 
-# rsconnect::deployApp('state_gf', account = 'mareichler')
+# rsconnect::deployApp('diy-covid19-plots', account = 'mareichler')
