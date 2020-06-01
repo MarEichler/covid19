@@ -192,10 +192,10 @@ knitr::include_graphics("img/facet_map.png")
 
 ### Still want to look at more plots? 
 
-Build your own growth factor plot for a given state and time period by using a shiny app.  The app ca can be access through this  link, <a href="https://mareichler.shinyapps.io/state_gf/" target = "_blank">mareichler.shinyapps.io/state_gf/</a>, and is also embedded below:  
+Build your own growth factor plot for a given state and time period by using a shiny app.  The app can be access through this  link, <a href="https://mareichler.shinyapps.io/diy-covid19-plots/" target = "_blank">mareichler.shinyapps.io/diy-covid19-plots/</a>, and is also embedded below:  
 
 ```{r, out.width = "100%"}
-knitr::include_app("https://mareichler.shinyapps.io/state_gf/", height = "500px")
+knitr::include_app("https://mareichler.shinyapps.io/diy-covid19-plots/", height = "500px")
 ```
 
 <br> 
