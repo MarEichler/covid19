@@ -4,20 +4,16 @@ library(knitr)
 library(zoo)
 library(cowplot)
 library(scales)
-load("gf_state_tidy.rda")
-load("nc_state_tidy.rda")
+load("covid19_state.rda")
 load("covid19_US.rda")
 source("func_plot.R")
-
-
-state_tidy <- left_join(gf_state_tidy, nc_state_tidy, by = c("state" = "state", "date" = "date"))
 
 
 us_all <- covid19_US %>%
     mutate(state = "Entire US") %>%
     select(state, date, gf = growth_factor, nc = new_cases)
 
-data <- rbind(state_tidy, us_all)
+data <- rbind(covid19_state, us_all)
 
 state_pc <- unique(data$state)
 names(state_pc) <- unique(data$state)
