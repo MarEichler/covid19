@@ -22,7 +22,7 @@ library(cowplot)
 knitr::opts_chunk$set(fig.width=8, fig.height = 4, dpi=300, echo=FALSE)
 source("script/dataframe/covid19_US.R") #run script for covid19 df 
 source("script/variable/colors.R") #colors 
-source("script/variable/parameters.R") #global parameters 
+source("script/variable/parameters.R") #global parameters; also imports data 
 ```
 
 
@@ -112,6 +112,98 @@ plot_gf_ma  <- plot_gf +
 plot_gf_ma
 ```
 
+
+
+
+
+
+
+<br>  
+  
+### Recent Values by Day for US
+
+```{r values-table-gf}
+#transpose table; easier to read
+covid19_US_adj %>%
+  arrange(desc(date)) %>%
+  top_n(14, wt=date) %>%
+  #format data for output tabe
+  mutate(
+      Date = format(date, '%a, %b %d, %Y')
+    , `Total Cases` = formatC(total_cases, big.mark=",", format="d")
+    , `New Cases`  = formatC(new_cases, big.mark=",", format="d")
+    , `Growth Factor` = round(growth_factor, 2)
+    , `Growth Factor 14-day MA` = round(MA_growth_factor, 2)
+    , `New Cases 14-Day MA` = formatC(MA_new_cases, big.mark=",", format="d")
+  ) %>%
+  #color Growth Factor based on value 
+  mutate(
+    `Growth Factor` = cell_spec(
+      `Growth Factor`, color = 
+          ifelse( growth_factor > 1, gf2plus, colorspace::lighten(gf2plus, 0.4))
+      , bold = T
+      ), 
+    `Growth Factor 14-day MA` = cell_spec(
+      `Growth Factor 14-day MA`, color = 
+          ifelse( MA_growth_factor > 1, gf2plus, colorspace::lighten(gf2plus, 0.4))
+      , bold = T
+      )
+  ) %>%
+  #re-order to group cases and death information together 
+  select(
+      Date
+    , `Total Cases`
+    , `New Cases`
+    , `New Cases 14-Day MA`
+    , `Growth Factor`
+    , `Growth Factor 14-day MA`
+    ) %>%
+  kable(
+    align=c('l', rep('r', 6))
+    , escape = F
+  ) %>%
+  kable_styling(
+    bootstrap_options = c(
+      #adds stiped color to rows
+        "striped"
+      #highlight row when hover over it 
+      , "hover"
+      #table doesn't have to be full width 
+      , full_width = FALSE
+      #make it horizontally scrollable
+      , "responsive"
+      )
+    ) %>%
+  row_spec(1, bold=T, color="white", background = "rgba(0, 0, 0, .3)")
+```
+
+<br>  
+
+### Recent Growth Factor for each state 
+
+Since most of the COVID-19 measures are enacted by the state; it may be more helpful for the individual to see the growth factor for the last 14 days in a specific state.  
+
+```{r geofacet, message = FALSE, results = "hide", warning = FALSE}
+source("script/plot/geofacet.R") #creates facet_map of states' raw gf for past 14 days 
+```
+
+
+```{r, out.width = "100%", fig.align = 'center'}
+knitr::include_graphics("img/facet_map.png")
+```
+<br>
+
+### Still want to look at more plots? 
+
+Build your own growth factor plot for a given state and time period by using a shiny app.  The app ca can be access through this  link, <a href="https://mareichler.shinyapps.io/state_gf/" target = "_blank">mareichler.shinyapps.io/state_gf/</a>, and is also embedded below:  
+
+```{r, out.width = "100%"}
+knitr::include_app("https://mareichler.shinyapps.io/state_gf/", height = "500px")
+```
+
+<br> 
+
+### Growth Rate 14-day moving average or growth rate on 14-day moving average of new cases? 
 
 What if instead of looking at the growth rate and average of the growth rate - we calculated the growth rate on the average of new cases?  I'm going to call this $\text{GF}_{14}$ to represent that it's the growth rate based on the 14-day moving average of new cases.  
 
@@ -224,91 +316,3 @@ kable(sd_df,  caption = "Standard Deviations") %>%
 Looking at the standard deviations, it's unsurpising that the $\text{GF}_{14}$ has the least amount of deviation, followed by the Growth Rate 14-day Moiving average, and the raw Growth Rate has the most deviation.  
 
 Since there isn't a large difference between $\text{GF}_{14}$ and Growth Rate 14-Day Moving Average, I'm going to use the Growth Rate 14-Day Moving Average instead of $\text{GF}_{14}$.  When possible, I want to keep the calculations as simple and close to the raw data as possible.  
-
-
-
-
-<br>  
-  
-### Recent Values by Day for US
-
-```{r values-table-gf}
-#transpose table; easier to read
-covid19_US_adj %>%
-  arrange(desc(date)) %>%
-  top_n(14, wt=date) %>%
-  #format data for output tabe
-  mutate(
-      Date = format(date, '%a, %b %d, %Y')
-    , `Total Cases` = formatC(total_cases, big.mark=",", format="d")
-    , `New Cases`  = formatC(new_cases, big.mark=",", format="d")
-    , `Growth Factor` = round(growth_factor, 2)
-    , `Growth Factor 14-day MA` = round(MA_growth_factor, 2)
-    , `New Cases 14-Day MA` = formatC(MA_new_cases, big.mark=",", format="d")
-  ) %>%
-  #color Growth Factor based on value 
-  mutate(
-    `Growth Factor` = cell_spec(
-      `Growth Factor`, color = 
-          ifelse( growth_factor > 1, gf2plus, colorspace::lighten(gf2plus, 0.4))
-      , bold = T
-      ), 
-    `Growth Factor 14-day MA` = cell_spec(
-      `Growth Factor 14-day MA`, color = 
-          ifelse( MA_growth_factor > 1, gf2plus, colorspace::lighten(gf2plus, 0.4))
-      , bold = T
-      )
-  ) %>%
-  #re-order to group cases and death information together 
-  select(
-      Date
-    , `Total Cases`
-    , `New Cases`
-    , `New Cases 14-Day MA`
-    , `Growth Factor`
-    , `Growth Factor 14-day MA`
-    ) %>%
-  kable(
-    align=c('l', rep('r', 6))
-    , escape = F
-  ) %>%
-  kable_styling(
-    bootstrap_options = c(
-      #adds stiped color to rows
-        "striped"
-      #highlight row when hover over it 
-      , "hover"
-      #table doesn't have to be full width 
-      , full_width = FALSE
-      #make it horizontally scrollable
-      , "responsive"
-      )
-    ) %>%
-  row_spec(1, bold=T, color="white", background = "rgba(0, 0, 0, .3)")
-```
-
-<br>  
-  
-### Recent Growth Factor for each state 
-
-Since most of the COVID-19 measures are enacted by the state; it may be more helpful for the individual to see the growth factor for the last 14 days in a specific state.  
-
-```{r geofacet, message = FALSE, results = "hide", warning = FALSE}
-source("script/plot/geofacet.R") #creates facet_map of states' raw gf for past 14 days 
-```
-
-
-```{r, out.width = "100%", fig.align = 'center'}
-knitr::include_graphics("img/facet_map.png")
-```
-<br>
-
-### Still want to look at more plots? 
-
-Build your own growth factor plot for a given state and time period by using a shiny app.  The app ca can be access through this  link, <a href="https://mareichler.shinyapps.io/state_gf/" target = "_blank">mareichler.shinyapps.io/state_gf/</a>, and is also embedded below:  
-
-```{r, out.width = "100%"}
-knitr::include_app("https://mareichler.shinyapps.io/state_gf/", height = "500px")
-```
-
-
