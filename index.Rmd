@@ -51,11 +51,6 @@ source("script/dataframe/recent_n_days.R") #seperates out n_days
 ```{r child="gf_avg_county.Rmd"}
 ```
 
-## Hex Map Gifs  
-
-
-```{r child="gifs.Rmd"}
-```
 
 ## Data
 
