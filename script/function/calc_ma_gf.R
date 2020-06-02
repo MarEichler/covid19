@@ -1,4 +1,5 @@
 
+## START OF WEEKLY AVERAGE 
 f_ma7 <- function(vec){
   id <- vec[,1] #get id name
   v <- vec[,-1] #remove id name; just todal cases
@@ -10,4 +11,4 @@ f_ma7 <- function(vec){
   gf_ma <- cbind(id, gf_ma)
   gf_ma
 }
-
+###################### END OF WEEKLY AVG FUNCTION 
