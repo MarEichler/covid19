@@ -12,10 +12,25 @@ editor_options:
 source("script/plot/hex-map.R") #creates hex map of state avg gf for past n days
 ```
 
+
 This plot is a quick overview of the last two weeks for each state.  Which states have seen an average decrease in daily cases for 14 days and may be ready to start the re-opening process?  Which states are not ready to reopen and finally which states may need additional social-distancing and lock-down measures?  
 
 As mentioned in the Growth Factor tab, some states will have very large growth rates.  This is mostly due to having 0 cases on one day and then a large amount the next day - likely caused by test availability or reporting.  
 
 ```{r hex-map-img, out.width = "100%", fig.align = 'center'}
 knitr::include_graphics("img/hex_map.png")
+```
+
+
+```{r weekly-map, message = FALSE, results = "hide", warning = FALSE}
+source("script/plot/state_weekly_gif.R") #creates hex map of state avg gf for past n days
+
+first_date <- min(covid19_state_weekly$date)
+```
+
+
+This plot shows how the weekly average growth rate has changed by state since the start of the pandemic.  Week 1 starts on `r first_date`; which is the first day data is available. 
+
+```{r weekly-map-img, out.width = "100%", fig.align = 'center'}
+knitr::include_graphics("img/state_weekly_gif.gif")
 ```
