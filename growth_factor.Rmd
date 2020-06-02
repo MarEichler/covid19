@@ -181,7 +181,7 @@ covid19_US_adj %>%
 Since most of the COVID-19 measures are enacted by the state; it may be more helpful for the individual to see the growth factor for the last 14 days in a specific state.  
 
 ```{r geofacet, message = FALSE, results = "hide", warning = FALSE}
-source("script/plot/geofacet.R") #creates facet_map of states' raw gf for past 14 days 
+source("script/plot/state_14days.R") #creates facet_map of states' raw gf for past 14 days 
 ```
 
 

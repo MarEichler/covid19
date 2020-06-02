@@ -9,7 +9,7 @@ editor_options:
 
 
 ```{r hex-map, message = FALSE, results = "hide", warning = FALSE}
-source("script/plot/hex-map.R") #creates hex map of state avg gf for past n days
+source("script/plot/state_14days_avg.R") #creates hex map of state avg gf for past n days
 ```
 
 
