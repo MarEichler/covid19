@@ -40,8 +40,6 @@ labels <- centers %>%
 
 
 
-
-
 color_palette <- c(gf0, gf0_1, gf1_2, gf2plus)
 
 shp_gf <- spdf_fortified %>%
@@ -92,7 +90,7 @@ state_weekly_gif <- animate(
   , width = 7
   , height = 5
   , units = c("in")
-  , res = 100
+  , res = 400
   )
 
 anim_save("img/state_weekly_gif.gif", state_weekly_gif)
