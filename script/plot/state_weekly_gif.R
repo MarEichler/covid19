@@ -90,7 +90,7 @@ state_weekly_gif <- animate(
   , width = 7
   , height = 5
   , units = c("in")
-  , res = 400
+  , res = 300
   )
 
 anim_save("img/state_weekly_gif.gif", state_weekly_gif)
