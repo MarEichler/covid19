@@ -31,7 +31,7 @@ gf_plot_ma <- function(plot_data, min_date, max_date){
     scale_y_continuous(
       breaks = c(0, 1, 2)
       , labels = c("0", "1", "2")
-      , expand = c(0, .02)
+  #    , expand = c(0, .02)
     ) +
     scale_x_date(
       name = NULL
@@ -55,8 +55,8 @@ gf_plot_ma <- function(plot_data, min_date, max_date){
       , labels = scales::date_format("%b-%d")
     ) + 
     scale_y_continuous(
-      expand = c(0, .02)
-      , labels = comma
+      labels = comma
+   #  , expand = c(0, .02)
     ) +
     theme_minimal()+
     theme( plot.title = element_text(hjust = 0.5), axis.title = element_blank())
@@ -76,7 +76,7 @@ gf_plot <- function(plot_data, min_date, max_date){
     scale_y_continuous(
       breaks = c(0, 1, 2)
       , labels = c("0", "1", "2")
-      , expand = c(0, .02)
+     # , expand = c(0, .02)
     ) +
     scale_x_date(
       name = NULL
@@ -94,9 +94,9 @@ gf_plot <- function(plot_data, min_date, max_date){
       , labels = scales::date_format("%b-%d")
     ) + 
     scale_y_continuous(
-      expand = c(0, .02)
-      , labels = comma
-    )+
+      labels = comma
+      #  , expand = c(0, .02)
+    ) +
     theme_minimal()+
     theme( plot.title = element_text(hjust = 0.5), axis.title = element_blank())
   

@@ -60,7 +60,7 @@ plot_gf <- ggplot(plot_data, aes(date, gf)) +
   scale_y_continuous(
       breaks = c(0, 1, 2)
     , labels = c("0", "1", "2")
-    , expand = c(0, .02)
+ #   , expand = c(0, .02)
   ) +
   scale_x_date(
     name = NULL
@@ -81,13 +81,14 @@ plot_nc <- ggplot(plot_data, aes(x=date, y=nc))+
   ggtitle("New Cases") +
   date_scaling + 
   scale_y_continuous(
-     expand = c(0, .02)
+  #   expand = c(0, 0.02)
      , labels = comma
   ) +
   theme_minimal()+
   theme( plot.title = element_text(hjust = 0.5), axis.title = element_blank())
 
-plot_grid(plot_gf, plot_nc, align = "h")
+
+plot_grid(plot_nc, plot_gf, align = "h")
 ##############################
 
 plot_data %>%
