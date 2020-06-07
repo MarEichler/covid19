@@ -43,7 +43,7 @@ names(state_pc) <- state_names
 ui <- fluidPage(
 
     # Application title
-    titlePanel("COVID-19: Growth Factor per Day"),
+    titlePanel("COVID-19: New Cases and Growth Factor per Day"),
 
     # Sidebar with a slider input for number of bins 
     sidebarLayout(
@@ -73,11 +73,34 @@ ui <- fluidPage(
 
         # Show a plot of the generated distribution
         mainPanel(
-            p("Recall that the growth factor = new cases today / new cases yesterday."),
-            "Points Represent a growth factor or moving average greater than 2 on a given day", 
+           helpText("Points Represent a growth factor or moving average greater than 2 on a given day"), 
            plotOutput("Plot"),
            br(), 
-           p("Large variations in growth factor may be due to other variables such as testing capabilities") 
+           h4("Growth Factor"), 
+           p(withMathJax('$$\\text{Growth Factor} = \\frac{ \\text{New-Cases}_N}{\\text{New-Cases}_{N-1}}$$'), 
+             "What if there were 0 cases yesterday?  This would make the growth factor undefined. 
+             I have adjusted the growth factor so that if the pervious day had 0 cases,
+             the current day's growth factor is equal to the number of new cases"), 
+           br(),
+           h4("Data Limitations"),
+           p(
+             "A large limitation for this data is that reported new cases (and thus the growth factor) 
+             may not consistently and accurately represent the true number of new cases each day.  
+             As mentioned before, this could be due to test availability, reporting protocols, and a number of other variables.
+             It is important to note that this information is a helpful tool in trying to understand the pandemic, 
+             but it may not reflect the entire story.  "
+           ), 
+           br(),
+           h4("Data Source"),
+           p(
+             "This data is downloaded from",
+             a("USA Facts.", href="https://usafacts.org/visualizations/coronavirus-covid-19-spread-map/"), 
+            "I use two of the three datasets available: total cases and total deaths.
+            Both of these datasets are broken down by state and county.  
+            This data requires additional formatting, calculation, and aggregation.  
+            USA Facts gets data by county on a daily basis, 
+            this is totaled to get values for each day for individual states and the entire US. "
+           )
            
         ) #end main panel 
     )
