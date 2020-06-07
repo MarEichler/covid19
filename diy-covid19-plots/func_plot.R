@@ -61,7 +61,7 @@ gf_plot_ma <- function(plot_data, min_date, max_date){
     theme_minimal()+
     theme( plot.title = element_text(hjust = 0.5), axis.title = element_blank())
   
-  plot_grid(plot_gf, plot_nc, align = "h")
+  plot_grid(plot_nc, plot_gf, align = "h")
   
 }
 
@@ -100,6 +100,6 @@ gf_plot <- function(plot_data, min_date, max_date){
     theme_minimal()+
     theme( plot.title = element_text(hjust = 0.5), axis.title = element_blank())
   
-  plot_grid(plot_gf, plot_nc, align = "h")
+  plot_grid(plot_nc, plot_gf, align = "h")
   
 }
