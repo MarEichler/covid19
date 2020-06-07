@@ -7,18 +7,26 @@ editor_options:
   chunk_output_type: inline
 ---
 
-Data available through: `r max_date`  
 
 ```{r}
 usafacts_data <- read.csv(link <- "https://usafactsstatic.blob.core.windows.net/public/data/covid-19/covid_confirmed_usafacts.csv")
 max_date <- as.Date(colnames(usafacts_data)[ncol(usafacts_data)], format = "X%m.%d.%y")
 ```
 
+Data available through: `r max_date`  
+
 This data is downloaded from 
 <a href="https://usafacts.org/visualizations/coronavirus-covid-19-spread-map/" target="_blank" >
-USA Facts CDC</a>. I use two of the three spreadsheets, one with total cases and one with total deaths - both broken down by state and county.  This data requires additional formatting, calculation, and aggregation.  USA Facts gets data by county on a daily basis, this is totaled to get values for each day for the entire US. 
+USA Facts CDC</a>. I use two of the three datasets available: total cases and total deaths.  Both of these datasets are broken down by state and county.  This data requires additional formatting, calculation, and aggregation.  USA Facts gets data by county on a daily basis, this is totaled to get values for each day for the entire US. 
 
 The
 <a href="https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/cases-in-us.html" target="_blank">
 American CDC </a> 
 links to USA Facts under Cases & Death by County, which is how I found the data source.  
+
+Many of the plots have been restricted to show data on March 15, 2020 and after.  This is when case numbers started to rise and preventative measures started to increase dramatically.  
+
+### Data Limitations 
+
+ A large limitation for this data is that reported new cases (and thus the growth factor) may not consistently and accurately represent the true number of new cases each day.  As mentioned before, this could be due to test availability, reporting protocols, and a number of other variables.  It is important to note that this information is a helpful tool in trying to understand the pandemic, but it may not reflect the entire story.  
+ 

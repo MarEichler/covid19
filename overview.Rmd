@@ -31,12 +31,6 @@ source("script/variable/parameters.R") #global parameters
 ```
 
 
-
-
-I am restricted the charts to show values on March 15, 2020 and after.  This is when cases numbers started to rise and preventative measures started to increase dramatically.  
-
-
-
 ```{r current-values}
 #find current values to use as labels 
 
@@ -56,7 +50,7 @@ current_US_newdeaths <- current_values$new_deaths
  
 
 ###  Total Cases and Total Deaths  
-These show the cumulative total of cases and deaths for each day - also denoting the current totals.  These total values are important; however they are not helpful for figuring out whether the pandemic is slowing down or growing.
+These show the cumulative total of cases and deaths by day.  I have also denoted the current cumulative totals.  These total values are important; however they are not helpful for figuring out whether the pandemic is slowing down or growing as it is difficult to see trends in cumulative curves like these.
 
 ```{r tc-td-plot, fig.height=3}
 covid_tidy <- covid19_US_adj %>%
@@ -80,7 +74,7 @@ ggplot(covid_tidy, aes(date, count)) +
     , alpha = 0.6
   )+
   facet_wrap(
-    .~factor(type, labels = c("Total Cases by Day", "Total Dealths by Day"))
+    .~factor(type, labels = c("Total Cases by Day", "Total Deaths by Day"))
     , ncol=2
     , scales = "free_y"
   ) + 
@@ -117,7 +111,7 @@ ggplot(covid_tidy, aes(date, count)) +
 
 ### New Cases 
 
-Looking at new cases each day can help us see if the pandemic is slowing.  If the new cases per day is decreasing then the pandemic is slowing.  
+Looking at new cases each day can help us see if the pandemic is slowing.  A decreasing number of new cases per day is evidence that the pandemic is slowing down.  
 
 
 ```{r dc-plot-setup}  
@@ -138,9 +132,9 @@ plot_dc <- ggplot(covid19_US_adj, aes(x=date, y=new_cases))+
 ```
 
 
-There can be a lot of variability in the daily case totals due to a variety of variable.  One variable is the availability of tests; cases will go down if there is scarcity of tests and rise dramatically when more tests become available.  One way to help get a better sense over the overall trend is by smoothing the data using a moving average.  
+There can be a lot of variability in the daily case totals due to a variety of variables.  One example is the availability of tests; cases will go down if there is a scarcity of tests and rise dramatically when more tests become available.  One way to help get a better sense of the overall trend is by smoothing the data using a moving average.  
 
-The trends and raw data show a peak around mid-April and have been moving downward.  This may be due to inacting stricter social distancing and lock-downs accross the country.  There is also a cyclical nature to the daily new cases with counts often being lower on weekends and higher on weekdays.  
+The trends and raw data show a peak around mid-April and have been moving downward.  This may be due to enacting stricter social distancing and lock-downs across the country.  There is also a cyclical nature to the daily new cases with counts often being lower on weekends and higher on weekdays.  
 
 
 ```{r , warning = FALSE}  
@@ -170,11 +164,11 @@ plot_dc_ma
 
 ### New Deaths and Death Percentage   
 
-COVID-19 is much deadlier than the common flu.  One way to measure the impact is to look at the death percentage which is the total number of deaths divided by the total number of cases.  
+COVID-19 is much deadlier than the common flu.  One way to measure the impact is to look at the death percentage, which is the total number of deaths divided by the total number of cases.  
 
-A big concern during April was that the death percentage was continually increasing; even when actual deaths per day were not increasing.  Starting in early May the death percentage started to plateau around 6%. 
+A big concern during April was that the death percentage was continually increasing, even when actual deaths per day were not increasing.  Starting in early May the death percentage started to plateau around 6%. 
 
-Similar to new cases per day, deaths per day has been trending downward since about mid-April, although there are still spikes.  These spikes may be do to reporting times - spikes seem cyclical on a weekly with lower counts generally occuring on the weekends and higher counts happening during the week.  
+Similar to new cases per day, deaths per day has been trending downward since about mid-April, although there are still spikes.  These spikes may be due to reporting times where counts on weekdays are often higher than those on weekends.  Spikes also occur when previous deaths are re-assigned as COVID-19 related deaths, such as counting nursing home deaths and/or pneumonia deaths.  
 
 ```{r dp-plot}
 plot_dp <- ggplot(covid19_US_adj, aes(date, death_percentage)) + 
@@ -242,7 +236,7 @@ cowplot::plot_grid(
 
 ### Values for Past 14 Days  
 
-The actual values for the pervious 14 days are detailed in the table below for those who are interested in actual values.  
+The actual values for the previous 14 days are detailed in the table below.  
 
 ```{r values-table}
 #transpose table; easier to read

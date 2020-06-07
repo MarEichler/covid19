@@ -26,8 +26,6 @@ source("script/variable/parameters.R") #global parameters; also imports data
 ```
 
 
-I am restricted the charts to show values on March 15, 2020 and after.  This is when cases numbers started to rise and preventative measures started to increase dramatically.  
-
 
 ### Is the pandemic slowing? 
 
@@ -36,9 +34,9 @@ One important calculation is the growth factor, as outlined in <a href = "https:
 $$
 \text{Growth Factor} = \frac{ \text{New-Cases}_N}{\text{New-Cases}_{N-1}}
 $$
-where $N$ is a given day.  Essentialy this is taking the amount new cases today and dividing them by the amount of new cases yesterday.  
+where $N$ is a given day.  Essentialy this is taking the amount of new cases today and dividing them by the amount of new cases yesterday.  
 
-The growth factor can be very helpful in determining if the pandemic is slowing.  If the growth factor is less than 1, this means that the amount of new cases today is less than yesterday.  Once there are multiple days with a growth factor less than 1 - this is a strong sign that the pandemic is slowing down.  
+The growth factor can be very helpful in determining if the pandemic is slowing.  If the growth factor is less than 1, this means that the amount of new cases today is less than yesterday.  Once there are multiple days with a growth factor less than 1 it is a strong sign that the pandemic is slowing down.  
 
 **Adjustment to Growth Factor**  
 What if there were 0 cases yesterday?  This would make the growth factor undefined (or $\infty$ according to R).  This makes it difficult to look at trends.  I have adjusted the growth factor so that if the pervious day had 0 cases; the current day's growth factor is equal to the number of new cases: 
@@ -50,7 +48,7 @@ $$
 \text{New-Cases}_N & \text{if } \text{New-Cases}_{N-1} = 0 
 \end{cases}
 $$
-When I made this adjustment I was thinking about the early stages of the pandemic when the number of cases per day are 0, 1, or 2.  However, given the test scarcity and reporting times there are situations in counties or states where there were 0 cases one day and then hundred or thousands the next day.  This is why some of growth factors are much larger.  
+I made this adjustment for the early or late stages of the pandemic when the number of cases per day are 0, 1, or 2.  However, given the test scarcity and reporting times there are situations in counties or states where there are 0 cases one day and then hundreds or thousands the next day.  This large variability causes spikes in the growth factor in some plots. 
 
 
 ```{r gf-plot-setup, fig.width=4, fig.height=4}
@@ -83,9 +81,9 @@ plot_gf  <- ggplot(covid19_US_adj, aes(x=date, y=growth_factor))+
 ```
 
 
-Similar to the new cases per day; there can be a lot of variability in growth rates.  In order to get a better sense of the trend I am showing a 14-day moving average of the growth factor.  
+Similar to the new cases per day, there can be a lot of variability in growth factors  In order to get a better sense of the trend I am showing a 14-day moving average of the growth factor.  
 
-The growth rate shows a different trend than new cases.  Here, the growth rate has stayed around 1 since mid-April.  Compare that to the new cases plot on the Overview tab, which shows a downward trends.  The the growth factor remaining around 1 due may be due to the cyclical nature of new cases reporting (high during the week, low during the weekends) - but it could also be showing that although the decrease in new cases is positive we are not out of the woods yet.  
+The growth factor shows a different trend than new cases.  Here, the growth factor has stayed around 1 since mid-April.  Compare that to the new cases plot on the Overview tab, which shows a downward trend after a peak in mid-April.  The growth factor remaining around 1 may be due to the cyclical nature of new cases being reported (high during the week, low during the weekends) - but it could also be showing that although the decrease in new cases is a positive sign, we are not out of the woods yet.  
 
 ```{r}
 labels_gf <- covid19_US %>% filter(date == as.Date("2020-05-02"))
@@ -178,7 +176,7 @@ covid19_US_adj %>%
 
 ### Recent Growth Factor for each state 
 
-Since most of the COVID-19 measures are enacted by the state; it may be more helpful for the individual to see the growth factor for the last 14 days in a specific state.  
+Since most of the COVID-19 measures are enacted by individual states, it may be more helpful for an individual to see the growth factor for the last 14 days in a specific state.  
 
 ```{r geofacet, message = FALSE, results = "hide", warning = FALSE}
 source("script/plot/state_14days.R") #creates facet_map of states' raw gf for past 14 days 
@@ -200,11 +198,11 @@ knitr::include_app("https://mareichler.shinyapps.io/diy-covid19-plots/", height 
 
 <br> 
 
-### Growth Rate 14-day moving average or growth rate on 14-day moving average of new cases? 
+### Growth Factor Average or Growth Factor on Average of New Cases? 
 
-What if instead of looking at the growth rate and average of the growth rate - we calculated the growth rate on the average of new cases?  I'm going to call this $\text{GF}_{14}$ to represent that it's the growth rate based on the 14-day moving average of new cases.  
+What if instead of looking at the average of the growth factor, we calculated the growth factor on the average of new cases?  I'm going to call this $\text{GF}_{14}$ to represent that it's the growth factor based on the 14-day moving average of new cases.  
 
-Looking at the new cases 14-day moving average, it is clearly smoother than the raw new cases.  
+Looking at the new cases 14-day moving average, it is clearly smoother than the raw new cases and most of the cyclical nature has been removed.  
 
 ```{r, fig.height = 2.5}
 plot_ma_nc <- ggplot(covid19_US_adj, aes(x=date, y=MA_new_cases))+
@@ -225,7 +223,7 @@ plot_ma_nc
 ```
 
 
-Using the new cases 14-day moving average, calculate the $\text{GF}_{14}$: 
+Using the new cases 14-day moving average, I am calculating $\text{GF}_{14}$ as follows: 
 
 $$
 \text{GF}_{14} = \frac{
@@ -237,6 +235,7 @@ $$
 
 I am showing both the growth factor 14-day moving average and the $\text{GF}_{14}$ for comparison.  
 
+<br> 
 
 ```{r}
 plot_gf_14 <- ggplot(covid19_US_adj, aes(x=date, y=gf_14))+
@@ -277,7 +276,7 @@ plot_ma_gf <- ggplot(covid19_US_adj, aes(x=date, y=MA_growth_factor))+
 plot_grid(plot_ma_gf, plot_gf_14, ncol = 2, align = "h")
 ```
 
-Turns out it doesn't make a significant difference!  Even when looking the growth rate based on the 14-day moving average of new cases (smoothing over the cyclical nature of new cases reporting) - results is a growth factor, $\text{GF}_{14}$ that is not deviating from 1.  
+It turns out in this case it does not make make a significant difference!  Even when looking at the growth factor based on the 14-day moving average of new cases (smoothing over the cyclical nature of new cases reporting) the result is a growth factor, $\text{GF}_{14}$ that is not deviating from 1.  
 
  
 
@@ -306,6 +305,6 @@ kable(sd_df,  caption = "Standard Deviations") %>%
 ```
 
 
-Looking at the standard deviations, it's unsurpising that the $\text{GF}_{14}$ has the least amount of deviation, followed by the Growth Rate 14-day Moiving average, and the raw Growth Rate has the most deviation.  
+Looking at the standard deviations, it is unsurprising that the $\text{GF}_{14}$ has the least amount of deviation, followed by the growth factor 14-day moving average, and the raw growth factor has the most deviation.  
 
-Since there isn't a large difference between $\text{GF}_{14}$ and Growth Rate 14-Day Moving Average, I'm going to use the Growth Rate 14-Day Moving Average instead of $\text{GF}_{14}$.  When possible, I want to keep the calculations as simple and close to the raw data as possible.  
+Since there is a not a large difference between growth factor 14-day moving average and $\text{GF}_{14}$, I'm going to use the growth factor 14-day moving average instead of $\text{GF}_{14}$.  When available, I want to keep the calculations as simple and close to the raw data as possible.  

@@ -7,9 +7,10 @@ editor_options:
   chunk_output_type: inline
 ---
 
-```{r}
+```{r, include = FALSE}
 library(tidyverse)
 library(scales)
+knitr::opts_chunk$set(echo = FALSE)
 ```
 
 
@@ -32,7 +33,9 @@ na_print <- formatC(as.numeric(not_assigned), format="f", big.mark=",", digits=0
 pna_print <- percent(as.numeric(perc_not_assigned), accuracy = 0.001)
 ```
 
-It is also interesting to look at the growth factor on the county level.  Although since most lock-down measures are enacted at the state level, this plot may not be that helpful.  In addition there are `r na_print` cases that have been not assigned to a county.  Although that only accounts for `r pna_print` of the total cases; it could have a big impact on a given state or county.  
+Although most lock-down measures are enacted at the state level, it is still interesting to look at the growth factor on the county level.  
+
+A limitation on this plot is that there are `r na_print` cases that have been not assigned to a county.  Although that only accounts for `r pna_print` of the total cases in the United States; it could have a big impact on a given county.  
 
 ```{r county-map, message = FALSE, results = "hide", warning = FALSE}
 source("script/plot/county-map.R") #creates hex map of county avg gf for past n day
