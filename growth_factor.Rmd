@@ -39,7 +39,7 @@ where $N$ is a given day.  Essentialy this is taking the amount of new cases tod
 The growth factor can be very helpful in determining if the pandemic is slowing.  If the growth factor is less than 1, this means that the amount of new cases today is less than yesterday.  Once there are multiple days with a growth factor less than 1 it is a strong sign that the pandemic is slowing down.  
 
 **Adjustment to Growth Factor**  
-What if there were 0 cases yesterday?  This would make the growth factor undefined (or $\infty$ according to R).  This makes it difficult to look at trends.  I have adjusted the growth factor so that if the pervious day had 0 cases; the current day's growth factor is equal to the number of new cases: 
+What if there were 0 cases yesterday?  This would make the growth factor undefined (or $\infty$ according to R).  This makes it difficult to look at trends.  I have adjusted the growth factor so that if the previous day had 0 cases, the current day's growth factor is equal to the number of new cases: 
 
 $$
 \text{Growth Factor} = \begin{cases}
