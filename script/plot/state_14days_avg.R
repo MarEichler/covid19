@@ -68,7 +68,7 @@ if (gf_labels[1] %in% gf_mean_df$growth_factor) {
 }
 
 
-title <- paste("Average Growth Rate over last", ndays, "days")
+title <- paste("Average Growth Factor over last", ndays, "days")
 subtitle <- paste(min_date, "to", max_date)
 
 hex_map <- ggplot() +

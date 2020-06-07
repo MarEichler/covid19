@@ -43,7 +43,7 @@ county_shp_gf <- counties_sf %>%
   left_join(. , gf_mean_df, by=c("county_fips" = "countyFIPS") )
 
 
-title <- paste("Average Growth Rate over last", ndays, "days")
+title <- paste("Average Growth Factor over last", ndays, "days")
 subtitle <- paste(min_date, "to", max_date)
 
 county_map <- ggplot(county_shp_gf) +

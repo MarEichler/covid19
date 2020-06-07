@@ -37,7 +37,7 @@ x_max_recent <- max(facet_data$date)
 ndays <- length(unique(facet_data$date))
 source("script/variable/colors.R")
 
-caption <- "Points represent a growth rate greater than 2 on a given day."
+caption <- "Points represent a growth factor greater than 2 on a given day."
 
 
 title <- paste("Daily Growth Rate over last", ndays, "days")
