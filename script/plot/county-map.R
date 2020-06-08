@@ -2,8 +2,15 @@ library(tidyverse)
 library(urbnmapr)
 library(RColorBrewer)
 
-# https://github.com/UrbanInstitute/urbnmapr
+#outside scripts
+source("script/variable/colors.R")
+source("script/variable/gf_cut_info.R")
 
+#data
+load("data/covid19_county_ndays.rda")
+
+# MAPPING PACKAGE INFORMATION 
+# https://github.com/UrbanInstitute/urbnmapr
 
 counties_sf <- get_urbn_map("counties", sf = TRUE) %>%
   mutate(county_fips = as.numeric(county_fips))
@@ -11,32 +18,17 @@ counties_sf <- get_urbn_map("counties", sf = TRUE) %>%
 state_sf <- get_urbn_map("states", sf = TRUE) 
 
 
-#DATA AND COLOR FOR STATE 
-load("data/covid19_county_ndays.rda")
-
 max_date <- max(covid19_county_ndays$date)
 min_date <- min(covid19_county_ndays$date)
 ndays <- length(unique(covid19_county_ndays$date))
 
-source("script/variable/gf_cut_info.R")
 
-#create grwothrate average for 14 days 
+#create growth factor  average for 14 days 
 gf_mean_df <- covid19_county_ndays %>%
   group_by(countyFIPS) %>%
   summarize(gf_mean = mean(gf)) %>%
   mutate( growth_factor = cut(gf_mean, breaks = gf_breaks , labels = gf_labels , right = gf_right))
 
-#set color palette
-
-source("script/variable/colors.R")
-
-
-#if "0" in set; start with grey
-if (gf_labels[1] %in% gf_mean_df$growth_factor) {
-  color_palette <- c(gf0, gf0_1, gf1_2, gf2plus)
-} else {
-  color_palette <- c(gf0_1, gf1_2, gf2plus)
-}
 
 #join growth rate data with shape file data
 county_shp_gf <- counties_sf %>%

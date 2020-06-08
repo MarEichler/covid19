@@ -63,7 +63,7 @@ labels <- centers %>%
 title <- paste("Average Growth Factor over last", ndays, "days")
 subtitle <- paste(min_date, "to", max_date)
 
-hex_map <- ggplot() +
+state_14avg <- ggplot() +
   geom_polygon(
     data = shp_gf_avg7
     , aes(fill =  growth_factor, x = long, y = lat, group = group)
@@ -99,8 +99,8 @@ hex_map <- ggplot() +
 
 
 ggsave(
-  "img/hex_map.png"
-  , plot = hex_map
+  "img/state_14days_avg.png"
+  , plot = state_14avg
   , width = 7
   , height = 5
   , units = c("in")

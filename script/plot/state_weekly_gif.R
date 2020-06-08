@@ -39,13 +39,8 @@ labels <- centers %>%
   left_join(., gf_labels, by = c("id" = "state")) 
 
 
-
-color_palette <- c(gf0, gf0_1, gf1_2, gf2plus)
-
 shp_gf <- spdf_fortified %>%
   left_join(. , covid19_state_weekly, by=c("id" = "state") )
-
-
 
 
 weekly_plot <- ggplot() +
@@ -95,4 +90,3 @@ state_weekly_gif <- animate(
 
 anim_save("img/state_weekly_gif.gif", state_weekly_gif)
 ##########################################
-
