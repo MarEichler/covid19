@@ -28,7 +28,7 @@ source("script/variable/parameters.R") #global parameters; also imports data
 
 ### Is the pandemic slowing? 
 
-One important calculation is the growth factor, as outlined in <a href = "https://www.youtube.com/watch?v=Kas0tIxDvrg" target = "_blank"> 3Blue1Brown's youtube video on exponential growth </a>.  The growth rate is calculated as follows: 
+One important calculation is the growth factor, as outlined in <a href = "https://www.youtube.com/watch?v=Kas0tIxDvrg" target = "_blank"> 3Blue1Brown's youtube video on exponential growth </a>.  The growth factor is calculated as follows: 
 
 $$
 \text{Growth Factor} = \frac{ \text{New-Cases}_N}{\text{New-Cases}_{N-1}}
@@ -283,7 +283,7 @@ sd3 <- mapply(sd, na.rm = TRUE, df3)
 
 sd_df <- rbind(sd1, sd2, sd3)
 rownames(sd_df) <- c("All dates", "Since 2020-03-15", "Last 14 days")
-colnames(sd_df) <- c("Growth Rate", "Growth Factor 14-day MA", "GF_14")
+colnames(sd_df) <- c("Growth Factor", "Growth Factor 14-day MA", "GF_14")
 
 kable(sd_df,  caption = "Standard Deviations") %>%
   kable_styling(bootstrap_options = c("striped", "condensed"), full_width = F, position = "float_left", font_size = 12)
