@@ -7,14 +7,6 @@ editor_options:
   chunk_output_type: inline
 ---
 
-
-```{r}
-usafacts_data <- read.csv(link <- "https://usafactsstatic.blob.core.windows.net/public/data/covid-19/covid_confirmed_usafacts.csv")
-max_date <- as.Date(colnames(usafacts_data)[ncol(usafacts_data)], format = "X%m.%d.%y")
-```
-
-Data available through: `r max_date`  
-
 This data is downloaded from 
 <a href="https://usafacts.org/visualizations/coronavirus-covid-19-spread-map/" target="_blank" >
 USA Facts</a>. I use two of the three datasets available: total cases and total deaths.  Both of these datasets are broken down by state and county.  This data requires additional formatting, calculation, and aggregation.  USA Facts gets data by county on a daily basis, this is totaled to get values for each day for individual states and the entire US. 
