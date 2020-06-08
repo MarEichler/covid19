@@ -24,9 +24,8 @@ knitr::opts_chunk$set(fig.width=8, fig.height = 4, dpi=300, echo=FALSE)
 ```
 
 ```{r outside-scripts}
-#read in colors 
-source("script/dataframe/covid19_US.R") #run script for covid19 df 
 source("script/variable/colors.R") #colors 
+source("script/dataframe/covid19_US.R") #run script for covid19 df 
 source("script/variable/parameters.R") #global parameters 
 ```
 
