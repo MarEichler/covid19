@@ -12,27 +12,32 @@ knitr::opts_chunk$set(echo=FALSE)
 
 ```{r scripts-for-data, message = FALSE, results = "hide", warning = FALSE}
 #SCRIPTS THAT NEED TO BE RUN 
-
 source("script/dataframe/total_cases.R") #import data 
 source("script/dataframe/covid19_state.R") 
 source("script/dataframe/covid19_county.R")
 source("script/dataframe/recent_n_days.R") #seperates out n_days 
 ```
 
+```{r}
+usafacts_data <- read.csv(link <- "https://usafactsstatic.blob.core.windows.net/public/data/covid-19/covid_confirmed_usafacts.csv")
+max_date <- as.Date(colnames(usafacts_data)[ncol(usafacts_data)], format = "X%m.%d.%y")
+```
+
 
 # {.tabset}
 
 
-## Overview 
+## Overview  
 
+Data available through: `r max_date`
 
 ```{r child="overview.Rmd"}
 ```
 
 
-## Growth Factor 
+## Growth Factor  
 
-
+Data available through: `r max_date`
 
 ```{r child="growth_factor.Rmd"}
 ```
@@ -40,19 +45,22 @@ source("script/dataframe/recent_n_days.R") #seperates out n_days
 
 ## GF Average (States)
 
-
+Data available through: `r max_date`
 
 ```{r child="gf_avg_state.Rmd"}
 ```
 
 ## GF Average (Counties)
 
+Data available through: `r max_date`
 
 ```{r child="gf_avg_county.Rmd"}
 ```
 
 
-## Data
+## Data  
+
+Data available through: `r max_date`
 
 ```{r child="data_source.Rmd"}
 ```
