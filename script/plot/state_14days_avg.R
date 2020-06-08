@@ -3,6 +3,16 @@ library(geojsonio)
 library(rgdal)
 library(broom)
 library(tidyr)
+library(rgeos)
+
+#outside scripts
+source("script/variable/colors.R")
+source("script/variable/gf_cut_info.R")
+
+
+#data 
+load("data/covid19_state_ndays.rda")
+
 
 #HEX MAP SET UP
 
@@ -11,7 +21,7 @@ library(tidyr)
 # Download the Hexagones boundaries at geojson format here:
 #     https://team.carto.com/u/andrew/tables/andrew.us_states_hexgrid/public/map.
 
-# Load this file. (Note: I stored in a folder called DATA)
+# Load downloaded file 
 spdf <- geojson_read("data/us_states_hexgrid.geojson",  what = "sp")
 
 spdf@data <-  spdf@data %>% 
@@ -23,49 +33,31 @@ spdf_fortified <- tidy(spdf, region = "state_pc")
 
 
 
-#DATA AND COLOR FOR STATE 
-load("data/covid19_state_ndays.rda")
-
 max_date <- max(covid19_state_ndays$date)
 min_date <- min(covid19_state_ndays$date)
 ndays <- length(unique(covid19_state_ndays$date))
 
-source("script/variable/gf_cut_info.R")
 
-#create grwothrate average for 14 days 
+#create growth factor  average for 14 days 
 gf_mean_df <- covid19_state_ndays %>%
   group_by(state) %>%
   summarize(gf_mean = mean(gf)) %>%
   mutate( growth_factor = cut(gf_mean, breaks = gf_breaks , labels = gf_labels , right = gf_right))
 
 
-# gf_state_ndays %>% filter(state == "MN")
-# gf_state_ndays %>% filter(state == "MN") %>% group_by(state) %>% summarize(mean(gf))
-
 #join growth rate data with shape file data
 shp_gf_avg7 <- spdf_fortified %>%
   left_join(. , gf_mean_df, by=c("id" = "state") )
 
 #HEX MAP STATE LABELS 
-# Calculate the centroid of each hexagon to add the label:
-library(rgeos)
+# Calculate the centers of each hexagon to add the labels:
+#requires rgeos package 
 centers <- cbind.data.frame(data.frame(gCentroid(spdf, byid=TRUE), id=spdf@data$iso3166_2))
 labels <- centers %>%
   left_join(., gf_mean_df, by = c("id" = "state")) %>%
   mutate(
     gf_label = round(gf_mean, 2)
   )
-
-#set color palette
-
-source("script/variable/colors.R")
-
-#if "0" in set; start with grey; if not start with green 
-if (gf_labels[1] %in% gf_mean_df$growth_factor) {
-  color_palette <- c(gf0, gf0_1, gf1_2, gf2plus)
-} else {
-  color_palette <- c(gf0_1, gf1_2, gf2plus)
-}
 
 
 title <- paste("Average Growth Factor over last", ndays, "days")

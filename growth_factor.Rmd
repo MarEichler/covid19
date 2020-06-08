@@ -20,11 +20,10 @@ library(kableExtra)
 library(latex2exp)
 library(cowplot)
 knitr::opts_chunk$set(fig.width=8, fig.height = 4, dpi=300, echo=FALSE)
-source("script/dataframe/covid19_US.R") #run script for covid19 df 
 source("script/variable/colors.R") #colors 
+source("script/dataframe/covid19_US.R") #run script for covid19 df 
 source("script/variable/parameters.R") #global parameters; also imports data 
 ```
-
 
 
 ### Is the pandemic slowing? 
@@ -38,7 +37,7 @@ where $N$ is a given day.  Essentialy this is taking the amount of new cases tod
 
 The growth factor can be very helpful in determining if the pandemic is slowing.  If the growth factor is less than 1, this means that the amount of new cases today is less than yesterday.  Once there are multiple days with a growth factor less than 1 it is a strong sign that the pandemic is slowing down.  
 
-**Adjustment to Growth Factor**  
+#### Adjustment to Growth Factor
 What if there were 0 cases yesterday?  This would make the growth factor undefined (or $\infty$ according to R).  This makes it difficult to look at trends.  I have adjusted the growth factor so that if the previous day had 0 cases, the current day's growth factor is equal to the number of new cases: 
 
 $$
@@ -51,23 +50,20 @@ $$
 I made this adjustment for the early or late stages of the pandemic when the number of cases per day are 0, 1, or 2.  However, given the test scarcity and reporting times there are situations in counties or states where there are 0 cases one day and then hundreds or thousands the next day.  This large variability causes spikes in the growth factor in some plots. 
 
 
-```{r gf-plot-setup, fig.width=4, fig.height=4}
-#captions 
-gf_max <- max(covid19_US_adj$growth_factor)
+### Growth Factor Plot 
 
+Similar to the new cases per day, there can be a lot of variability in growth factors  In order to get a better sense of the trend I am showing a 14-day moving average of the growth factor.  
 
-cap_gf <- paste(
-  strwrap("A growth factor below 1 means new cases are decreasing,\ni.e. the pandemic is slowing"
-          , 30)
-  , collapse = "\n"
-)
+The growth factor shows a different trend than new cases.  Here, the growth factor has stayed around 1 since mid-April.  Compare that to the new cases plot on the Overview tab, which shows a downward trend after a peak in mid-April.  The growth factor remaining around 1 may be due to the cyclical nature of new cases being reported (high during the week, low during the weekends) - but it could also be showing that although the decrease in new cases is a positive sign, we are not out of the woods yet.  
 
-#plot set up 
-plot_gf  <- ggplot(covid19_US_adj, aes(x=date, y=growth_factor))+
-  annotate("rect", xmin = x_min, xmax = x_max, ymin = 1, ymax =  Inf, fill = gf2plus, alpha = 0.2) +
-#  geom_line(alpha=0.6) +
+```{r}
+#label for 14-day moving average 
+labels_gf <- covid19_US %>% filter(date == as.Date("2020-05-02"))
+
+ggplot(covid19_US_adj, aes(x=date, y=growth_factor))+
+  red_box +
   geom_area(alpha = 0.3) +
-  annotate("text", x = x_min + 1, y = 0, label = cap_gf, vjust=-0.3, hjust= -0.1, size = 3, color = "grey15") +
+  gf_info_cap +
   date_scaling +
   scale_y_continuous(limit = c(0, 2), expand = c(0, 0)) +
   theme_minimal()+
@@ -77,19 +73,7 @@ plot_gf  <- ggplot(covid19_US_adj, aes(x=date, y=growth_factor))+
     , axis.title.y=element_blank()
     , plot.margin  = margin(t=0, r=15, b=0, l=0)
     , axis.ticks.length = unit(5, "pt")
-  ) 
-```
-
-
-Similar to the new cases per day, there can be a lot of variability in growth factors  In order to get a better sense of the trend I am showing a 14-day moving average of the growth factor.  
-
-The growth factor shows a different trend than new cases.  Here, the growth factor has stayed around 1 since mid-April.  Compare that to the new cases plot on the Overview tab, which shows a downward trend after a peak in mid-April.  The growth factor remaining around 1 may be due to the cyclical nature of new cases being reported (high during the week, low during the weekends) - but it could also be showing that although the decrease in new cases is a positive sign, we are not out of the woods yet.  
-
-```{r}
-labels_gf <- covid19_US %>% filter(date == as.Date("2020-05-02"))
-
-
-plot_gf_ma  <- plot_gf + 
+  ) + 
   geom_line(
       aes(y = MA_growth_factor)
     , size = 1.25
@@ -106,14 +90,14 @@ plot_gf_ma  <- plot_gf +
   ) +
   ggtitle("Growth Factor per Day")
 
-
-plot_gf_ma
 ```
 
 
 <br>  
   
-### Recent Values by Day for US
+### Recent Values by Day for US  
+
+The actual values for the previous 14 days are detailed in the table below.  
 
 ```{r values-table-gf}
 #transpose table; easier to read
@@ -239,10 +223,10 @@ I am showing both the growth factor 14-day moving average and the $\text{GF}_{14
 
 ```{r}
 plot_gf_14 <- ggplot(covid19_US_adj, aes(x=date, y=gf_14))+
-  annotate("rect", xmin = x_min, xmax = x_max, ymin = 1, ymax =  Inf, fill = gf2plus, alpha = 0.2) +
+  red_box +
   geom_line(alpha=0.6, color = blue_comp) +
   geom_area(alpha = 0.3, fill = blue_comp) +
-  annotate("text", x = x_min + 1, y = 0, label = cap_gf, vjust=-0.3, hjust= -0.1, size = 3, color = "grey35") +
+  gf_info_cap +
   date_scaling +
   scale_y_continuous(limit = c(0, 2), expand = c(0, 0)) +
   ggtitle(TeX("$GF_{14}$")) +
@@ -256,10 +240,10 @@ plot_gf_14 <- ggplot(covid19_US_adj, aes(x=date, y=gf_14))+
   ) 
 
 plot_ma_gf <- ggplot(covid19_US_adj, aes(x=date, y=MA_growth_factor))+
-  annotate("rect", xmin = x_min, xmax = x_max, ymin = 1, ymax =  Inf, fill = gf2plus, alpha = 0.2) +
+  red_box+
   geom_line(alpha=0.6, color = blue_comp) +
   geom_area(alpha = 0.3, fill = blue_comp) +
-  annotate("text", x = x_min + 1, y = 0, label = cap_gf, vjust=-0.3, hjust= -0.1, size = 3, color = "grey35") +
+  gf_info_cap +
   date_scaling +
   scale_y_continuous(limit = c(0, 2), expand = c(0, 0)) +
   ggtitle(TeX("Growth Factor 14-Day Moving Average")) +
@@ -276,7 +260,9 @@ plot_ma_gf <- ggplot(covid19_US_adj, aes(x=date, y=MA_growth_factor))+
 plot_grid(plot_ma_gf, plot_gf_14, ncol = 2, align = "h")
 ```
 
-It turns out in this case it does not make make a significant difference!  Even when looking at the growth factor based on the 14-day moving average of new cases (smoothing over the cyclical nature of new cases reporting) the result is a growth factor, $\text{GF}_{14}$ that is not deviating from 1.  
+<br>  
+
+It turns out in this case it does not make make a significant difference!  Even when looking at the growth factor based on the 14-day moving average of new cases (smoothing over the cyclical nature of new cases reporting) the result is a growth factor, $\text{GF}_{14}$ that is not significantly deviating from 1.  
 
  
 

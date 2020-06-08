@@ -14,3 +14,9 @@ state_abbrv_color <- "grey20"
 line_state <- "grey20"
 
 
+color_palette <- list(
+    "0"   = gf0
+  , "0-1" = gf0_1
+  , "1-2" = gf1_2
+  , "2+"  = gf2plus
+)
