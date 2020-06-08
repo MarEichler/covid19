@@ -21,7 +21,7 @@ This plot is a quick overview of the last two weeks for each state.  Using the t
 
 As mentioned in the Growth Factor tab, some states will have very large average growth factors.  This is most likely due to having 0 cases on one day and then a large number of cases the next day; often caused by test availability or reporting.  
 
-```{r state-14days-avg-script, out.width = "100%", fig.align = 'center'}
+```{r state-14days-avg-img, out.width = "100%", fig.align = 'center'}
 knitr::include_graphics("img/state_14days_avg.png")
 ```
 
