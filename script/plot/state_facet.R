@@ -9,10 +9,15 @@ library(moderndive)
 library(cowplot) 
 library(png)
 
-# https://github.com/clauswilke/dataviz/blob/master/geospatial_data.Rmd
+#outside scripts 
+source("script/variable/colors.R")
 
+#data
 load("data/covid19_state_ndays.rda")
 
+
+#use code from the fundamentals of data vizualization book: 
+# https://github.com/clauswilke/dataviz/blob/master/geospatial_data.Rmd
 
 
 adjust_labels <- as_labeller(
@@ -35,12 +40,12 @@ plus3 <- facet_data %>%
 x_min_recent <- min(facet_data$date)
 x_max_recent <- max(facet_data$date)
 ndays <- length(unique(facet_data$date))
-source("script/variable/colors.R")
+
 
 caption <- "Points represent a growth factor greater than 2 on a given day."
 
 
-title <- paste("Daily Growth Rate over last", ndays, "days")
+title <- paste("Daily Growth Factor over last", ndays, "days")
 subtitle <- paste(x_min_recent, "to", x_max_recent)
 
 facet_map <- ggplot(facet_data, aes(date, gf)) +
@@ -82,21 +87,21 @@ facet_map <- ggplot(facet_data, aes(date, gf)) +
   ) 
 
 
-ggsave("img/facet_map.png", plot = facet_map, width = 7, height = 5, units = c("in"), dpi = 300)
+ggsave("img/state_facet.png", plot = facet_map, width = 7, height = 5, units = c("in"), dpi = 300)
 
 
-#cant add annotation to plot using gLabel (bug for geo_facet)
+#cant add annotation to plot using gLabel (bug for geo_facet) 
+# if use this -- all bins are filled with background rectangle (not just the bins for states)
 #save the image; import image and add label and then resave 
 
-
-img <- readPNG("img/facet_map.png")
+img <- readPNG("img/state_facet.png")
 
 #get size
 h<-dim(img)[1]
 w<-dim(img)[2]
 
 #open new file for output
-png("img/facet_map.png", width=w, height=h)
+png("img/state_facet.png", width=w, height=h)
 par(mar=c(0,0,0,0), xpd=NA, mgp=c(0,0,0), oma=c(0,0,0,0), ann=F)
 plot.new()
 plot.window(0:1, 0:1)
@@ -110,5 +115,3 @@ text(.4,.8, caption, cex=3, col=rgb(0,0,0,.65))
 
 #close image
 dev.off()
-
-
