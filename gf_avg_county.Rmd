@@ -37,14 +37,14 @@ Although most lock-down measures are enacted at the state level, it is still int
 
 A limitation on this plot is that there are `r na_print` cases that have been not assigned to a county.  Although that only accounts for `r pna_print` of the total cases in the United States; it could have a big impact on a given county.  
 
-```{r county-map, message = FALSE, results = "hide", warning = FALSE}
+```{r county-script, message = FALSE, results = "hide", warning = FALSE}
 source("script/plot/county-map.R") #creates hex map of county avg gf for past n day
 
 ```
 
 
 
-```{r county-map-img, out.width = "100%", fig.align = 'center'}
+```{r county-img, out.width = "100%", fig.align = 'center'}
 
 knitr::include_graphics("img/county_map.png")
 ```
