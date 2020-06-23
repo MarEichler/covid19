@@ -3,7 +3,8 @@ load("data/total_cases.rda")
 source("script/function/calc_growth_factor.R")
 source("script/function/calc_new_cases.R")
 source("script/function/calc_apply_to_df.R")
-source("script/function/calc_ma_gf.R")
+source("script/function/calc_ma_7.R")
+source("script/function/calc_perc_7.R")
 source("script/variable/gf_cut_info.R")
 
 ### STATES 
@@ -27,19 +28,39 @@ nc_state <- nc_state_wide %>%
   pivot_longer(cols = c(-1),  names_to = "date", values_to = "nc") %>%
   mutate(date = as.Date(date)) 
 
-#create one data set 
-covid19_state <- inner_join(gf_state, nc_state, by = c("state" = "state", "date" = "date"))
+# 7-DAY MA OF NEW CASES 
+nc_state_ma7_wide<- f_DataFrame(as_tibble(nc_state_wide), f_ma7)
 
+nc_state_ma7 <- nc_state_ma7_wide %>%
+  pivot_longer(cols = c(-1), names_to = "date", values_to = "nc_ma7") %>%
+  mutate(date = as.Date(date))
+
+# 7-DAY PERC DIFF OF 7-DAY MA OF NEW CASES 
+nc_state_ma7_perc_wide<- f_DataFrame(as_tibble(nc_state_ma7_wide), f_perc7)
+
+nc_state_ma7_perc <- nc_state_ma7_perc_wide %>%
+  pivot_longer(cols = c(-1), names_to = "date", values_to = "nc_ma7_perc") %>%
+  mutate(date = as.Date(date))
+
+#create one data set 
+covid19_state <- left_join(
+    gf_state
+  , left_join(
+        nc_state
+      , left_join(nc_state_ma7_perc, nc_state_ma7, by = c("state" = "state", "date" = "date"))
+      , by = c("state" = "state", "date" = "date")
+    )
+  , by = c("state" = "state", "date" = "date")
+  )
 
 save(covid19_state, file = "data/covid19_state.rda") # send to data folder 
 save(covid19_state, file = "diy-covid19-plots/covid19_state.rda") #send data to app
 
 
-#weekly gf avg 
-state_rollmean <- f_DataFrame(as_tibble(gf_state_wide), f_ma7)
 
-min_date <- min(colnames(state_rollmean)[-1])
-max_date <- max(colnames(state_rollmean)[-1])
+
+min_date <-min(covid19_state$date)
+max_date <- max(covid19_state$date) - 7
 
 #create selected days to 'start' week 
 select_days <- seq(as.Date(min_date), as.Date(max_date), "week") 
@@ -61,7 +82,7 @@ covid19_state_weekly <- state_rollmean %>%
   left_join(., weeks, by = c("date" = "week_start_day"))%>%
   mutate( growth_factor = cut(gf_ma, breaks = gf_breaks , labels = gf_labels , right = gf_right)) 
 
-save(covid19_state_weekly, file = "data/covid19_state_weekly.rda") # send to data folder 
+#save(covid19_state_weekly, file = "data/covid19_state_weekly.rda") # send to data folder 
 
 
 
