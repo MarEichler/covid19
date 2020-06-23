@@ -43,14 +43,14 @@ Data available through: `r max_date`
 ```
 
 
-## GF Average (States)
+## State Plots
 
 Data available through: `r max_date`
 
-```{r child="gf_avg_state.Rmd"}
+```{r child="state.Rmd"}
 ```
 
-## GF Average (Counties)
+## County Plot
 
 Data available through: `r max_date`
 
