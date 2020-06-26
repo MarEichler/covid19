@@ -111,7 +111,7 @@ Looking at new cases each day can help us see if the pandemic is slowing.  A dec
 
 There can be a lot of variability in the daily case totals due to a variety of variables.  One example is the availability of tests; cases will go down if there is a scarcity of tests and rise dramatically when more tests become available.  One way to help get a better sense of the overall trend is by smoothing the data using a moving average.  
 
-The trends and raw data show a peak around mid-April and have been moving downward.  This may be due to enacting stricter social distancing and lock-downs across the country.  There is also a cyclical nature to the daily new cases with counts often being lower on weekends and higher on weekdays.  
+The trends and raw data show a peak around mid-April and had been moving downward likely due to strict lock-down and social distancing measures.  In late June, new cases started to increase dramatically, forming a second peak as many states start re-opening and many people stop practicing social distancing measures.  There is also a cyclical nature to the daily new cases with counts often being lower on weekends and higher on weekdays.  
 
 
 
