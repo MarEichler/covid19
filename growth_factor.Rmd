@@ -83,7 +83,7 @@ ggplot(covid19_US_adj, aes(x=date, y=growth_factor))+
   geom_text_repel(
       seed = 100
     , data = labels_gf
-    , aes(y = MA_growth_factor, label = "14-Day\nMoving Average")
+    , aes(y = MA_growth_factor, label = "7-Day\nMoving Average")
     , color = blue_comp
     , nudge_y = 0.5
     , nudge_x = 3
@@ -110,8 +110,8 @@ covid19_US_adj %>%
     , `Total Cases` = formatC(total_cases, big.mark=",", format="d")
     , `New Cases`  = formatC(new_cases, big.mark=",", format="d")
     , `Growth Factor` = round(growth_factor, 2)
-    , `Growth Factor 14-day MA` = round(MA_growth_factor, 2)
-    , `New Cases 14-Day MA` = formatC(MA_new_cases, big.mark=",", format="d")
+    , `Growth Factor 7-day MA` = round(MA_growth_factor, 2)
+    , `New Cases 7-Day MA` = formatC(MA_new_cases, big.mark=",", format="d")
   ) %>%
   #color Growth Factor based on value 
   mutate(
@@ -121,8 +121,8 @@ covid19_US_adj %>%
                   ifelse(growth_factor > 0, colorspace::lighten(gf2plus, 0.4), "grey35"))
       , bold = T
       ), 
-    `Growth Factor 14-day MA` = cell_spec(
-      `Growth Factor 14-day MA`, color = 
+    `Growth Factor 7-day MA` = cell_spec(
+      `Growth Factor 7-day MA`, color = 
           ifelse( MA_growth_factor > 1, gf2plus,
                   ifelse(growth_factor > 0, colorspace::lighten(gf2plus, 0.4), "grey35"))
       , bold = T
@@ -133,9 +133,9 @@ covid19_US_adj %>%
       Date
     , `Total Cases`
     , `New Cases`
-    , `New Cases 14-Day MA`
+    , `New Cases 7-Day MA`
     , `Growth Factor`
-    , `Growth Factor 14-day MA`
+    , `Growth Factor 7-day MA`
     ) %>%
   kable(
     align=c('l', rep('r', 6))
