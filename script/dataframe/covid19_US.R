@@ -75,28 +75,14 @@ covid19_US <- covid19_US %>%
 covid19_US <- mutate(covid19_US, death_percentage = total_deaths / total_cases)
 
 #calculate moving average 14
-ma_k <- 14
+ma_k <- 7
 covid19_US$MA_growth_factor <- c(rep(NA, ma_k - 1), zoo::rollmean(covid19_US$growth_factor, k=ma_k, na.rm=TRUE))
 covid19_US$MA_new_cases <- c(rep(NA, ma_k - 1), zoo::rollmean(covid19_US$new_cases, k=ma_k, na.rm = TRUE))
 covid19_US$MA_new_deaths <- c(rep(NA, ma_k - 1), zoo::rollmean(covid19_US$new_deaths, k=ma_k, na.rm = TRUE))
 
-#covid19_US$ma_nc_14 <- c(rep(NA, 14 - 1), zoo::rollmean(covid19_US$new_cases, k=14, na.rm = TRUE))
 
-#calculate gf on ma
-covid19_US$gf_14 <- NA
-for (r in 2:R){
-  covid19_US$gf_14[r] <- 
-    #Growth Factor = New Cases Today / New Cases Yesterday 
-    covid19_US$MA_new_cases[r] /  covid19_US$MA_new_cases[r-1] 
-}
-
-covid19_US <- covid19_US %>%
-  mutate(
-    gf_14 = ifelse(gf_14 == Inf, ma_nc_14, gf_14)
-  )
 ####################################
 
-#glimpse(covid19_US)
 
 save(covid19_US, file = "data/covid19_US.rda")
 save(covid19_US, file = "diy-covid19-plots/covid19_US.rda") #send data to app
