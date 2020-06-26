@@ -8,4 +8,6 @@ maps_files/
 maps_cache/
 .rdb
 .rdx
-testing
+testing  
+.rsconnect/
+.dcf
