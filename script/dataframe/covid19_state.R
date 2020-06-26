@@ -1,4 +1,6 @@
 library(tidyverse)
+library(quantmod)
+library(zoo)
 load("data/total_cases.rda")
 source("script/function/calc_growth_factor.R")
 source("script/function/calc_new_cases.R")
@@ -75,12 +77,12 @@ weeks <- data.frame(
 )
 
 
-covid19_state_weekly <- state_rollmean %>%
-  pivot_longer(c(-1), names_to = "date", values_to = "gf_ma") %>%
-  mutate(date = as.Date(date)) %>%
-  filter(date %in% select_days) %>%
-  left_join(., weeks, by = c("date" = "week_start_day"))%>%
-  mutate( growth_factor = cut(gf_ma, breaks = gf_breaks , labels = gf_labels , right = gf_right)) 
+#covid19_state_weekly <- state_rollmean %>%
+#  pivot_longer(c(-1), names_to = "date", values_to = "gf_ma") %>%
+#  mutate(date = as.Date(date)) %>%
+#  filter(date %in% select_days) %>%
+#  left_join(., weeks, by = c("date" = "week_start_day"))%>%
+#  mutate( growth_factor = cut(gf_ma, breaks = gf_breaks , labels = gf_labels , right = gf_right)) 
 
 #save(covid19_state_weekly, file = "data/covid19_state_weekly.rda") # send to data folder 
 
