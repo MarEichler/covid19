@@ -13,7 +13,10 @@ us_all <- covid19_US %>%
     mutate(state = "Entire US") %>%
     select(state, date, gf = growth_factor, nc = new_cases)
 
-data <- rbind(covid19_state, us_all)
+data <- covid19_state %>%
+    select(state, date, gf, nc) %>%
+    rbind(., us_all)
+
 
 state_pc <- unique(data$state)
 names(state_pc) <- unique(data$state)
@@ -67,7 +70,7 @@ ui <- fluidPage(
         checkboxInput("show_ma", "Show Moving-Average", value = TRUE), 
         
         #k for moving average 
-        numericInput("ma_k", "Moving Average k (i.e. number of days for moving average)", value =14)
+        numericInput("ma_k", "Moving Average k (i.e. number of days for moving average)", value = 7)
         
         ), #end of side par PANEL 
 
