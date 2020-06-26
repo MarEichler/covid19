@@ -157,9 +157,9 @@ ggplot(covid19_US_adj, aes(x=date, y=new_cases))+
 
 COVID-19 is much deadlier than the common flu.  One way to measure the impact is to look at the death percentage, which is the total number of deaths divided by the total number of cases.  
 
-A big concern during April was that the death percentage was continually increasing, even when actual deaths per day were not increasing.  Starting in early May the death percentage started to plateau around 6%. 
+A big concern during April was that the death percentage was continually increasing, even when actual deaths per day were not increasing.  Starting in early May the death percentage started to plateau around 6%.  At the end of may, the death percentage starts curving downward as deaths per day continued to decrease as new cases per days continued to plateau and then increase.  
 
-Similar to new cases per day, deaths per day has been trending downward since about mid-April, although there are still spikes.  These spikes may be due to reporting times where counts on weekdays are often higher than those on weekends.  Spikes also occur when previous deaths are re-assigned as COVID-19 related deaths, such as counting nursing home deaths and/or pneumonia deaths.  
+Similar to new cases there is a cyclical nature to spikes in new cases.  These spikes may be due to reporting times where counts on weekdays are often higher than those on weekends.  Spikes also occur when previous deaths are re-assigned as COVID-19 related deaths, such as counting nursing home deaths and/or pneumonia deaths.  
 
 ```{r dp-plot}
 plot_dp <- ggplot(covid19_US_adj, aes(date, death_percentage)) + 
