@@ -23,11 +23,6 @@ knitr::include_graphics("img/state_facet_0315.png")
 <br>
 
 ### Recent Trends 
-Looking at trends from the past week and the past two weeks.  
-```{r state-facet-trend7-img, out.width = "100%", fig.align = 'center'}
-knitr::include_graphics("img/state_facet_trend7.png")
-```
-<br>
 
 ```{r state-facet-trend14-img, out.width = "100%", fig.align = 'center'}
 knitr::include_graphics("img/state_facet_trend14.png")
