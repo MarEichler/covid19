@@ -69,8 +69,8 @@ ggsave("img/state_facet_0315.png", plot = state_facet_0315, width = 7, height = 
 
 
 ####TREND PLOT   
-max_date <- max(df$date)
-min_date14 <- max(covid19_state$date) - 14
+max_date <- max(covid19_state$date)
+min_date14 <-max_date - 14
 
 n_days <- max_date - min_date14
 
