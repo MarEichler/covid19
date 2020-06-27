@@ -239,17 +239,21 @@ covid19_US_adj %>%
       Date = format(date, '%a, %b %d, %Y')
     , `Total Cases` = formatC(total_cases, big.mark=",", format="d")
     , `New Cases`  = formatC(new_cases, big.mark=",", format="d")
+    , `New Cases 7-Day MA` = formatC(MA_new_cases, big.mark=",", format="d")
     , `Total Deaths` = formatC(total_deaths, big.mark=",", format="d")
     , `New Deaths` = formatC(new_deaths, big.mark=",", format="d")
+    , `New Deaths 7-Day MA` = formatC(MA_new_deaths, big.mark=",", format="d")
     , `Death Percentage` = percent(death_percentage, accuracy=0.001)
   ) %>%
   #re-order to group cases and death information together 
   select(
       Date
     , `Total Cases`
-    , `New Cases`
     , `Total Deaths`
+    , `New Cases`
+    , `New Cases 7-Day MA`
     , `New Deaths`
+    , `New Deaths 7-Day MA`
     , `Death Percentage`
     ) %>%
   kable(
