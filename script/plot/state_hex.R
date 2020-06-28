@@ -50,24 +50,10 @@ df <- covid19_twodays %>%
      perc_ch = cut(perc_numb, breaks =number_breaks, labels = chacter_breaks)
    , perc_adj = ifelse(perc_numb > 1, 1, ifelse(perc_numb < -1, -1, perc_numb))
   ) 
-  
-
-
-
-df <- covid19_state %>%
-  filter(date == max_date) %>%
-  mutate(
-      perc_ch = cut(nc_ma7_perc, breaks =number_breaks, labels = chacter_breaks)
-    , perc_numb = nc_ma7_perc
-    , perc_adj = ifelse(nc_ma7_perc > 1, 1, ifelse(nc_ma7_perc < -1, -1, nc_ma7_perc))
-  ) 
-
 
 
 hex_data<- spdf_fortified %>%
   left_join(. , df, by=c("id" = "state") )
-
-
 
 #HEX MAP STATE LABELS 
 # Calculate the centers of each hexagon to add the labels:
