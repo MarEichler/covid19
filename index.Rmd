@@ -50,12 +50,19 @@ Data available through: `r max_date`
 ```{r child="state.Rmd"}
 ```
 
+
+```{r, echo = FALSE, eval = FALSE}
+
 ## County Plot
 
 Data available through: `r max_date`
 
-```{r child="gf_avg_county.Rmd"}
+#```{r child="gf_avg_county.Rmd"}
+#```
+
+
 ```
+
 
 
 ## Data  
