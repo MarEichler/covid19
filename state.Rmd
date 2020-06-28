@@ -22,12 +22,35 @@ knitr::include_graphics("img/state_facet_0315.png")
 ```
 <br>
 
-### Recent Trends 
-
 ```{r state-facet-trend14-img, out.width = "100%", fig.align = 'center'}
 knitr::include_graphics("img/state_facet_trend14.png")
 ```
 <br>
+
+### Percentage Change of Weekly Average from Week to Week 
+
+These plots are based on NPR's plots using percentage change in new cases.  I also used the same colors.  NPR plots can be found ![here](https://www.npr.org/sections/health-shots/2020/03/16/816707182/map-tracking-the-spread-of-the-coronavirus-in-the-u-s).
+
+```{r state-hex-script, message = FALSE, results = "hide", warning = FALSE}
+source("script/plot/state_hex.R")  
+```
+
+```{r state-hex_img, out.width = "100%", fig.align = 'center'}
+knitr::include_graphics("img/state_hex.png")
+```
+
+<br>
+
+```{r state-hex-gif-script, message = FALSE, results = "hide", warning = FALSE}
+source("script/plot/state_hex_gif.R") 
+```
+
+```{r state-hex-gif-script-img, out.width = "100%", fig.align = 'center'}
+knitr::include_graphics("img/state_hex_gif.gif")
+```
+
+<br>
+
 
 ### Recent Growth Factor by State
 

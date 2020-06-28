@@ -31,27 +31,9 @@ spdf@data <-  spdf@data %>%
   )
 spdf_fortified <- tidy(spdf, region = "state_pc")
 
-
-
 max_date <- max(covid19_state$date)
 min_date <- max_date - 7
 
-
-
-#colors from NPR 
-#https://www.npr.org/sections/health-shots/2020/03/16/816707182/map-tracking-the-spread-of-the-coronavirus-in-the-u-s
-
-nc_perc_palette <- list(
-    "-100%" = "#549990" 
-  ,  "-50%" = "#7dc3ae" #GnYlRd[2]
-  ,   "-5%" = "#ebe3a7" #GnYlRd[5]
-  ,   "+5%" = "#eeb97a" #GnYlRd[6]
-  ,  "+50%" = "#ea8e4f" #GnYlRd[7]
-  , "+100%" = "#df6222" #GnYlRd[8]
-  )
-
-chacter_breaks <- labels(nc_perc_palette)
-number_breaks <- c(-1, -.5, -.05, .05, .5, 1, Inf)
 
 df <- covid19_state %>%
   filter(date == max_date) %>%
@@ -62,9 +44,7 @@ df <- covid19_state %>%
   ) 
 
 
-#c( "< -100%", "-100% to -50%", "-50% to -5%", "-5% to 5%", "5% to 50%", "50% to 100%", "> 100%")  
 
-#join growth rate data with shape file data
 hex_data<- spdf_fortified %>%
   left_join(. , df, by=c("id" = "state") )
 
@@ -81,9 +61,8 @@ labels <- centers %>%
   mutate( value = round(perc_numb, 2))
 
 
-title <- paste("Percentage Change in 7-day New Cases Moving Average")
-subtitle <- paste("One Week:", min_date, "to", max_date)
-
+title <- paste("Percentage Change in Average Cases")
+subtitle <- paste("Last Week (", min_date, ") Compared to This Week (", max_date, ")", sep = "") 
 
 
 state_hex <- ggplot(data = hex_data, aes(x = long, y = lat, group = group, fill = perc_ch)) + 
@@ -133,7 +112,7 @@ state_hex <- ggplot(data = hex_data, aes(x = long, y = lat, group = group, fill 
 #  , breaks = c(-1, -.5, -.05, .05, .5, 1)
 #  , labels = scales:: percent
 #) +
-  
+state_hex
 
 ggsave(
   "img/state_hex.png"
