@@ -28,7 +28,11 @@ spdf@data <-  spdf@data %>%
 spdf_fortified <- tidy(spdf, region = "state_pc")
 
 df <- covid19_state_weekly %>%
-  mutate(perc_ch = cut(nc_ma7_perc, breaks =number_breaks, labels = chacter_breaks)  ) 
+  mutate(
+    perc_ch = cut(nc_ma7_perc, breaks =number_breaks, labels = chacter_breaks)
+    , perc_numb = nc_ma7_perc
+    , perc_adj = ifelse(nc_ma7_perc > 1, 1, ifelse(nc_ma7_perc < -1, -1, nc_ma7_perc))
+    ) 
 
 hex_data<- spdf_fortified %>%
   left_join(. , df, by=c("id" = "state") )
@@ -46,10 +50,17 @@ title <- paste("Percentage Change in Average Cases from Previous Week")
 #subtitle <- paste("Last Week (", min_date, ") Compared to This Week (", max_date, ")", sep = "") 
 
 
-weekly_plot <- ggplot(data = hex_data, aes(x = long, y = lat, group = group, fill = perc_ch)) + 
+weekly_plot <- ggplot(data = hex_data, aes(x = long, y = lat, group = group, fill = perc_adj)) + 
   geom_polygon() +
   geom_polygon( color = "white" , size = 1, show.legend = FALSE) +
-  scale_fill_manual( name = NULL, values = nc_perc_palette , limits = chacter_breaks, na.value = NA_grey) +
+  scale_fill_gradientn(
+    name = NULL
+    , colors = nc_perc_palette
+    , values = c(0, .25, .45, .5, .7, 1)
+    , limits = c(-1, 1)
+    , breaks = c(-1, -.5, -.05, .05, .5, 1)
+    , labels = scales:: percent
+  ) +
   guides(fill = guide_legend(
       nrow = 1, 
       direction = "horizontal",
