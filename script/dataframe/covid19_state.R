@@ -72,19 +72,16 @@ select_days
 length(select_days)
 
 weeks <- data.frame(
-  "week_start_day" = select_days
+  "end_of_week" = select_days
   , "week" = seq(1, length(select_days), 1)
 )
 
 
-#covid19_state_weekly <- state_rollmean %>%
-#  pivot_longer(c(-1), names_to = "date", values_to = "gf_ma") %>%
-#  mutate(date = as.Date(date)) %>%
-#  filter(date %in% select_days) %>%
-#  left_join(., weeks, by = c("date" = "week_start_day"))%>%
-#  mutate( growth_factor = cut(gf_ma, breaks = gf_breaks , labels = gf_labels , right = gf_right)) 
+covid19_state_weekly <- nc_state_ma7_perc %>%
+  filter(date %in% select_days) %>%
+  left_join(., weeks, by = c("date" = "end_of_week")) 
 
-#save(covid19_state_weekly, file = "data/covid19_state_weekly.rda") # send to data folder 
+save(covid19_state_weekly, file = "data/covid19_state_weekly.rda") # send to data folder 
 
 
 
