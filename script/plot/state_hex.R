@@ -32,7 +32,26 @@ spdf@data <-  spdf@data %>%
 spdf_fortified <- tidy(spdf, region = "state_pc")
 
 max_date <- max(covid19_state$date)
-min_date <- max_date - 7
+min_date <- max_date - 14
+
+covid19_twodays <- covid19_state %>%
+  filter(date == min_date | date == max_date) %>%
+  select(state, date, nc_ma7) %>%
+  pivot_wider(names_from = date, values_from = nc_ma7) 
+
+df <- covid19_twodays %>%
+  select(-state) %>%
+  apply(., 1, quantmod::Delt) %>%
+  t() %>%
+  as.tibble() %>%
+  select(perc_numb = V2) %>%
+  cbind(covid19_twodays, .) %>%
+  mutate(
+     perc_ch = cut(perc_numb, breaks =number_breaks, labels = chacter_breaks)
+   , perc_adj = ifelse(perc_numb > 1, 1, ifelse(perc_numb < -1, -1, perc_numb))
+  ) 
+  
+
 
 
 df <- covid19_state %>%
@@ -62,13 +81,21 @@ labels <- centers %>%
 
 
 title <- paste("Percentage Change in Average Cases")
-subtitle <- paste("Last Week (", min_date, ") Compared to This Week (", max_date, ")", sep = "") 
+subtitle <- paste("Average from Two Weeks Ago Compared to Average This Week\n Week ending on", 
+                  min_date, "to Week ending on", max_date)#  "Week Ending, min_date, ") Compared to This Week (", max_date, ")", sep = "") 
 
 
-state_hex <- ggplot(data = hex_data, aes(x = long, y = lat, group = group, fill = perc_ch)) + 
+state_hex <- ggplot(data = hex_data, aes(x = long, y = lat, group = group, fill = perc_adj)) + 
   geom_polygon() +
   geom_polygon( color = "white" , size = 1, show.legend = FALSE) +
-  scale_fill_manual( name = NULL, values = nc_perc_palette , limits = chacter_breaks) +
+  scale_fill_gradientn(
+      name = NULL
+    , colors = nc_perc_palette
+    , values = c(0, .25, .45, .5, .7, 1)
+    , limits = c(-1, 1)
+    , breaks = c(-1, -.5, -.05, .05, .5, 1)
+    , labels = scales:: percent
+  ) +
   guides(fill = guide_legend(
     nrow = 1, 
     direction = "horizontal",
@@ -112,7 +139,8 @@ state_hex <- ggplot(data = hex_data, aes(x = long, y = lat, group = group, fill 
 #  , breaks = c(-1, -.5, -.05, .05, .5, 1)
 #  , labels = scales:: percent
 #) +
-state_hex
+
+#scale_fill_manual( name = NULL, values = nc_perc_palette , limits = chacter_breaks) +
 
 ggsave(
   "img/state_hex.png"
