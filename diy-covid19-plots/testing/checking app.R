@@ -5,15 +5,17 @@ library(cowplot)
 library(scales)
 load("data/covid19_US.rda")
 load("data/covid19_state.rda")
+load("data/covid19_county.rda")
 source("script/variable/colors.R")
-
-
 
 us_all <- covid19_US %>%
   mutate(state = "Entire US") %>%
   select(state, date, gf = growth_factor, nc = new_cases)
 
-data <- rbind(covid19_state, us_all)
+data <- covid19_state %>%
+  select(state, date, gf, nc) %>%
+  rbind(., us_all)
+
 
 state_pc <- unique(data$state)
 names(state_pc) <- unique(data$state)
@@ -28,7 +30,7 @@ date_scaling <- scale_x_date(
   , expand = c(0, 0)
 )
 
-ma_k <- 14
+ma_k <- 7
 
 min_date <- x_max -28
 max_date <- x_max
@@ -91,7 +93,7 @@ plot_nc <- ggplot(plot_data, aes(x=date, y=nc))+
 plot_grid(plot_nc, plot_gf, align = "h")
 ##############################
 
-plot_data %>%
-  arrange(desc(date))
-
-
+ 
+cnty_data <- covid19_county %>%
+  filter(countyFIPS == "1")
+cnty_data
