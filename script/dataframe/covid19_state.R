@@ -11,10 +11,17 @@ source("script/variable/gf_cut_info.R")
 
 ### STATES 
 #sum up by states 
+#remove na columns 
+colnames(total_cases) <- ifelse(is.na(colnames(total_cases)) == TRUE, "no_date", colnames(total_cases))
+
 state_total_cases <- total_cases %>%
-  select(-c(1, 2, 4)) %>%
+  select(-c(1, 2, 4), -no_date) %>%
   group_by(state) %>%
   summarise_at(vars(-group_cols()), sum)
+
+test <- head(total_cases[, 160:166])
+
+
 
 #calculate gf and make tidy 
 gf_state_wide <- f_DataFrame(state_total_cases, f_GrowthFactor) 
