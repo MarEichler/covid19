@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo=FALSE)
 #SCRIPTS THAT NEED TO BE RUN 
 source("script/dataframe/total_cases.R") #import data 
 source("script/dataframe/covid19_state.R") 
-source("script/dataframe/covid19_county.R")
+#source("script/dataframe/covid19_county.R")
 source("script/dataframe/recent_n_days.R") #seperates out n_days 
 ```
 
