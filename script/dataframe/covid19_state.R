@@ -11,11 +11,9 @@ source("script/variable/gf_cut_info.R")
 
 ### STATES 
 #sum up by states 
-#remove na columns 
-colnames(total_cases) <- ifelse(is.na(colnames(total_cases)) == TRUE, "no_date", colnames(total_cases))
 
 state_total_cases <- total_cases %>%
-  select(-c(1, 2, 4), -no_date) %>%
+  select(-c(1, 2, 4)) %>%
   group_by(state) %>%
   summarise_at(vars(-group_cols()), sum)
 
