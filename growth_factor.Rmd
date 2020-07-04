@@ -54,7 +54,7 @@ I made this adjustment for the early or late stages of the pandemic when the num
 
 Similar to the new cases per day, there can be a lot of variability in growth factors  In order to get a better sense of the trend I am showing a 14-day moving average of the growth factor.  
 
-The growth factor shows a different trend than new cases.  Here, the growth factor has stayed around 1 since mid-April.  Compare that to the new cases plot on the Overview tab, which shows a downward trend after a peak in mid-April.  The growth factor remaining around 1 may be due to the cyclical nature of new cases being reported (high during the week, low during the weekends) - but it could also be showing that although the decrease in new cases is a positive sign, we are not out of the woods yet.  
+The growth factor shows a different trend than new cases.  Here, the growth factor has stayed around 1 since mid-April.  Compare that to the new cases plot on the Overview tab, which shows a downward trend after a peak in mid-April.  Between mid-April and mid-June the growth factor hovered around 1, showing that although cases were decreasing there was not substantial decrease in growth.  After states began to re-open there was a dramatic increase in new-cases starting in mid-June.  This lead to the 7-day moving average growth rate to be above 1 showing the increase of the pandemic.  
 
 ```{r}
 #label for 14-day moving average 

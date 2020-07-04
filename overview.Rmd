@@ -159,7 +159,7 @@ COVID-19 is much deadlier than the common flu.  One way to measure the impact is
 
 A big concern during April was that the death percentage was continually increasing, even when actual deaths per day were not increasing.  Starting in early May the death percentage started to plateau around 6%.  At the end of may, the death percentage starts curving downward as deaths per day continued to decrease as new cases per days continued to plateau and then increase.  
 
-Similar to new cases there is a cyclical nature to spikes in new cases.  These spikes may be due to reporting times where counts on weekdays are often higher than those on weekends.  Spikes also occur when previous deaths are re-assigned as COVID-19 related deaths, such as counting nursing home deaths and/or pneumonia deaths.  
+Similar to new cases there is a cyclical nature to spikes in new cases.  These spikes may be due to reporting times where counts on weekdays are often higher than those on weekends.  Spikes also occur when previous deaths are re-assigned as COVID-19 related deaths, such as counting nursing home deaths and/or pneumonia deaths.  In late June, states began to add probable deaths to the death count: Delaware (June 23rd), New Jersey (June 25th), and New York (June 30th).  
 
 ```{r dp-plot}
 plot_dp <- ggplot(covid19_US_adj, aes(date, death_percentage)) + 
@@ -183,7 +183,7 @@ plot_dp <- ggplot(covid19_US_adj, aes(date, death_percentage)) +
 ```{r nd-plot}
 labels_nd <- covid19_US %>% filter(date == as.Date("2020-05-01"))
 
-plot_nd <- ggplot(covid19_US_adj, aes(date, new_deaths)) + 
+plot_nd <-ggplot(covid19_US_adj, aes(date, new_deaths)) + 
   geom_col(alpha=0.3) +
   geom_line(
     aes(y = MA_new_deaths)
@@ -234,15 +234,15 @@ The actual values for the previous 14 days are detailed in the table below.
 covid19_US_adj %>%
   arrange(desc(date)) %>%
   top_n(14, wt=date) %>%
-  #format data for output tabe
+  #format data for output table 
   mutate(
       Date = format(date, '%a, %b %d, %Y')
     , `Total Cases` = formatC(total_cases, big.mark=",", format="d")
     , `New Cases`  = formatC(new_cases, big.mark=",", format="d")
-    , `New Cases 7-Day MA` = formatC(MA_new_cases, big.mark=",", format="d")
+    , `New Cases 7-MA` = formatC(MA_new_cases, big.mark=",", format="d")
     , `Total Deaths` = formatC(total_deaths, big.mark=",", format="d")
     , `New Deaths` = formatC(new_deaths, big.mark=",", format="d")
-    , `New Deaths 7-Day MA` = formatC(MA_new_deaths, big.mark=",", format="d")
+    , `New Deaths 7-MA` = formatC(MA_new_deaths, big.mark=",", format="d")
     , `Death Percentage` = percent(death_percentage, accuracy=0.001)
   ) %>%
   #re-order to group cases and death information together 
@@ -251,9 +251,9 @@ covid19_US_adj %>%
     , `Total Cases`
     , `Total Deaths`
     , `New Cases`
-    , `New Cases 7-Day MA`
+    , `New Cases 7-MA`
     , `New Deaths`
-    , `New Deaths 7-Day MA`
+    , `New Deaths 7-MA`
     , `Death Percentage`
     ) %>%
   kable(
