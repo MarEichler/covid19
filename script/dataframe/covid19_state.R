@@ -7,7 +7,7 @@ source("script/function/calc_new_cases.R")
 source("script/function/calc_apply_to_df.R")
 source("script/function/calc_ma_7.R")
 source("script/function/calc_perc_7.R")
-source("script/variable/gf_cut_info.R")
+source("script/function/calc_norm_to_0_to_1.R")
 
 ### STATES 
 #sum up by states 
@@ -49,21 +49,29 @@ nc_state_ma7_perc <- nc_state_ma7_perc_wide %>%
   pivot_longer(cols = c(-1), names_to = "date", values_to = "nc_ma7_perc") %>%
   mutate(date = as.Date(date))
 
-#create one data set 
-covid19_state <- left_join(
-    gf_state
-  , left_join(
-        nc_state
-      , left_join(nc_state_ma7_perc, nc_state_ma7, by = c("state" = "state", "date" = "date"))
-      , by = c("state" = "state", "date" = "date")
-    )
-  , by = c("state" = "state", "date" = "date")
-  )
+nc_state_norm_wide <- f_DataFrame(as_tibble(nc_state_wide), f_norm01)
+
+nc_state_norm <- nc_state_norm_wide %>%
+  pivot_longer(cols = c(-1), names_to = "date", values_to = "nc_norm") %>%
+  mutate(date = as.Date(date))
+
+nc_state_ma7_norm_wide <- f_DataFrame(as_tibble(nc_state_norm_wide), f_ma7)
+
+
+nc_state_ma7_norm <- nc_state_ma7_norm_wide %>%
+  pivot_longer(cols = c(-1), names_to = "date", values_to = "nc_ma7_norm") %>%
+  mutate(date = as.Date(date))
+
+
+
+ma7_df        <- left_join(nc_state_ma7_perc, nc_state_ma7,  by = c("state"="state", "date" ="date"))
+raw_df        <- left_join(gf_state, nc_state,               by = c("state"="state", "date" ="date")) 
+norm_df       <- left_join(nc_state_norm, nc_state_ma7_norm, by = c("state"="state", "date" ="date")) 
+ma7_raw_df    <- left_join(raw_df, ma7_df,                   by = c("state"="state", "date" ="date"))
+covid19_state <- left_join(ma7_raw_df, norm_df,              by = c("state" = "state", "date" = "date"))
 
 save(covid19_state, file = "data/covid19_state.rda") # send to data folder 
 save(covid19_state, file = "diy-covid19-plots/covid19_state.rda") #send data to app
-
-
 
 
 min_date <-min(covid19_state$date)
