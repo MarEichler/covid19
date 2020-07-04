@@ -42,11 +42,11 @@ knitr::include_graphics("img/state_hex.png")
 <br>
 
 ```{r state-hex-gif-script, message = FALSE, results = "hide", warning = FALSE}
-source("script/plot/state_hex_gif.R") 
+#source("script/plot/state_hex_gif.R") 
 ```
 
 ```{r state-hex-gif-script-img, out.width = "100%", fig.align = 'center'}
-knitr::include_graphics("img/state_hex_gif.gif")
+#knitr::include_graphics("img/state_hex_gif.gif")
 ```
 
 <br>
