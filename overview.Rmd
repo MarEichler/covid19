@@ -257,7 +257,7 @@ covid19_US_adj %>%
     , `Death Percentage`
     ) %>%
   kable(
-    align=c('l', rep('r', 5))
+    align=c('l', rep('r', 7))
     , escape = F
   ) %>%
   kable_styling(
