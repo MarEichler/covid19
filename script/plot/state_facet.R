@@ -13,7 +13,7 @@ library(png)
 source("script/variable/colors.R")
 
 #data
-load("data/covid19_state_ndays.rda")
+load("data/covid19_state.rda")
 
 
 #use code from the fundamentals of data vizualization book: 
@@ -31,10 +31,13 @@ adjust_labels <- as_labeller(
 )
 
 
-facet_data <- covid19_state_ndays 
+facet_data <- covid19_state %>%
+  filter(date > max(date) - 14)
 
 plus3 <- facet_data %>%
-  filter(gf > 2) 
+  filter(gf_ma7 > 2) 
+
+plus3
 
 
 x_min_recent <- min(facet_data$date)
@@ -42,17 +45,17 @@ x_max_recent <- max(facet_data$date)
 ndays <- length(unique(facet_data$date))
 
 
-caption <- "Points represent a growth factor greater than 2 on a given day."
+caption <- "Points represent an MA growth factor greater than 2 on a given day."
 
 
-title <- paste("Daily Growth Factor over last", ndays, "days")
+title <- paste("Last", ndays, "days: 7-Day Moving Average of Growth Factor")
 subtitle <- paste(x_min_recent, "to", x_max_recent)
 
-facet_map <- ggplot(facet_data, aes(date, gf)) +
+facet_map <- ggplot(facet_data, aes(date, gf_ma7)) +
   annotate("rect", xmin = x_min_recent, xmax = x_max_recent, ymin =  1, ymax =  Inf,   fill = gf2plus,   alpha = 0.45) +
   geom_line( color = "grey35") +
   geom_area(color = "grey35" , alpha = 0.6) +
-  geom_point( data = plus3, aes(date, gf), color = "grey35", size = 1.5) +
+  geom_point( data = plus3, aes(date, gf_ma7), color = "grey35", size = 1.5) +
   scale_y_continuous(
       name = "Growth Factor"
     , limits = c(0, 2)
@@ -86,7 +89,7 @@ facet_map <- ggplot(facet_data, aes(date, gf)) +
     , plot.subtitle = element_text(hjust = 0.5, size = 12)
   ) 
 
-
+facet_data
 ggsave("img/state_facet.png", plot = facet_map, width = 7, height = 5, units = c("in"), dpi = 300)
 
 

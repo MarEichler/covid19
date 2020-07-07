@@ -42,6 +42,13 @@ nc_state_ma7 <- nc_state_ma7_wide %>%
   pivot_longer(cols = c(-1), names_to = "date", values_to = "nc_ma7") %>%
   mutate(date = as.Date(date))
 
+# 7-DAY MA OF GROTH FACTOR
+gf_state_ma7_wide<- f_DataFrame(as_tibble(gf_state_wide), f_ma7)
+
+gf_state_ma7 <- gf_state_ma7_wide %>%
+  pivot_longer(cols = c(-1), names_to = "date", values_to = "gf_ma7") %>%
+  mutate(date = as.Date(date))
+
 # 7-DAY PERC DIFF OF 7-DAY MA OF NEW CASES 
 nc_state_ma7_perc_wide<- f_DataFrame(as_tibble(nc_state_ma7_wide), f_perc7)
 
@@ -59,7 +66,10 @@ nc_state_ma7_norm <- nc_state_ma7_norm_wide %>%
 
 
 
-ma7_df        <- left_join(nc_state_ma7_perc, nc_state_ma7,  by = c("state"="state", "date" ="date"))
+ma7_df        <- left_join(
+                          nc_state_ma7_perc
+                  , left_join(gf_state_ma7, nc_state_ma7,    by = c("state"="state", "date" ="date"))
+                                                        ,    by = c("state"="state", "date" ="date"))
 raw_df        <- left_join(gf_state, nc_state,               by = c("state"="state", "date" ="date")) 
 norm_df       <- left_join(nc_state_norm, nc_state_ma7_norm, by = c("state"="state", "date" ="date")) 
 ma7_raw_df    <- left_join(raw_df, ma7_df,                   by = c("state"="state", "date" ="date"))
