@@ -65,13 +65,12 @@ nc_state_ma7_norm <- nc_state_ma7_norm_wide %>%
   mutate(date = as.Date(date))
 
 
+ma7_df_nc     <- left_join(nc_state_ma7, nc_state_ma7_perc, by = c("state"="state", "date" ="date"))
+ma7_df        <- left_join(ma7_df_nc, gf_state_ma7,         by = c("state"="state", "date" ="date"))
 
-ma7_df        <- left_join(
-                          nc_state_ma7_perc
-                  , left_join(gf_state_ma7, nc_state_ma7,    by = c("state"="state", "date" ="date"))
-                                                        ,    by = c("state"="state", "date" ="date"))
+
 raw_df        <- left_join(gf_state, nc_state,               by = c("state"="state", "date" ="date")) 
-norm_df       <- left_join(nc_state_norm, nc_state_ma7_norm, by = c("state"="state", "date" ="date")) 
+norm_df       <-  nc_state_ma7_norm 
 ma7_raw_df    <- left_join(raw_df, ma7_df,                   by = c("state"="state", "date" ="date"))
 covid19_state <- left_join(ma7_raw_df, norm_df,              by = c("state" = "state", "date" = "date"))
 
