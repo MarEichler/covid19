@@ -49,13 +49,8 @@ nc_state_ma7_perc <- nc_state_ma7_perc_wide %>%
   pivot_longer(cols = c(-1), names_to = "date", values_to = "nc_ma7_perc") %>%
   mutate(date = as.Date(date))
 
-nc_state_norm_wide <- f_DataFrame(as_tibble(nc_state_wide), f_norm01)
 
-nc_state_norm <- nc_state_norm_wide %>%
-  pivot_longer(cols = c(-1), names_to = "date", values_to = "nc_norm") %>%
-  mutate(date = as.Date(date))
-
-nc_state_ma7_norm_wide <- f_DataFrame(as_tibble(nc_state_norm_wide), f_ma7)
+nc_state_ma7_norm_wide <- f_DataFrame(as_tibble(nc_state_ma7_wide), f_norm01)
 
 
 nc_state_ma7_norm <- nc_state_ma7_norm_wide %>%

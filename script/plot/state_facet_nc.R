@@ -41,12 +41,12 @@ facet_data <- covid19_state %>%
 facet_data
   
 max_date <- max(facet_data$date)
-title <- paste("Normalized New Cases and 7-Day Moving Average of New Cases")
+title <- paste("Normalized 7-Day Moving Average of New Cases")
 subtitle <- paste(min_date, "to", max_date)
   
-state_facet_0315 <- ggplot(facet_data, aes(date, nc_norm)) + 
-    geom_col(alpha = 0.3) +
-    geom_line(aes(y = nc_ma7_norm), color = blue_comp) + 
+state_facet_0315 <- ggplot(facet_data, aes(date, nc_ma7_norm)) + 
+    geom_area(fill = blue_comp, alpha = 0.2) + 
+    geom_line(color = blue_comp) + 
     facet_geo(~state, grid = "us_state_grid2" , labeller = adjust_labels, scales = "fixed") +
     scale_x_date(      name = NULL, breaks = NULL, expand = c(0, 0)) + 
     scale_y_continuous(name = NULL, breaks = NULL, expand = c(0, 0), limits = c(0, 1)) +
@@ -88,19 +88,17 @@ trend_data <- covid19_state %>%
   filter(date >= min_date14) %>%
   left_join(., df_trend, by = "state")
   
-title <- paste("Last", n_days, "days: Normalized New Cases and 7-Day Moving Average of New Cases")
+title <- paste("Last", n_days, "days: Normalized 7-Day Moving Average of New Cases")
 subtitle <- paste(min_date, "to", max_date)
 
-state_facet_trend14  <- ggplot(trend_data, aes(date, nc_norm)) + 
-  geom_col(alpha = 0.3) +
-  geom_line(aes(y = nc_ma7_norm, color = trend)) + 
+state_facet_trend14  <-ggplot(trend_data, aes(date, nc_ma7_norm, color = trend, fill = trend)) + 
+  geom_area(alpha = 0.2) +
+  geom_line() +
   facet_geo(~state, grid = "us_state_grid2" , labeller = adjust_labels, scales = "free") +
   scale_x_date(      name = NULL, breaks = NULL, expand = c(0, 0)) + 
   scale_y_continuous(name = NULL, breaks = NULL, expand = c(0, 0), limit = c(0, 1)) +
-  scale_color_manual(
-    name = "Difference in 7-day moving average between endpoints"
-    , values = c("forestgreen", "red")
-  )+
+  scale_color_manual(name = "Difference between today and 14 days ago", values = c("forestgreen", "red"))+
+  scale_fill_manual(name = "Difference between today and 14 days ago", values = c("forestgreen", "red"))+
   theme_minimal() +
   labs(
     title = title
