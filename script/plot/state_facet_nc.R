@@ -72,10 +72,9 @@ ggsave("img/state_facet_0315.png", plot = state_facet_0315, width = 7, height = 
 
 
 ####TREND PLOT   
+n_days <- 14
 max_date <- max(covid19_state$date)
-min_date14 <-max_date - 14
-
-n_days <- max_date - min_date14
+min_date14 <-max_date - n_days
 
 df_trend <-covid19_state %>%
   filter(date == max_date | date == min_date14) %>%
@@ -89,7 +88,7 @@ trend_data <- covid19_state %>%
   left_join(., df_trend, by = "state")
   
 title <- paste("Last", n_days, "days: Normalized 7-Day Moving Average of New Cases")
-subtitle <- paste(min_date, "to", max_date)
+subtitle <- paste(min_date14, "to", max_date)
 
 state_facet_trend14  <-ggplot(trend_data, aes(date, nc_ma7_norm, color = trend, fill = trend)) + 
   geom_area(alpha = 0.2) +
