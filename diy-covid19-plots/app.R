@@ -46,7 +46,7 @@ names(state_pc) <- state_names
 ui <- fluidPage(
 
     # Application title
-    titlePanel("COVID-19: New Cases and Growth Factor per Day"),
+    titlePanel("COVID-19"),
 
     # Sidebar with a slider input for number of bins 
     sidebarLayout(
@@ -62,7 +62,7 @@ ui <- fluidPage(
                     ),  # end of select input 
         #input date 
         dateRangeInput("dates", label = "Select Date Range",
-                       start = x_max - 28,  end = x_max,
+                       start = as.Date("2020-03-15"),  end = x_max,
                        min = x_min, max = x_max
                        ), #end of date range input 
         
@@ -76,15 +76,9 @@ ui <- fluidPage(
 
         # Show a plot of the generated distribution
         mainPanel(
-           helpText("Points Represent a growth factor or moving average greater than 2 on a given day"), 
+          # helpText("Points Represent a growth factor or moving average greater than 2 on a given day"), 
            plotOutput("Plot"),
            br(), 
-           h4("Growth Factor"), 
-           p(withMathJax('$$\\text{Growth Factor} = \\frac{ \\text{New-Cases}_N}{\\text{New-Cases}_{N-1}}$$'), 
-             "What if there were 0 cases yesterday?  This would make the growth factor undefined. 
-             I have adjusted the growth factor so that if the pervious day had 0 cases,
-             the current day's growth factor is equal to the number of new cases"), 
-           br(),
            h4("Data Limitations"),
            p(
              "A large limitation for this data is that reported new cases (and thus the growth factor) 
