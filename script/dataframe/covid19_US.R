@@ -11,10 +11,12 @@ td_link <- "https://usafactsstatic.blob.core.windows.net/public/data/covid-19/co
 #total cases and new cases by day 
 cases <- read.csv(tc_link) %>%
   select(-c(1:4)) %>% 
+  mutate(X7.22.20 = as.integer(X7.22.20)) %>% #this column has numbers as 'factors' rather than integers; need to fix 
   summarize_all(sum) %>%
   pivot_longer(cols =  everything(), names_to = "date", values_to = "total_cases") %>%
   mutate(date = as.Date(date, format = "X%m.%d.%y")) %>%
   arrange(date)
+
 
 n_days <- length(unique(cases$date))
 
