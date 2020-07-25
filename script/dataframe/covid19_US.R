@@ -9,18 +9,16 @@ tc_link <- "https://usafactsstatic.blob.core.windows.net/public/data/covid-19/co
 td_link <- "https://usafactsstatic.blob.core.windows.net/public/data/covid-19/covid_deaths_usafacts.csv"
 
 #total cases and new cases by day 
-cases <- read.csv(tc_link)[1:3195,] %>%
-  #remove last row where someone put a sum
+cases <- read.csv(tc_link)[1:3195, ]%>%
   select(-c(1:4)) %>% 
-  drop_na() %>% #final row is NA column; NEED TO DROP 
-  mutate(`X7.22.20` = as.integer(`X7.22.20`)) %>% #this column has numbers as 'factors' rather than integers; need to fix 
+  mutate(`X7.22.20` = as.numeric(as.character(`X7.22.20`))) %>% #this column has numbers as 'factors' rather than integers; need to fix 
   summarize_all(sum) %>%
   pivot_longer(cols =  everything(), names_to = "date", values_to = "total_cases") %>%
   mutate(date = as.Date(date, format = "X%m.%d.%y")) %>%
   arrange(date)
 
-
 n_days <- length(unique(cases$date))
+
 
 tc_today <- cases[[2]]
 tc_yesterday <- c(0, tc_today[1:n_days-1])
@@ -28,7 +26,6 @@ new_cases <- tc_today - tc_yesterday
 
 cases <- cbind(cases, new_cases)
 
-cases
 ########################################
 
 
