@@ -12,14 +12,12 @@ source("script/function/calc_norm_to_0_to_1.R")
 ### STATES 
 #sum up by states 
 
+
+
 state_total_cases <- total_cases %>%
   select(-c(1, 2, 4)) %>%
   group_by(state) %>%
   summarise_at(vars(-group_cols()), sum)
-
-test <- head(total_cases[, 160:166])
-
-
 
 #calculate gf and make tidy 
 gf_state_wide <- f_DataFrame(state_total_cases, f_GrowthFactor) 

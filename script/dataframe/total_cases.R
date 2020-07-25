@@ -4,11 +4,10 @@
 link <- "https://usafactsstatic.blob.core.windows.net/public/data/covid-19/covid_confirmed_usafacts.csv"
 
 #import link
-total_cases <- read.csv(link)
+total_cases <- read.csv(link)[1:3195, ] #remove last row where someone puta  sum 
 
 #total number of columsn 
 last_col <- ncol(total_cases)
-
 
 #rename date columns into date format 
 names(total_cases)[5:last_col] <- format(as.Date(names(total_cases)[5:last_col], format = "X%m.%d.%y"), format = "%Y-%m-%d")

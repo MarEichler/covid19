@@ -9,7 +9,8 @@ tc_link <- "https://usafactsstatic.blob.core.windows.net/public/data/covid-19/co
 td_link <- "https://usafactsstatic.blob.core.windows.net/public/data/covid-19/covid_deaths_usafacts.csv"
 
 #total cases and new cases by day 
-cases <- read.csv(tc_link) %>%
+cases <- read.csv(tc_link)[1:3195,] %>%
+  #remove last row where someone put a sum
   select(-c(1:4)) %>% 
   drop_na() %>% #final row is NA column; NEED TO DROP 
   mutate(`X7.22.20` = as.integer(`X7.22.20`)) %>% #this column has numbers as 'factors' rather than integers; need to fix 
@@ -17,7 +18,6 @@ cases <- read.csv(tc_link) %>%
   pivot_longer(cols =  everything(), names_to = "date", values_to = "total_cases") %>%
   mutate(date = as.Date(date, format = "X%m.%d.%y")) %>%
   arrange(date)
-
 
 
 n_days <- length(unique(cases$date))
