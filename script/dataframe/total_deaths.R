@@ -9,6 +9,9 @@ total_deaths <- read.csv(link)
 #total number of columsn 
 last_col <- ncol(total_deaths)
 
+#rename date columns into date format 
+names(total_deaths)[5:last_col] <- format(as.Date(names(total_deaths)[5:last_col], format = "X%m.%d.%y"), format = "%Y-%m-%d")
+
 #rename columns 
 names(total_deaths)[1:4] <- c("countyFIPS", "county_name", "state", "stateFIPS")
 
