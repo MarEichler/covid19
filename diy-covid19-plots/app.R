@@ -4,18 +4,25 @@ library(knitr)
 library(zoo)
 library(cowplot)
 library(scales)
+
+#script
+source("func_plot.R")
+
+#data
 load("covid19_state.rda")
 load("covid19_US.rda")
-source("func_plot.R")
 
 
 us_all <- covid19_US %>%
     mutate(state = "Entire US") %>%
-    select(state, date, gf = growth_factor, nc = new_cases)
+    select(state, date, gf = growth_factor, nc = new_cases, nd = new_deaths)
 
 data <- covid19_state %>%
-    select(state, date, gf, nc) %>%
+    select(state, date, gf, nc, nd) %>%
+    mutate(state = as.character(state)) %>%
     rbind(., us_all)
+
+
 
 
 state_pc <- unique(data$state)
@@ -36,6 +43,7 @@ date_scaling <- scale_x_date(
 state_pc <- unique(data$state)
 
 state_names <- state.name[match(state_pc, state.abb)]
+state_names[8] <- "District of Columbia (DC)"
 state_names[52] <- "Entire USA"
 
 names(state_pc) <- state_names
@@ -79,6 +87,8 @@ ui <- fluidPage(
           # helpText("Points Represent a growth factor or moving average greater than 2 on a given day"), 
            plotOutput("Plot"),
            br(), 
+           tableOutput("Table"), 
+           br(), 
            h4("Data Limitations"),
            p(
              "A large limitation for this data is that reported new cases (and thus the growth factor) 
@@ -117,20 +127,30 @@ server <- function(input, output) {
         plot_data <- data %>%
             filter(state == input$state) %>%
             mutate(
-                ma_gf = c(rep(NA, ma_k - 1), rollmean(gf, k=ma_k, na.rm=TRUE))
-                , ma_nc = c(rep(NA, ma_k - 1), rollmean(nc, k=ma_k, na.rm=TRUE))
+                ma_nc = c(rep(NA, ma_k - 1), rollmean(nc, k=ma_k, na.rm=TRUE))
+              , ma_nd = c(rep(NA, ma_k - 1), rollmean(nd, k=ma_k, na.rm=TRUE))
             ) %>%
-            filter(date >= min_date & date <= max_date) %>%
-            mutate(
-                gf_2plus = ifelse(gf > 2, 2, -1), 
-                ma_2plus = ifelse(ma_gf > 2, 2, -1)
-            )
+            filter(date >= min_date & date <= max_date) 
             
         
-       if (input$show_ma == TRUE) {gf_plot_ma(plot_data, min_date, max_date) } 
-       else {gf_plot(plot_data, min_date, max_date)}
+       if (input$show_ma == TRUE) {plot_ma(plot_data, min_date, max_date) } 
+       else {plot(plot_data, min_date, max_date)}
         
-    }) # end render output 
+    }) # end render output PLOT
+    
+    output$Table <- renderTable({
+        
+        
+        table <- data %>%
+            filter(state == input$state) %>%
+            summarize(
+                 `Total Cases`  = formatC(sum(nc), big.mark=",", format="d")
+                , `Total Deaths` = formatC(sum(nd), big.mark=",", format="d")
+            ) 
+        
+        table
+        
+    }, align = c("rr"))  #end of output table 
     
 
 }
