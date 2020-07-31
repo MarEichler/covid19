@@ -1,7 +1,8 @@
 library(tidyverse)
 library(quantmod)
 library(zoo)
-load("data/total_cases.rda")
+
+#scripts 
 source("script/function/calc_growth_factor.R")
 source("script/function/calc_new_cases.R")
 source("script/function/calc_apply_to_df.R")
@@ -9,8 +10,12 @@ source("script/function/calc_ma_7.R")
 source("script/function/calc_perc_7.R")
 source("script/function/calc_norm_to_0_to_1.R")
 
+#data
+load("data/total_cases.rda")
+load("data/total_deaths.rda")
+
 ### STATES 
-#sum up by states 
+# SUM TOTAL CASES
 state_total_cases <- total_cases %>%
   select(-c(1, 2, 4)) %>%
   group_by(state) %>%
@@ -59,10 +64,26 @@ nc_state_ma7_norm <- nc_state_ma7_norm_wide %>%
   mutate(date = as.Date(date))
 
 
+# SUM TOTAL CASES
+state_total_deaths <- total_deaths %>%
+  select(-c(1, 2, 4)) %>%
+  group_by(state) %>%
+  summarise_at(vars(-group_cols()), sum)
+
+#DAILY NEW CASES 
+nd_state_wide <- f_DataFrame(state_total_deaths, f_NewCases) 
+
+nd_state <- nd_state_wide %>%
+  pivot_longer(cols = c(-1),  names_to = "date", values_to = "nd") %>%
+  mutate(date = as.Date(date)) 
+
+
+
 #put all the stuff together 
 ma7_df_nc     <- left_join(nc_state_ma7, nc_state_ma7_perc, by = c("state"="state", "date" ="date"))
 ma7_df        <- left_join(ma7_df_nc, gf_state_ma7,         by = c("state"="state", "date" ="date"))
-raw_df        <- left_join(gf_state, nc_state,               by = c("state"="state", "date" ="date")) 
+raw_df        <- left_join(gf_state, nc_state,              by = c("state"="state", "date" ="date")) 
+raw_df        <- left_join(nd_state, raw_df,                by = c("state"="state", "date" ="date"))
 norm_df       <-  nc_state_ma7_norm 
 ma7_raw_df    <- left_join(raw_df, ma7_df,                   by = c("state"="state", "date" ="date"))
 covid19_state <- left_join(ma7_raw_df, norm_df,              by = c("state" = "state", "date" = "date"))
@@ -80,8 +101,6 @@ max_date <- max(covid19_state$date) - 7
 
 #create selected days to 'start' week 
 select_days <- seq(as.Date(min_date), as.Date(max_date), "week") 
-
-select_days
 
 length(select_days)
 
