@@ -11,22 +11,12 @@ source("script/function/calc_norm_to_0_to_1.R")
 
 ### STATES 
 #sum up by states 
-
-
-
 state_total_cases <- total_cases %>%
   select(-c(1, 2, 4)) %>%
   group_by(state) %>%
   summarise_at(vars(-group_cols()), sum)
 
-#calculate gf and make tidy 
-gf_state_wide <- f_DataFrame(state_total_cases, f_GrowthFactor) 
-
-gf_state <- gf_state_wide %>%
-  pivot_longer(cols = c(-1),  names_to = "date", values_to = "gf") %>%
-  mutate(date = as.Date(date)) 
-
-#calculate new casaes and make tidy 
+#DAILY NEW CASES 
 nc_state_wide <- f_DataFrame(state_total_cases, f_NewCases) 
 
 nc_state <- nc_state_wide %>%
@@ -39,6 +29,13 @@ nc_state_ma7_wide<- f_DataFrame(as_tibble(nc_state_wide), f_ma7)
 nc_state_ma7 <- nc_state_ma7_wide %>%
   pivot_longer(cols = c(-1), names_to = "date", values_to = "nc_ma7") %>%
   mutate(date = as.Date(date))
+
+#DAILY GROWTH FACTOR 
+gf_state_wide <- f_DataFrame(state_total_cases, f_GrowthFactor) 
+
+gf_state <- gf_state_wide %>%
+  pivot_longer(cols = c(-1),  names_to = "date", values_to = "gf") %>%
+  mutate(date = as.Date(date)) 
 
 # 7-DAY MA OF GROTH FACTOR
 gf_state_ma7_wide<- f_DataFrame(as_tibble(gf_state_wide), f_ma7)
@@ -54,28 +51,30 @@ nc_state_ma7_perc <- nc_state_ma7_perc_wide %>%
   pivot_longer(cols = c(-1), names_to = "date", values_to = "nc_ma7_perc") %>%
   mutate(date = as.Date(date))
 
-
+# 7-DAY MA OF NEW CASES NORMALIZED TO 0-1 (i.e. where is the curve)
 nc_state_ma7_norm_wide <- f_DataFrame(as_tibble(nc_state_ma7_wide), f_norm01)
-
 
 nc_state_ma7_norm <- nc_state_ma7_norm_wide %>%
   pivot_longer(cols = c(-1), names_to = "date", values_to = "nc_ma7_norm") %>%
   mutate(date = as.Date(date))
 
 
+#put all the stuff together 
 ma7_df_nc     <- left_join(nc_state_ma7, nc_state_ma7_perc, by = c("state"="state", "date" ="date"))
 ma7_df        <- left_join(ma7_df_nc, gf_state_ma7,         by = c("state"="state", "date" ="date"))
-
-
 raw_df        <- left_join(gf_state, nc_state,               by = c("state"="state", "date" ="date")) 
 norm_df       <-  nc_state_ma7_norm 
 ma7_raw_df    <- left_join(raw_df, ma7_df,                   by = c("state"="state", "date" ="date"))
 covid19_state <- left_join(ma7_raw_df, norm_df,              by = c("state" = "state", "date" = "date"))
 
+#save data frames 
 save(covid19_state, file = "data/covid19_state.rda") # send to data folder 
 save(covid19_state, file = "diy-covid19-plots/covid19_state.rda") #send data to app
 
+########################################################
 
+
+#WEEKLY DATA FRAME FOR GIFs
 min_date <-min(covid19_state$date)
 max_date <- max(covid19_state$date) - 7
 
@@ -98,5 +97,4 @@ covid19_state_weekly <- nc_state_ma7_perc %>%
 
 save(covid19_state_weekly, file = "data/covid19_state_weekly.rda") # send to data folder 
 
-
-
+########################################################
