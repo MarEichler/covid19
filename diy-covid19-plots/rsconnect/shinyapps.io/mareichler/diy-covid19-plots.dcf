@@ -5,6 +5,6 @@ account: mareichler
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 2390484
-bundleId: 3461298
+bundleId: 3466775
 url: https://mareichler.shinyapps.io/diy-covid19-plots/
-when: 1596236022.17081
+when: 1596407019.31059
