@@ -51,8 +51,8 @@ labels <- centers %>%
   mutate( value = round(nc_ma7_norm, 2))
 
 
-title <- paste("Normalized 7-Day Moving Average")
-subtitle <- paste("Where are states in their curve?\n 7-Day Moving Average on", 
+title <- paste("Where are states in their curve?")
+subtitle <- paste("7-Day Moving Average on", 
 max_date, "divided by max 7-Day Moving Average")
 
 
