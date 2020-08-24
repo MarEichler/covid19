@@ -4,7 +4,7 @@ output:
   html_document:
     highlight: "tango"
 editor_options: 
-  chunk_output_type: inline
+  chunk_output_type: console
 ---
 
 
@@ -60,29 +60,26 @@ covid_tidy <- covid19_US_adj %>%
     , values_to = "count"
   ) 
 
-total_labels <- covid_tidy %>%
+total_labels <- covid19_US_adj %>%
   filter(date == current_date) %>%
   mutate(
-    label = paste("Current Total", formatC(count, big.mark=",", format="d"), sep = "\n")
+      total_cases = paste("Current Total", formatC(total_cases, big.mark=",", format="d"), sep = "\n")
+    , total_deaths = paste("Current Total", formatC(total_deaths, big.mark=",", format="d"), sep = "\n")
   )
 
-ggplot(covid_tidy, aes(date, count)) + 
+
+tc <- ggplot(covid19_US_adj, aes(date, total_cases)) + 
   geom_area(alpha = 0.4)+
   geom_line(
       size = 1
     , alpha = 0.6
   )+
-  facet_wrap(
-    .~factor(type, labels = c("Total Cases by Day", "Total Deaths by Day"))
-    , ncol=2
-    , scales = "free_y"
-  ) + 
   date_scaling +
-  thousands_scaling +
+  millions_scaling + 
   geom_text(
       data = total_labels 
     , aes(
-          label = label
+          label = total_cases
         , y = -Inf
         , x = current_date
       )
@@ -93,14 +90,43 @@ ggplot(covid_tidy, aes(date, count)) +
     , color = "white"
     ) +
   theme_minimal() +
+  ggtitle("Total Cases by Day (in millions)") +
   theme(
       plot.title = element_text(size = title_size, hjust = 0.5)
-    , strip.text.x = element_text(size = subtitle_size)
-    , panel.spacing = unit(.5, "in")
     , plot.margin  = margin(t=0, r=15, b=0, l=0)
     , axis.ticks.length = unit(5, "pt")
   )
 
+td <- ggplot(covid19_US_adj, aes(date, total_deaths)) + 
+  geom_area(alpha = 0.4)+
+  geom_line(
+      size = 1
+    , alpha = 0.6
+  )+
+  date_scaling +
+  thousands_scaling + 
+  geom_text(
+      data = total_labels 
+    , aes(
+          label = total_deaths
+        , y = -Inf
+        , x = current_date
+      )
+    , vjust = -0.15
+    , hjust=1.05 
+    , size = 6
+    , fontface = "bold"
+    , color = "white"
+    ) +
+  theme_minimal() +
+  ggtitle("Total Deaths by Day (in thousands)") +
+  theme(
+      plot.title = element_text(size = title_size, hjust = 0.5)
+    , plot.margin  = margin(t=0, r=15, b=0, l=0)
+    , axis.ticks.length = unit(5, "pt")
+  )
+
+plot_grid(tc, td, nrow = 1)
 ```
 
 <br>
