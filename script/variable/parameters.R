@@ -42,6 +42,16 @@ thousands_scaling <- scale_y_continuous(
   , expand = c(0, 0)
 )
 
+# for US plot; 10,000 -> 10k
+millions_scaling <- scale_y_continuous(
+  name = NULL
+  , limits = c(0, NA)
+  , labels = scales::unit_format(unit = "M", scale = 1e-6, accuracy = 1)
+  , expand = c(0, 0)
+)
+
+
+
 #caption for gf_plots that gives info 
 cap_gf <- paste(
   strwrap("A growth factor below 1 means new cases are decreasing,\ni.e. the pandemic is slowing"
