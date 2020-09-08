@@ -52,11 +52,11 @@ I made this adjustment for the early or late stages of the pandemic when the num
 
 ### Growth Factor Plot 
 
-Similar to the new cases per day, there can be a lot of variability in growth factors  In order to get a better sense of the trend I am showing a 14-day moving average of the growth factor.  
+Similar to the new cases per day, there can be a lot of variability in growth factors  In order to get a better sense of the trend I am showing a 7-day moving average of the growth factor.  
 
-The growth factor shows a different trend than new cases.  Here, the growth factor has stayed around 1 since mid-April.  Compare that to the new cases plot on the Overview tab, which shows a downward trend after a peak in mid-April.  Between mid-April and mid-June the growth factor hovered around 1, showing that although cases were decreasing there was not substantial decrease in growth.  After states began to re-open there was a dramatic increase in new-cases starting in mid-June.  This lead to the 7-day moving average growth rate to be above 1 showing the increase of the pandemic.  
+Between mid-April and mid-June the growth factor hovered around 1, showing that although cases were decreasing there was not substantial decrease in growth.  After states began to re-open there was a dramatic increase in new-cases starting in mid-June.  Between mid-June and mid-July cases started increasing dramatically which lead lead to the 7-day moving average growth rate to be above 1 for a month.  Since mid-July the growth factor has oscillating around 1.  
 
-```{r}
+```{r, eval = FALSE }
 #label for 14-day moving average 
 labels_gf <- covid19_US %>% filter(date == as.Date("2020-05-02"))
 
@@ -92,6 +92,25 @@ ggplot(covid19_US_adj, aes(x=date, y=growth_factor))+
   ggtitle("Growth Factor per Day")
 
 ```
+
+```{r}
+ggplot(covid19_US_adj, aes(x=date, y= MA_growth_factor - 1))+
+  annotate("rect", xmin = x_min, xmax = x_max, ymin = 0, ymax =  Inf, fill = gf2plus, alpha = 0.2) + 
+  geom_area(alpha = 0.3, fill = blue_comp) +
+  annotate("text", x = x_min + 1, y = -0.5, label = cap_gf, vjust=-0.3, hjust= -0.1, size = 3, color = "grey15") +
+  date_scaling +
+  scale_y_continuous(expand = c(0, 0), limits = c(-0.5, 0.5), breaks = seq(-0.5, 0.5, .25), labels = seq(.5, 1.5, .25)) +
+  theme_minimal()+
+  theme(
+    plot.title = element_text(hjust = 0.5, size = subtitle_size)
+    , axis.title.x=element_blank()
+    , axis.title.y=element_blank()
+    , plot.margin  = margin(t=0, r=15, b=0, l=0)
+    , axis.ticks.length = unit(5, "pt")
+  ) + 
+  ggtitle("7-Day Moving Average of Growth Factor")
+```
+
 
 
 <br>  
