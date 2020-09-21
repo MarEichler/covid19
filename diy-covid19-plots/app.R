@@ -31,13 +31,6 @@ names(state_pc) <- unique(data$state)
 x_min <- min(data$date)
 x_max <- max(data$date)
 
-x_min
-#ggplot set ups 
-date_scaling <- scale_x_date(
-    name = NULL
-    , labels = scales::date_format("%b-%d")
-    , expand = c(0, 0)
-)
 
 
 state_pc <- unique(data$state)
@@ -78,14 +71,20 @@ ui <- fluidPage(
         checkboxInput("show_ma", "Show Moving-Average", value = TRUE), 
         
         #k for moving average 
-        numericInput("ma_k", "Moving Average k (i.e. number of days for moving average)", value = 7)
+        numericInput("ma_k", "Moving Average k (i.e. number of days for moving average)", value = 7), 
+        
+        #upper bound for gf plot
+        numericInput("gf_max", "Upper Bound for Growth Factor Plot", value = 1.5, min = 1.1), 
+        
+        #upper bound for gf plot
+        numericInput("gf_min", "Lower Bound for Growth Factor Plot", value = 0.5, min = 0, max = 0.9) 
         
         ), #end of side par PANEL 
 
         # Show a plot of the generated distribution
         mainPanel(
           # helpText("Points Represent a growth factor or moving average greater than 2 on a given day"), 
-           plotOutput("Plot"),
+           plotOutput("Plot", height = 600),
            br(), 
            tableOutput("Table"), 
            br(), 
@@ -119,6 +118,9 @@ server <- function(input, output) {
     
     output$Plot <- renderPlot({
         
+        gf_max <- input$gf_max
+        gf_min <- input$gf_min
+        
         ma_k <- input$ma_k
         
         min_date <- input$dates[1]
@@ -129,12 +131,13 @@ server <- function(input, output) {
             mutate(
                 ma_nc = c(rep(NA, ma_k - 1), rollmean(nc, k=ma_k, na.rm=TRUE))
               , ma_nd = c(rep(NA, ma_k - 1), rollmean(nd, k=ma_k, na.rm=TRUE))
+              , ma_gf = c(rep(NA, ma_k - 1), rollmean(gf, k=ma_k, na.rm=TRUE))
             ) %>%
             filter(date >= min_date & date <= max_date) 
             
         
-       if (input$show_ma == TRUE) {plot_ma(plot_data, min_date, max_date) } 
-       else {plot(plot_data, min_date, max_date)}
+       if (input$show_ma == TRUE) {plot_ma(plot_data, min_date, max_date, gf_min, gf_max) } 
+       else {plot(plot_data, min_date, max_date, gf_min, gf_max)}
         
     }) # end render output PLOT
     
