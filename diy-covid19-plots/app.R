@@ -77,7 +77,7 @@ ui <- fluidPage(
         numericInput("gf_max", "Upper Bound for Growth Factor Plot", value = 1.5, min = 1.01), 
         
         #upper bound for gf plot
-        numericInput("gf_min", "Lower Bound for Growth Factor Plot", value = 0.75, min = 0, max = 0.95) 
+        numericInput("gf_min", "Lower Bound for Growth Factor Plot", value = 0.9, min = 0, max = 0.99) 
         
         ), #end of side par PANEL 
 
