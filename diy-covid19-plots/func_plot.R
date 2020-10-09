@@ -73,7 +73,7 @@ plot_ma <- function(plot_data, min_date, max_date, gf_min, gf_max){
   plot_grid(
     plot_nc
     , plot_nd
-    , plot_gf
+   # , plot_gf
     , ncol = 1
     , align = "v"
   )
@@ -140,7 +140,7 @@ plot <- function(plot_data, min_date, max_date, gf_min, gf_max){
   plot_grid(
     plot_nc
     , plot_nd
-    , plot_gf
+    #, plot_gf
     , ncol = 1
     , align = "v"
   )

@@ -74,10 +74,10 @@ ui <- fluidPage(
         numericInput("ma_k", "Moving Average k (i.e. number of days for moving average)", value = 7), 
         
         #upper bound for gf plot
-        numericInput("gf_max", "Upper Bound for Growth Factor Plot", value = 1.5, min = 1.01), 
+       # numericInput("gf_max", "Upper Bound for Growth Factor Plot", value = 1.5, min = 1.01), 
         
         #upper bound for gf plot
-        numericInput("gf_min", "Lower Bound for Growth Factor Plot", value = 0.9, min = 0, max = 0.99) 
+        #numericInput("gf_min", "Lower Bound for Growth Factor Plot", value = 0.9, min = 0, max = 0.99) 
         
         ), #end of side par PANEL 
 
