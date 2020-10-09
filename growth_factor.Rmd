@@ -145,12 +145,12 @@ ggplot(aes(x=date, y= value - 1))+
   scale_y_continuous(expand = c(0, 0)) +
   labs(
       title = "Growth Factor Difference from One"
-    , subtitle = "A growth factor less than one means new cases are decreasing"
+    , subtitle = "A growth factor less than one (difference less than zero) means new cases are decreasing"
   ) +
   theme_minimal()+
   theme(
     plot.title = element_text(hjust = 0.5, size = title_size)
-    , plot.subtitle  = element_text(hjust = 0.5, size = subtitle_size - 2)
+    , plot.subtitle  = element_text(hjust = 0.5, size = subtitle_size - 4)
     , strip.text = element_text(size = subtitle_size)
     , axis.title.x=element_blank()
     , axis.title.y=element_blank()
