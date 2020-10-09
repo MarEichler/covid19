@@ -93,13 +93,13 @@ ggplot(covid19_US_adj, aes(x=date, y=growth_factor))+
 
 ```
 
-```{r}
-ggplot(covid19_US_adj, aes(x=date, y= MA_growth_factor - 1))+
+```{r, eval = FALSE }
+ggplot(covid19_US_adj, aes(x=date, y= growth_factor - 1))+
   annotate("rect", xmin = x_min, xmax = x_max, ymin = 0, ymax =  Inf, fill = gf2plus, alpha = 0.2) + 
-  geom_area(alpha = 0.3, fill = blue_comp) +
+  geom_area(alpha = 0.3) +
   annotate("text", x = x_min + 1, y = -0.5, label = cap_gf, vjust=-0.3, hjust= -0.1, size = 3, color = "grey15") +
   date_scaling +
-  scale_y_continuous(expand = c(0, 0), limits = c(-0.5, 0.5), breaks = seq(-0.5, 0.5, .25), labels = seq(.5, 1.5, .25)) +
+  scale_y_continuous(expand = c(0, 0), limits = c(-0.5, NA)) +
   theme_minimal()+
   theme(
     plot.title = element_text(hjust = 0.5, size = subtitle_size)
@@ -108,7 +108,55 @@ ggplot(covid19_US_adj, aes(x=date, y= MA_growth_factor - 1))+
     , plot.margin  = margin(t=0, r=15, b=0, l=0)
     , axis.ticks.length = unit(5, "pt")
   ) + 
-  ggtitle("7-Day Moving Average of Growth Factor")
+  ggtitle("Daily Growth Factor Difference from One")
+```
+
+```{r, eval = FALSE}
+ggplot(covid19_US_adj, aes(x=date, y= MA_growth_factor - 1))+
+  annotate("rect", xmin = x_min, xmax = x_max, ymin = 0, ymax =  Inf, fill = gf2plus, alpha = 0.2) + 
+  geom_area(alpha = 0.3, fill = blue_comp) +
+  annotate("text", x = x_min + 1, y = -0.5, label = cap_gf, vjust=-0.3, hjust= -0.1, size = 3, color = "grey15") +
+  date_scaling +
+  scale_y_continuous(expand = c(0, 0), limits = c(-0.5, 0.5), breaks = seq(-0.5, 0.5, .25)) +
+  theme_minimal()+
+  theme(
+    plot.title = element_text(hjust = 0.5, size = subtitle_size)
+    , axis.title.x=element_blank()
+    , axis.title.y=element_blank()
+    , plot.margin  = margin(t=0, r=15, b=0, l=0)
+    , axis.ticks.length = unit(5, "pt")
+  ) + 
+  ggtitle("7-Day Moving Average of Growth Factor Difference from One")
+```
+
+```{r}
+covid19_US_adj %>%
+  select(date, contains("growth_factor")) %>%
+  pivot_longer(-date) %>%
+ggplot(aes(x=date, y= value - 1))+
+  annotate("rect", xmin = x_min, xmax = x_max, ymin = 0, ymax =  Inf, fill = gf2plus, alpha = 0.2) + 
+  geom_area(alpha = 0.3, aes(fill = name), show.legend = FALSE) +
+  scale_fill_manual(name = NULL, values = c("grey30", blue_comp)) + 
+  facet_wrap(
+    ~factor(name, labels = c("Daily", "7-Day Moving Average"))
+    , nrow = 1
+  ) + 
+  date_scaling +
+  scale_y_continuous(expand = c(0, 0)) +
+  labs(
+      title = "Growth Factor Difference from One"
+    , subtitle = "A growth factor less than one means new cases are decreasing"
+  ) +
+  theme_minimal()+
+  theme(
+    plot.title = element_text(hjust = 0.5, size = title_size)
+    , plot.subtitle  = element_text(hjust = 0.5, size = subtitle_size - 2)
+    , strip.text = element_text(size = subtitle_size)
+    , axis.title.x=element_blank()
+    , axis.title.y=element_blank()
+    , plot.margin  = margin(t=0, r=15, b=0, l=0)
+    , axis.ticks.length = unit(5, "pt")
+  ) 
 ```
 
 
