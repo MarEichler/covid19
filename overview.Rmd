@@ -146,7 +146,7 @@ There is also a cyclical nature to the daily new cases with counts often being l
 
 ```{r dc-plot, warning = FALSE}  
 #label sets
-labels_dc <- covid19_US %>% filter(date == as.Date("2020-05-04"))
+labels_dc <- covid19_US %>% filter(date == as.Date("2020-06-20"))
 
 
 #daily cases plot
@@ -163,8 +163,8 @@ ggplot(covid19_US_adj, aes(x=date, y=new_cases))+
     , data = labels_dc
     , aes(y = MA_new_cases, label = "7-Day\nMoving Average")
     , color = blue_comp
-    , nudge_y = 5000
-    , nudge_x = 5
+    , nudge_y = 10000
+    , nudge_x = -20
   ) +
   ggtitle("New Cases per Day") +
   date_scaling +
