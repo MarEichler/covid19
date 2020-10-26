@@ -39,4 +39,11 @@ state_abbrv_color <- "grey20"
 line_state <- "grey20"
 
 
+#NPR COLORS
 
+NPR_darkgreen <- "#549990" #dark green 
+NPR_litegreen <- "#7dc3ae" #light green
+NPR_yellow    <- "#ebe3a7" #yellow
+NPR_yellorang <- "#eeb97a" #yellow/orange
+NPR_orange    <- "#ea8e4f" #orange
+NPR_red       <- "#df6222"
