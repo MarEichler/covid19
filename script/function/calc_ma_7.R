@@ -5,7 +5,7 @@ f_ma7 <- function(vec){
   v <- vec[,-1] #remove id name; just todal cases
   dates <- colnames(v)
   n_days <- length(dates)
-  ma <- zoo::rollmean(t(v), k = 7, align = "right")
+  ma <- zoo::rollmean(t(v), k = 7, align = "right", na.rm = TRUE)
   ma <- t(ma)
   colnames(ma) <- dates[7:(n_days)]
   ma <- cbind(id, ma)

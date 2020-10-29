@@ -22,7 +22,10 @@ state_total_cases <- total_cases %>%
   summarise_at(vars(-group_cols()), sum)
 
 #DAILY NEW CASES 
-nc_state_wide <- f_DataFrame(state_total_cases, f_NewCases) 
+nc_state_wide <- f_DataFrame(state_total_cases, f_NewCases) %>%
+  #if re-adjust total 'new cases' may be negative; set to NA 
+  mutate_at(vars(contains("2020")), funs(ifelse(. <0, NA, .))) 
+  
 
 nc_state <- nc_state_wide %>%
   pivot_longer(cols = c(-1),  names_to = "date", values_to = "nc") %>%
@@ -71,7 +74,9 @@ state_total_deaths <- total_deaths %>%
   summarise_at(vars(-group_cols()), sum)
 
 #DAILY NEW CASES 
-nd_state_wide <- f_DataFrame(state_total_deaths, f_NewCases) 
+nd_state_wide <- f_DataFrame(state_total_deaths, f_NewCases) %>%
+  #if re-adjust total 'new cases' may be negative; set to NA 
+  mutate_at(vars(contains("2020")), funs(ifelse(. <0, NA, .))) 
 
 nd_state <- nd_state_wide %>%
   pivot_longer(cols = c(-1),  names_to = "date", values_to = "nd") %>%
