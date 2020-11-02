@@ -97,28 +97,30 @@ covid19_state <- left_join(ma7_raw_df, norm_df,              by = c("state" = "s
 save(covid19_state, file = "data/covid19_state.rda") # send to data folder 
 save(covid19_state, file = "diy-covid19-plots/covid19_state.rda") #send data to app
 
+covid19_state %>% filter(state == "WY", date >= as.Date("2020-10-20"))
+
 ########################################################
 
 
 #WEEKLY DATA FRAME FOR GIFs
-min_date <-min(covid19_state$date)
-max_date <- max(covid19_state$date) - 7
-
-#create selected days to 'start' week 
-select_days <- seq(as.Date(min_date), as.Date(max_date), "week") 
-
-length(select_days)
-
-weeks <- data.frame(
-  "end_of_week" = select_days
-  , "week" = seq(1, length(select_days), 1)
-)
-
-
-covid19_state_weekly <- nc_state_ma7_perc %>%
-  filter(date %in% select_days) %>%
-  left_join(., weeks, by = c("date" = "end_of_week")) 
-
-save(covid19_state_weekly, file = "data/covid19_state_weekly.rda") # send to data folder 
+# min_date <-min(covid19_state$date)
+# max_date <- max(covid19_state$date) - 7
+# 
+# #create selected days to 'start' week 
+# select_days <- seq(as.Date(min_date), as.Date(max_date), "week") 
+# 
+# length(select_days)
+# 
+# weeks <- data.frame(
+#   "end_of_week" = select_days
+#   , "week" = seq(1, length(select_days), 1)
+# )
+# 
+# 
+# covid19_state_weekly <- nc_state_ma7_perc %>%
+#   filter(date %in% select_days) %>%
+#   left_join(., weeks, by = c("date" = "end_of_week")) 
+# 
+# save(covid19_state_weekly, file = "data/covid19_state_weekly.rda") # send to data folder 
 
 ########################################################
