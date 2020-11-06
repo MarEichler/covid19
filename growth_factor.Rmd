@@ -54,7 +54,7 @@ I made this adjustment for the early or late stages of the pandemic when the num
 
 Similar to the new cases per day, there can be a lot of variability in growth factors  In order to get a better sense of the trend I am showing a 7-day moving average of the growth factor.  
 
-Between mid-April and mid-June the growth factor hovered around 1, showing that although cases were decreasing there was not substantial decrease in growth.  After states began to re-open there was a dramatic increase in new-cases starting in mid-June.  Between mid-June and mid-July cases started increasing dramatically which lead lead to the 7-day moving average growth rate to be above 1 for a month.  Since mid-July the growth factor has oscillating around 1.  
+Between mid-April and mid-June the growth factor hovered around 1, showing that although cases were decreasing there was not substantial decrease in growth.  After states began to re-open there was a dramatic increase in new-cases starting in mid-June.  Between mid-June and mid-July cases started increasing dramatically which lead lead to the 7-day moving average growth factor to be above 1 for a month.  From mid-July  to October the 7-day moving average growth factor has oscillating around 1.  Starting in the Fall with the dramatic increase of new cases, the 7-day moving average growth factor has been consistently above 1.  
 
 ```{r, eval = FALSE }
 #label for 14-day moving average 

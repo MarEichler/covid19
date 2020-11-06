@@ -137,7 +137,7 @@ Looking at new cases each day can help us see if the pandemic is slowing.  A dec
 
 There can be a lot of variability in the daily case totals due to a variety of variables.  One example is the availability of tests; cases will go down if there is a scarcity of tests and rise dramatically when more tests become available.  One way to help get a better sense of the overall trend is by smoothing the data using a moving average.  
 
-The trends and raw data show a peak around mid-April and had been moving downward likely due to strict lock-down and social distancing measures.  In late June, new cases started to increase dramatically, forming a second peak as many states start re-opening and many people stop practicing social distancing measures.  A new peak formed around mid-July and cases started decreasing at the end of July.  
+The trends and raw data show a peak around mid-April and had been moving downward likely due to strict lock-down and social distancing measures.  In late June, new cases started to increase dramatically, forming a second peak as many states start re-opening and many people stop practicing social distancing measures.  A new peak formed around mid-July and cases started decreasing at the end of July.  In the fall, cases starting rising again and a new peek formed at the beginning of November with some days having more than 100k new cases.  
 
 There is also a cyclical nature to the daily new cases with counts often being lower on weekends and higher on weekdays. 
 
@@ -187,7 +187,7 @@ COVID-19 is much deadlier than the common flu.  One way to measure the impact is
 
 A big concern during April was that the death percentage was continually increasing, even when actual deaths per day were not increasing.  Starting in early May the death percentage started to plateau around 6%.  At the end of May, the death percentage starts curving downward as deaths per day continued to decrease as new cases per days continued to plateau and then increase.  In July, daily deaths started to increase.   
 
-Similar to new cases there is a cyclical nature to spikes in new cases.  These spikes may be due to reporting times where counts on weekdays are often higher than those on weekends.  Spikes also occur when previous deaths are re-assigned as COVID-19 related deaths, such as counting nursing home deaths and/or pneumonia deaths.  In late June, states began to add probable deaths to the death count: Delaware (June 23rd), New Jersey (June 25th), and New York (June 30th).  On July 27th, Texas annoucnhed a change in the way it counts deaths.  
+Similar to new cases there is a cyclical nature to spikes in new cases.  These spikes may be due to reporting times where counts on weekdays are often higher than those on weekends.  Spikes also occur when previous deaths are re-assigned as COVID-19 related deaths, such as counting nursing home deaths and/or pneumonia deaths.  In late June, states began to add probable deaths to the death count: Delaware (June 23rd), New Jersey (June 25th), and New York (June 30th).  On July 27th, Texas announced a change in the way it counts deaths.  
 
 ```{r dp-plot}
 plot_dp <- ggplot(covid19_US_adj, aes(date, death_percentage)) + 
