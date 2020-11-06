@@ -46,7 +46,7 @@ thousands_scaling <- scale_y_continuous(
 millions_scaling <- scale_y_continuous(
   name = NULL
   , limits = c(0, NA)
-  , labels = scales::unit_format(unit = "M", scale = 1e-6, accuracy = 1)
+  , labels = scales::unit_format(unit = "M", scale = 1e-6, accuracy = 0.1)
   , expand = c(0, 0)
 )
 
