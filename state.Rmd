@@ -7,58 +7,87 @@ editor_options:
   chunk_output_type: inline
 ---
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(echo = FALSE)
-```
-### Case Curves by State 
-
-```{r state-facet-nc-script, message = FALSE, results = "hide", warning = FALSE}
-source("script/plot/state_facet_nc.R") #creates facet_map of states' raw gf for past 14 days 
+```{r state-outside-script, results="hide", warning=FALSE, message=FALSE, include = FALSE}
+# source("script/variable/setup.R")
+# source("script/variable/colors.R") #colors 
+# source("script/dataframe/covid19.R") #run script for covid19 df 
+# source("script/variable/parameters.R") #global parameters 
 ```
 
-
-```{r state-facet-nc-img, out.width = "100%", fig.align = 'center'}
-knitr::include_graphics("img/state_facet_0315.png")
-```
-<br>
-
-```{r state-facet-trend14-img, out.width = "100%", fig.align = 'center'}
-knitr::include_graphics("img/state_facet_trend14.png")
-```
-<br>
-
-### Where are states in their curve?  
-
-These plots are based on NPR's plots, the colors looked so nice I wanted to use them myself.  NPR plots can be found [here](https://www.npr.org/sections/health-shots/2020/03/16/816707182/map-tracking-the-spread-of-the-coronavirus-in-the-u-s).
-
-I have normalized the 7-day moving average of new cases by dividing all of the moving average values by the max moving average value.  This puts all of the states of the same scale of 0 to 1; this is not to compare state to state in terms of total cases.  This plot is showing where states are their in their curve; higher percentages indicate that states are in an upper part of the curve.  If the value is 100%, that means that the current day has the highest 7-day moving average.  
-
-```{r state-hex-script, message = FALSE, results = "hide", warning = FALSE}
-source("script/plot/state_hex_norm.R")  
+```{r state-facet-data}
+facet_data <- covid19 %>%
+  filter(geo %in% c(state.abb, "DC")) %>% 
+  filter(date >= x_min) #x_min from parameters.R file 
 ```
 
-```{r state-hex_img, out.width = "100%", fig.align = 'center'}
-knitr::include_graphics("img/state_hex_norm.png")
+
+```{r state-MA7-free}
+title <- paste("7-Day Moving Average of New Cases")
+subtitle <- paste(x_min, "to", x_max) #x_min/x_max from parameters.R file 
+  
+ggplot(facet_data, aes(date, case_MA7)) + 
+    geom_area(fill = blue_comp, alpha = 0.2) + 
+    geom_line(color = blue_comp) + 
+    facet_geo(~geo, grid = "us_state_grid2" , labeller = adjust_labels, scales = "free") +
+    scale_x_date(      name = NULL, breaks = NULL, expand = c(0, 0)) + 
+    scale_y_continuous(name = NULL, breaks = NULL, expand = c(0, 0)
+                       , limits = c(0, NA)
+                       ) +
+    theme_minimal() +
+    labs(
+      title = title
+      , subtitle = subtitle
+      , caption = paste("Scales are free\nThis plot is not to compare numbers state to state",
+                        "but to look at curves and where cases are increasing or decreasing")
+    ) +
+    theme_minimal() +
+    theme(
+        strip.text = element_text(margin = margin(3, 3, 3, 3), face = "bold")
+      , plot.title = element_text(face = "bold", hjust = 0.5)
+      , plot.subtitle = element_text(hjust = 0.5, size = 12)
+      , panel.grid = element_blank()
+    ) 
 ```
 
-<br>
 
-```{r state-hex-gif-script, message = FALSE, results = "hide", warning = FALSE}
-#source("script/plot/state_hex_gif.R") 
+```{r state-MA7-PC}
+
+title <- paste("Per-Capita 7-Day Moving Average of New Cases")
+subtitle <- paste(x_min, "to", x_max) #x_min/x_max from parameters.R file 
+
+max_val <- facet_data %>% pull(case_MA7_PC) %>% max()
+  
+ggplot(facet_data, aes(date, case_MA7_PC)) + 
+    geom_area(fill = blue_comp, alpha = 0.2) + 
+    geom_line(color = blue_comp) + 
+    facet_geo(~geo, grid = "us_state_grid2" , labeller = adjust_labels, scales = "fixed") +
+    scale_x_date(      name = NULL, breaks = NULL, expand = c(0, 0)) + 
+    scale_y_continuous(name = NULL, breaks = NULL, expand = c(0, 0)
+                       , limits = c(0, NA)
+                       ) +
+    theme_minimal() +
+    labs(
+      title = title
+      , subtitle = subtitle
+      , caption = paste("Scales are fixed")
+    ) +
+    theme_minimal() +
+    theme(
+        strip.text = element_text(margin = margin(3, 3, 3, 3), face = "bold")
+      , plot.title = element_text(face = "bold", hjust = 0.5)
+      , plot.subtitle = element_text(hjust = 0.5, size = 12)
+      , panel.grid = element_blank()
+    ) 
 ```
 
-```{r state-hex-gif-script-img, out.width = "100%", fig.align = 'center'}
-#knitr::include_graphics("img/state_hex_gif.gif")
-```
 
-<br>
 
+
+```{r, out.width = "100%", eval = FALSE }
 ### Take a Closer Look! 
 
-Build your own plot for a given state and time period by using a shiny app.  The app can be access through this  link, <a href="https://mareichler.shinyapps.io/diy-covid19-plots/" target = "_blank">mareichler.shinyapps.io/diy-covid19-plots/</a>, and is also embedded below:  
-
-```{r, out.width = "100%"}
-knitr::include_app("https://mareichler.shinyapps.io/diy-covid19-plots/", height = "500px")
+# Build your own plot for a given state and time period by using a shiny app.  The app can be access through this  link, <a href="https://mareichler.shinyapps.io/diy-covid19-plots/" target = "_blank">mareichler.shinyapps.io/diy-covid19-plots/</a>, and is also embedded below:  
+# knitr::include_app("https://mareichler.shinyapps.io/diy-covid19-plots/", height = "500px")
 ```
 
 

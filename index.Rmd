@@ -10,18 +10,30 @@ knitr::opts_chunk$set(echo=FALSE)
 ```
 
 
-```{r scripts-for-data, message = FALSE, results = "hide", warning = FALSE}
-#SCRIPTS THAT NEED TO BE RUN 
-source("script/dataframe/total_cases.R") #import data 
-source("script/dataframe/total_deaths.R") #imporate data
-source("script/dataframe/covid19_state.R") 
-#source("script/dataframe/covid19_county.R")
-source("script/dataframe/recent_n_days.R") #seperates out n_days 
+```{r index-outside-scripts, results="hide", warning=FALSE, message=FALSE, include = FALSE}
+source("script/variable/setup.R")
+source("script/variable/colors.R") #colors 
+source("script/dataframe/covid19.R") #run script for covid19 df 
+source("script/variable/parameters.R") #global parameters 
 ```
 
-```{r}
-usafacts_data <- read.csv(link <- "https://usafactsstatic.blob.core.windows.net/public/data/covid-19/covid_confirmed_usafacts.csv")
-max_date <- as.Date(colnames(usafacts_data)[ncol(usafacts_data)], format = "X%m.%d.%y")
+
+```{r index-data-date}
+data_date <- covid19 %>% pull(date) %>% max()
+```
+
+
+```{r index-mod-dates}
+mod_dates <- tibble(type = NA, name = NA, mod_date = NA) %>%
+  add_row(type = "script", name = "setup",         mod_date = file.info("script/variable/setup.R")$mtime) %>%
+  add_row(type = "script", name = "colors",        mod_date = file.info("script/variable/colors.R")$mtime) %>%
+  add_row(type = "script", name = "covid df",      mod_date = file.info("script/dataframe/covid19.R")$mtime) %>%
+  add_row(type = "script", name = "param",         mod_date = file.info("script/variable/parameters.R")$mtime) %>%
+  add_row(type = "rmd",    name = "overview",      mod_date = file.info("overview.Rmd")$mtime) %>%
+  add_row(type = "rmd",    name = "growth_factor", mod_date = file.info("growth_factor.Rmd")$mtime) %>%
+  add_row(type = "rmd",    name = "state",         mod_date = file.info("state.Rmd")$mtime) %>%
+  add_row(type = "rmd",    name = "data_source",   mod_date = file.info("data_source.Rmd")$mtime) %>%
+  drop_na()
 ```
 
 
@@ -30,47 +42,53 @@ max_date <- as.Date(colnames(usafacts_data)[ncol(usafacts_data)], format = "X%m.
 
 ## Overview  
 
-Data available through: `r max_date`
+
+Data available through: `r data_date`  
+ 
 
 ```{r child="overview.Rmd"}
 ```
 
+```{r}
+last_mod <- mod_dates %>% filter(type == "script" | name == "overview") %>% pull(mod_date) %>% max() %>% format(., "%Y-%m-%e")
+```
+Code for this page last modified: `r last_mod` 
 
 ## Growth Factor  
 
-Data available through: `r max_date`
+Data available through: `r data_date`  
 
 ```{r child="growth_factor.Rmd"}
 ```
 
+```{r}
+last_mod <- mod_dates %>% filter(type == "script" | name == "growth_factor") %>% pull(mod_date) %>% max() %>% format(., "%Y-%m-%e")
+```
+Code for this page last modified: `r last_mod` 
 
 ## State Plots
 
-Data available through: `r max_date`
+
+Data available through: `r data_date`  
 
 ```{r child="state.Rmd"}
 ```
 
-
-```{r, echo = FALSE, eval = FALSE}
-
-## County Plot
-
-Data available through: `r max_date`
-
-#```{r child="gf_avg_county.Rmd"}
-#```
-
-
+```{r}
+last_mod <- mod_dates %>% filter(type == "script" | name == "state") %>% pull(mod_date) %>% max() %>% format(., "%Y-%m-%e")
 ```
-
-
+Code for this page last modified: `r last_mod` 
 
 ## Data  
 
-Data available through: `r max_date`
+Data available through: `r data_date`  
+
 
 ```{r child="data_source.Rmd"}
 ```
 
+```{r}
+last_mod <- mod_dates %>% filter(name == "data_source") %>% pull(mod_date) %>% max() %>% format(., "%Y-%m-%e")
+```
+Code for this page last modified: `r last_mod` 
 

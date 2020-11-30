@@ -8,42 +8,17 @@ editor_options:
 ---
 
 
-```{r, results="hide", warning=FALSE, message=FALSE, include = FALSE}
-library(tidyverse)
-library(gridExtra)
-library(grid)
-library(knitr)
-library(lubridate)
-library(scales)
-library(ggrepel)
-library(kableExtra)
-library(zoo)
-library(latex2exp)
-library(cowplot)
-knitr::opts_chunk$set(fig.width=8, fig.height = 4, dpi=300, echo=FALSE)
-```
-
-```{r outside-scripts}
-source("script/variable/colors.R") #colors 
-source("script/dataframe/covid19_US.R") #run script for covid19 df 
-source("script/variable/parameters.R") #global parameters 
+```{r overview-outside-script, results="hide", warning=FALSE, message=FALSE, include = FALSE}
+# source("script/variable/setup.R")
+# source("script/variable/colors.R") #colors 
+# source("script/dataframe/covid19.R") #run script for covid19 df 
+# source("script/variable/parameters.R") #global parameters 
 ```
 
 
-```{r current-values}
+```{r overview-covid19_US}
 #find current values to use as labels 
-
-current_values <- covid19_US_adj %>%
-    #return row that has current date
-    filter(date == current_date)
-
-
-current_US_deaths      <- current_values$total_deaths
-current_US_totalcases  <- current_values$total_cases
-current_US_newcases <- current_values$new_cases
-current_US_growthfact  <- current_values$growth_factor
-current_US_deathperc   <- current_values$death_percentage
-current_US_newdeaths <- current_values$new_deaths
+covid19_US <- covid19 %>% filter(geo == "USA")
 ```
 
  
@@ -51,24 +26,16 @@ current_US_newdeaths <- current_values$new_deaths
 ###  Total Cases and Total Deaths  
 These show the cumulative total of cases and deaths by day.  I have also denoted the current cumulative totals.  These total values are important; however they are not helpful for figuring out whether the pandemic is slowing down or growing as it is difficult to see trends in cumulative curves like these.
 
-```{r tc-td-plot, fig.height=3}
-covid_tidy <- covid19_US_adj %>%
-  select(date, total_cases, total_deaths) %>%
-  pivot_longer(
-      cols = c(total_cases, total_deaths)
-    , names_to = "type"
-    , values_to = "count"
-  ) 
+```{r overview-tc-td-plot, fig.height=3}
 
-total_labels <- covid19_US_adj %>%
-  filter(date == current_date) %>%
+total_labels <- covid19_US %>%
+  filter(date == max(date)) %>%
   mutate(
-      total_cases = paste("Current Total", formatC(total_cases, big.mark=",", format="d"), sep = "\n")
-    , total_deaths = paste("Current Total", formatC(total_deaths, big.mark=",", format="d"), sep = "\n")
+      case_total  = paste("Current Total", formatC(case_total,  big.mark=",", format="d"), sep = "\n")
+    , death_total = paste("Current Total", formatC(death_total, big.mark=",", format="d"), sep = "\n")
   )
 
-
-tc <- ggplot(covid19_US_adj, aes(date, total_cases)) + 
+tc <- ggplot(covid19_US, aes(date, case_total)) + 
   geom_area(alpha = 0.4)+
   geom_line(
       size = 1
@@ -79,9 +46,9 @@ tc <- ggplot(covid19_US_adj, aes(date, total_cases)) +
   geom_text(
       data = total_labels 
     , aes(
-          label = total_cases
+          label = case_total
         , y = -Inf
-        , x = current_date
+        , x = max(date)
       )
     , vjust = -0.15
     , hjust=1.05 
@@ -97,7 +64,7 @@ tc <- ggplot(covid19_US_adj, aes(date, total_cases)) +
     , axis.ticks.length = unit(5, "pt")
   )
 
-td <- ggplot(covid19_US_adj, aes(date, total_deaths)) + 
+td <- ggplot(covid19_US, aes(date, death_total)) + 
   geom_area(alpha = 0.4)+
   geom_line(
       size = 1
@@ -108,9 +75,9 @@ td <- ggplot(covid19_US_adj, aes(date, total_deaths)) +
   geom_text(
       data = total_labels 
     , aes(
-          label = total_deaths
+          label = death_total
         , y = -Inf
-        , x = current_date
+        , x = max(date)
       )
     , vjust = -0.15
     , hjust=1.05 
@@ -142,18 +109,19 @@ The trends and raw data show a peak around mid-April and had been moving downwar
 There is also a cyclical nature to the daily new cases with counts often being lower on weekends and higher on weekdays. 
 
 
+```{r overview-dc-plot, warning = FALSE}  
 
-
-```{r dc-plot, warning = FALSE}  
-#label sets
-labels_dc <- covid19_US %>% filter(date == as.Date("2020-06-20"))
-
+# set labels, top of second wave 
+labels_dc <- covid19_US %>% 
+  filter(date >= as.Date("2020-07-01"), date <= as.Date("2020-10-01")) %>% 
+  mutate(max = ifelse(case_new == max(case_new), 1, 0)) %>%
+  filter(max == 1)
 
 #daily cases plot
-ggplot(covid19_US_adj, aes(x=date, y=new_cases))+
+ggplot(covid19_US, aes(x=date, y=case_new))+
   geom_col(alpha=0.3) +
   geom_line(
-    aes(y = MA_new_cases)
+    aes(y = case_MA7)
     , size = 1.25
     , color = blue_comp
     , alpha = 0.6
@@ -161,9 +129,9 @@ ggplot(covid19_US_adj, aes(x=date, y=new_cases))+
   geom_text_repel(
       seed = 100
     , data = labels_dc
-    , aes(y = MA_new_cases, label = "7-Day\nMoving Average")
+    , aes(y = case_MA7, label = "7-Day\nMoving Average")
     , color = blue_comp
-    , nudge_y = 10000
+    , nudge_y = 25000
     , nudge_x = -20
   ) +
   ggtitle("New Cases per Day") +
@@ -189,13 +157,16 @@ A big concern during April was that the death percentage was continually increas
 
 Similar to new cases there is a cyclical nature to spikes in new cases.  These spikes may be due to reporting times where counts on weekdays are often higher than those on weekends.  Spikes also occur when previous deaths are re-assigned as COVID-19 related deaths, such as counting nursing home deaths and/or pneumonia deaths.  In late June, states began to add probable deaths to the death count: Delaware (June 23rd), New Jersey (June 25th), and New York (June 30th).  On July 27th, Texas announced a change in the way it counts deaths.  
 
-```{r dp-plot}
-plot_dp <- ggplot(covid19_US_adj, aes(date, death_percentage)) + 
+```{r overview-new-death-and-death-prop}
+
+death_prop_max <- covid19_US %>% filter(date >= x_min) %>% pull(death_prop) %>% max
+
+plot_dp <- ggplot(covid19_US, aes(date, death_prop)) + 
   geom_line(color = "grey40", size = 1) + 
   date_scaling + 
   scale_y_continuous(
       name = "Total Dealths / Total Cases"
-    , limits = c(0, NA)
+    , limits = c(0, death_prop_max)
     , labels = scales::percent
   ) +
   ggtitle("Dealth Percentage per Day") + 
@@ -206,15 +177,16 @@ plot_dp <- ggplot(covid19_US_adj, aes(date, death_percentage)) +
     , plot.margin  = margin(t=0, r=15, b=15, l=0)
     , axis.ticks.length = unit(5, "pt")
   )
-```
 
-```{r nd-plot}
-labels_nd <- covid19_US %>% filter(date == as.Date("2020-05-01"))
+labels_nd <- covid19_US %>% 
+  filter(date >= as.Date("2020-07-01"), date <= as.Date("2020-10-01")) %>% 
+  mutate(max = ifelse(death_new == max(death_new), 1, 0)) %>%
+  filter(max == 1)
 
-plot_nd <-ggplot(covid19_US_adj, aes(date, new_deaths)) + 
+plot_nd <-ggplot(covid19_US, aes(date, death_new)) + 
   geom_col(alpha=0.3) +
   geom_line(
-    aes(y = MA_new_deaths)
+    aes(y = death_MA7)
     , size = 1.25
     , color = blue_comp
     , alpha = 0.6
@@ -224,10 +196,10 @@ plot_nd <-ggplot(covid19_US_adj, aes(date, new_deaths)) +
   geom_text_repel(
       seed = 100
     , data = labels_nd
-    , aes(y = MA_new_deaths, label = "7-Day\nMoving Average")
+    , aes(y = death_MA7, label = "7-Day\nMoving Average")
     , color = blue_comp
-    , nudge_y = 2000
-    , nudge_x = 2
+    , nudge_y = 5000
+    , nudge_x = -10
   ) +
   ggtitle("New Deaths per Day") + 
   theme_minimal()+
@@ -239,10 +211,7 @@ plot_nd <-ggplot(covid19_US_adj, aes(date, new_deaths)) +
     , axis.ticks.length = unit(5, "pt")
   )
 
-```
 
-
-```{r dp-nd-plot}
 cowplot::plot_grid(
     plot_dp
   , plot_nd
@@ -257,21 +226,21 @@ cowplot::plot_grid(
 
 The actual values for the previous 14 days are detailed in the table below.  
 
-```{r values-table}
+```{r overview-values-table}
 #transpose table; easier to read
-covid19_US_adj %>%
+covid19_US %>%
   arrange(desc(date)) %>%
   top_n(14, wt=date) %>%
   #format data for output table 
   mutate(
-      Date = format(date, '%a, %b %d, %Y')
-    , `Total Cases` = formatC(total_cases, big.mark=",", format="d")
-    , `New Cases`  = formatC(new_cases, big.mark=",", format="d")
-    , `New Cases 7-MA` = formatC(MA_new_cases, big.mark=",", format="d")
-    , `Total Deaths` = formatC(total_deaths, big.mark=",", format="d")
-    , `New Deaths` = formatC(new_deaths, big.mark=",", format="d")
-    , `New Deaths 7-MA` = formatC(MA_new_deaths, big.mark=",", format="d")
-    , `Death Percentage` = percent(death_percentage, accuracy=0.001)
+       Date = format(date, '%a, %b %d, %Y')
+    , `Total Cases`     = formatC(case_total, big.mark=",", format="d")
+    , `New Cases`       = formatC(case_new,    big.mark=",", format="d")
+    , `New Cases 7-MA`  = formatC(case_MA7,    big.mark=",", format="d")
+    , `Total Deaths`    = formatC(death_total, big.mark=",", format="d")
+    , `New Deaths`      = formatC(death_new,   big.mark=",", format="d")
+    , `New Deaths 7-MA` = formatC(death_MA7, big.mark=",", format="d")
+    , `Death Percentage` = percent(death_prop, accuracy=0.001)
   ) %>%
   #re-order to group cases and death information together 
   select(

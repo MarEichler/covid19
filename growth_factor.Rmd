@@ -7,22 +7,11 @@ editor_options:
   chunk_output_type: console
 ---
 
-```{r packages-global-options, results="hide", warning=FALSE, message=FALSE, include = FALSE, eval = TRUE }
-#not needed for knitting with other rmd 
-library(tidyverse)
-library(gridExtra)
-library(grid)
-library(knitr)
-library(lubridate)
-library(scales)
-library(ggrepel)
-library(kableExtra)
-library(latex2exp)
-library(cowplot)
-knitr::opts_chunk$set(fig.width=8, fig.height = 4, dpi=300, echo=FALSE)
-source("script/variable/colors.R") #colors 
-source("script/dataframe/covid19_US.R") #run script for covid19 df 
-source("script/variable/parameters.R") #global parameters; also imports data 
+```{r gf-outside-scirpts, results="hide", warning=FALSE, message=FALSE, include = FALSE, eval = TRUE }
+# source("script/variable/setup.R")
+# source("script/variable/colors.R") #colors 
+# source("script/dataframe/covid19.R") #run script for covid19 df 
+# source("script/variable/parameters.R") #global parameters 
 ```
 
 
@@ -56,82 +45,11 @@ Similar to the new cases per day, there can be a lot of variability in growth fa
 
 Between mid-April and mid-June the growth factor hovered around 1, showing that although cases were decreasing there was not substantial decrease in growth.  After states began to re-open there was a dramatic increase in new-cases starting in mid-June.  Between mid-June and mid-July cases started increasing dramatically which lead lead to the 7-day moving average growth factor to be above 1 for a month.  From mid-July  to October the 7-day moving average growth factor has oscillating around 1.  Starting in the Fall with the dramatic increase of new cases, the 7-day moving average growth factor has been consistently above 1.  
 
-```{r, eval = FALSE }
-#label for 14-day moving average 
-labels_gf <- covid19_US %>% filter(date == as.Date("2020-05-02"))
 
-ggplot(covid19_US_adj, aes(x=date, y=growth_factor))+
-  red_box +
-  geom_area(alpha = 0.3) +
-  gf_info_cap +
-  date_scaling +
-  scale_y_continuous(expand = c(0, 0)) +
-  coord_cartesian(ylim = c(min(0.5, min(covid19_US_adj$growth_factor)), 1.5)) + #zoom into a certain part of graph
-  theme_minimal()+
-  theme(
-      plot.title = element_text(hjust = 0.5, size = subtitle_size)
-    , axis.title.x=element_blank()
-    , axis.title.y=element_blank()
-    , plot.margin  = margin(t=0, r=15, b=0, l=0)
-    , axis.ticks.length = unit(5, "pt")
-  ) + 
-  geom_line(
-      aes(y = MA_growth_factor)
-    , size = 1.25
-    , color = blue_comp
-    , alpha = 0.6
-  ) + 
-  geom_text_repel(
-      seed = 100
-    , data = labels_gf
-    , aes(y = MA_growth_factor, label = "7-Day\nMoving Average")
-    , color = blue_comp
-    , nudge_y = 0.5
-    , nudge_x = 3
-  ) +
-  ggtitle("Growth Factor per Day")
-
-```
-
-```{r, eval = FALSE }
-ggplot(covid19_US_adj, aes(x=date, y= growth_factor - 1))+
-  annotate("rect", xmin = x_min, xmax = x_max, ymin = 0, ymax =  Inf, fill = gf2plus, alpha = 0.2) + 
-  geom_area(alpha = 0.3) +
-  annotate("text", x = x_min + 1, y = -0.5, label = cap_gf, vjust=-0.3, hjust= -0.1, size = 3, color = "grey15") +
-  date_scaling +
-  scale_y_continuous(expand = c(0, 0), limits = c(-0.5, NA)) +
-  theme_minimal()+
-  theme(
-    plot.title = element_text(hjust = 0.5, size = subtitle_size)
-    , axis.title.x=element_blank()
-    , axis.title.y=element_blank()
-    , plot.margin  = margin(t=0, r=15, b=0, l=0)
-    , axis.ticks.length = unit(5, "pt")
-  ) + 
-  ggtitle("Daily Growth Factor Difference from One")
-```
-
-```{r, eval = FALSE}
-ggplot(covid19_US_adj, aes(x=date, y= MA_growth_factor - 1))+
-  annotate("rect", xmin = x_min, xmax = x_max, ymin = 0, ymax =  Inf, fill = gf2plus, alpha = 0.2) + 
-  geom_area(alpha = 0.3, fill = blue_comp) +
-  annotate("text", x = x_min + 1, y = -0.5, label = cap_gf, vjust=-0.3, hjust= -0.1, size = 3, color = "grey15") +
-  date_scaling +
-  scale_y_continuous(expand = c(0, 0), limits = c(-0.5, 0.5), breaks = seq(-0.5, 0.5, .25)) +
-  theme_minimal()+
-  theme(
-    plot.title = element_text(hjust = 0.5, size = subtitle_size)
-    , axis.title.x=element_blank()
-    , axis.title.y=element_blank()
-    , plot.margin  = margin(t=0, r=15, b=0, l=0)
-    , axis.ticks.length = unit(5, "pt")
-  ) + 
-  ggtitle("7-Day Moving Average of Growth Factor Difference from One")
-```
-
-```{r}
-covid19_US_adj %>%
-  select(date, contains("growth_factor")) %>%
+```{r gf-plot}
+covid19 %>%
+  filter(geo == "USA") %>%
+  select(date, contains("gf")) %>%
   pivot_longer(-date) %>%
 ggplot(aes(x=date, y= value - 1))+
   annotate("rect", xmin = x_min, xmax = x_max, ymin = 0, ymax =  Inf, fill = gf2plus, alpha = 0.2) + 
@@ -160,39 +78,43 @@ ggplot(aes(x=date, y= value - 1))+
 ```
 
 
-
 <br>  
   
 ### Recent Values by Day for US  
 
 The actual values for the previous 14 days are detailed in the table below.  
 
-```{r values-table-gf}
+```{r gf-values-table}
 #transpose table; easier to read
-covid19_US_adj %>%
+covid19 %>%
+  filter(geo == "USA") %>%
   arrange(desc(date)) %>%
   top_n(14, wt=date) %>%
   #format data for output tabe
   mutate(
-      Date = format(date, '%a, %b %d, %Y')
-    , `Total Cases` = formatC(total_cases, big.mark=",", format="d")
-    , `New Cases`  = formatC(new_cases, big.mark=",", format="d")
-    , `Growth Factor` = round(growth_factor, 2)
-    , `Growth Factor 7-day MA` = round(MA_growth_factor, 2)
-    , `New Cases 7-Day MA` = formatC(MA_new_cases, big.mark=",", format="d")
+      Date                 = format(date, '%a, %b %d, %Y')
+    , `Total Cases`        = formatC(case_total, big.mark=",", format="d")
+    , `New Cases`          = formatC(case_new, big.mark=",", format="d")
+    , `New Cases 7-Day MA` = formatC(case_MA7, big.mark=",", format="d")
+    , `Growth Factor`      = round(gf, 2)
+    , `Growth Factor 7-day MA` = round(gf_MA7, 2)
   ) %>%
   #color Growth Factor based on value 
   mutate(
     `Growth Factor` = cell_spec(
-      `Growth Factor`, color = 
-          ifelse( growth_factor > 1, gf2plus,
-                  ifelse(growth_factor > 0, colorspace::lighten(gf2plus, 0.4), "grey35"))
+      `Growth Factor`, color = case_when(
+              gf > 1 ~ gf2plus
+            , gf > 0 ~ colorspace::lighten(gf2plus, 0.4)
+            , TRUE   ~ "grey35"
+          )
       , bold = T
       ), 
     `Growth Factor 7-day MA` = cell_spec(
-      `Growth Factor 7-day MA`, color = 
-          ifelse( MA_growth_factor > 1, gf2plus,
-                  ifelse(growth_factor > 0, colorspace::lighten(gf2plus, 0.4), "grey35"))
+      `Growth Factor 7-day MA`, color = case_when(
+              gf_MA7 > 1 ~ gf2plus
+            , gf_MA7 > 0 ~ colorspace::lighten(gf2plus, 0.4)
+            , TRUE   ~ "grey35"
+          )
       , bold = T
       )
   ) %>%

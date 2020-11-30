@@ -7,14 +7,14 @@ editor_options:
   chunk_output_type: inline
 ---
 
-This data is downloaded from 
-<a href="https://usafacts.org/visualizations/coronavirus-covid-19-spread-map/" target="_blank" >
-USA Facts</a>. I use two of the three datasets available: total cases and total deaths.  Both of these datasets are broken down by state and county.  This data requires additional formatting, calculation, and aggregation.  USA Facts gets data by county on a daily basis, this is totaled to get values for each day for individual states and the entire US. 
+The covid19 deaths, cases, and tests are taken from the 
+<a href="https://covidtracking.com/data/download" target= "_blank">
+Covid Tracking Project</a>.  
 
-The
-<a href="https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/cases-in-us.html" target="_blank">
-American CDC </a> 
-links to USA Facts under Cases & Death by County, which is how I found the data source.  
+Population numbers are taken from the 
+<a href="https://www.census.gov/data/datasets/time-series/demo/popest/2010s-state-total.html#par_textimage_1873399417" target = "_blank">
+US Census</a>. 
+Note that the projected population for 2019 were used.  
 
 Many of the plots have been restricted to show data on March 15, 2020 and after.  This is when case numbers started to rise and preventative measures started to increase dramatically.  
 

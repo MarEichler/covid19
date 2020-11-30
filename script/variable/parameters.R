@@ -1,23 +1,16 @@
 #global parameters and ggplot formatting 
 
-#moving average
-ma_k <- 14
 
 #beginning date for overview plots 
 startdate <- "2020-03-15"
 #3/18 - start 'lockdown' ; after large growth factors↕
-
-load("data/covid19_US.rda")
-covid19_US_adj <- covid19_US  %>%
-  #only look at data after a given start date
-  filter(date >= as.Date(startdate))
 
 
 #plot parametrs
 title_size <- 14
 subtitle_size <- 12
 
-current_date <- max(covid19_US_adj$date)
+current_date <- max(covid19$date)
 
 x_min <- as.Date(startdate) #-.5
 x_max <- as.Date(current_date) #+1
@@ -32,6 +25,7 @@ date_scaling <- scale_x_date(
   , labels = date_format("%b-%d")
   , breaks = my_date_breaks
   , expand = c(0, 0)
+  , limits = c(x_min, x_max)
 )
 
 # for US plot; 10,000 -> 10k
