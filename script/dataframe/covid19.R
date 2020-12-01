@@ -1,5 +1,3 @@
-library(tidyverse)
-
 
 #SOURCE: https://covidtracking.com/data/download
 ctp_link_usa    <- "https://covidtracking.com/data/download/national-history.csv"
@@ -112,5 +110,6 @@ covid19 <- left_join(us_and_state, usa_population, by = "geo") %>%
     , test_new_PC      = test_new      / population 
     , test_MA7_PC      = test_MA7      / population 
   ) %>%
+  #create amounts per 100,000 people
+  mutate_at(vars(contains("_PC")), funs("100k"= .*100000)) %>% 
   select(date, geo, contains("death"), contains("case"), contains("gf"), contains("test"), population) 
-
