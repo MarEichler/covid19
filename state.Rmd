@@ -9,9 +9,9 @@ editor_options:
 
 ```{r state-outside-script, results="hide", warning=FALSE, message=FALSE, include = FALSE}
 # source("script/variable/setup.R")
-# source("script/variable/colors.R") #colors 
-# source("script/dataframe/covid19.R") #run script for covid19 df 
-# source("script/variable/parameters.R") #global parameters 
+# source("script/variable/colors.R") #colors
+# source("script/dataframe/covid19.R") #run script for covid19 df
+# source("script/variable/parameters.R") #global parameters
 ```
 
 ```{r state-facet-data}
@@ -52,32 +52,81 @@ ggplot(facet_data, aes(date, case_MA7)) +
 
 ```{r state-MA7-PC}
 
-title <- paste("Per-Capita 7-Day Moving Average of New Cases")
-subtitle <- paste(x_min, "to", x_max) #x_min/x_max from parameters.R file 
+#HEX MAP SET UP
 
-max_val <- facet_data %>% pull(case_MA7_PC) %>% max()
-  
-ggplot(facet_data, aes(date, case_MA7_PC)) + 
-    geom_area(fill = blue_comp, alpha = 0.2) + 
-    geom_line(color = blue_comp) + 
-    facet_geo(~geo, grid = "us_state_grid2" , labeller = adjust_labels, scales = "fixed") +
-    scale_x_date(      name = NULL, breaks = NULL, expand = c(0, 0)) + 
-    scale_y_continuous(name = NULL, breaks = NULL, expand = c(0, 0)
-                       , limits = c(0, NA)
-                       ) +
-    theme_minimal() +
-    labs(
-      title = title
-      , subtitle = subtitle
-      , caption = paste("Scales are fixed")
-    ) +
-    theme_minimal() +
-    theme(
-        strip.text = element_text(margin = margin(3, 3, 3, 3), face = "bold")
-      , plot.title = element_text(face = "bold", hjust = 0.5)
-      , plot.subtitle = element_text(hjust = 0.5, size = 12)
-      , panel.grid = element_blank()
-    ) 
+#INFO HERE: https://www.r-graph-gallery.com/328-hexbin-map-of-the-usa.html 
+
+# Download the Hexagones boundaries at geojson format here:
+#     https://team.carto.com/u/andrew/tables/andrew.us_states_hexgrid/public/map.
+
+# Load downloaded file 
+spdf <- geojsonio::geojson_read("data/us_states_hexgrid.geojson",  what = "sp")
+
+spdf@data <-  spdf@data %>% 
+  mutate(
+    google_name = gsub(" \\(United States\\)", "", google_name)
+    , state_pc = iso3166_2
+  )
+spdf_fortified <- broom::tidy(spdf, region = "state_pc")
+
+
+df <- covid19 %>% 
+  filter(geo %in% c(state.abb, "DC")) %>%
+  filter(date == max(date))
+
+max_date <- max(covid19$date)
+
+hex_data<- spdf_fortified %>%
+  left_join(. , df, by=c("id" = "geo") )
+
+#HEX MAP STATE LABELS 
+# Calculate the centers of each hexagon to add the labels:
+#requires rgeos package 
+centers <- cbind.data.frame(data.frame(rgeos::gCentroid(spdf, byid=TRUE), id=spdf@data$iso3166_2))
+
+
+labels <- centers %>%
+  left_join(., hex_data, by = c("id" = "id")) 
+
+
+USA_data <- covid19 %>% filter(geo == "USA") %>% filter(date == max_date)
+title <- paste("New Cases 7-Day Moving Average per 100,000")
+subtitle <- paste0("National US value: ", round(USA_data$case_MA7_PC_100k, 0))
+
+
+
+
+
+ggplot(data = hex_data, aes(x = long, y = lat, group = group, fill = case_MA7_PC_100k)) + 
+  geom_polygon() +
+  geom_polygon( color = "white" , size = 1, show.legend = FALSE) +
+  scale_fill_gradient(
+    name = NULL
+  ) +
+  geom_text(
+    data = labels
+    , aes(x=x, y=y+0.5, label=id)
+    , color = "white"
+    , fontface = "bold"
+  ) +
+  geom_text(
+    data = labels
+    , aes(x=x, y=y-0.8, label=round(case_MA7_PC_100k, 0))
+    , color = "white"
+    , size = 2.5
+  )+
+  theme_void() +
+  coord_map() +
+  labs(
+    title = title
+    , subtitle = subtitle
+  ) +
+  theme(
+    plot.title = element_text(face = "bold", hjust = 0.5)
+    , plot.subtitle = element_text(hjust = 0.5, size = 12)
+    , legend.spacing.x = unit(0, 'cm')
+    , legend.margin=margin(t = .5, unit='cm')
+  )
 ```
 
 
