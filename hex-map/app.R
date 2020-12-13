@@ -1,47 +1,49 @@
-#
-# This is a Shiny web application. You can run the application by clicking
-# the 'Run App' button above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
+source("setup.R")
+source("covid19_data.R")
+source("hex-map-function.R")
+
+data_date <- max(hex_data$date)
 
 library(shiny)
 
 # Define UI for application that draws a histogram
-ui <- fluidPage(
+ui <- fillPage( 
 
-    # Application title
-    titlePanel("Old Faithful Geyser Data"),
-
-    # Sidebar with a slider input for number of bins 
-    sidebarLayout(
-        sidebarPanel(
-            sliderInput("bins",
-                        "Number of bins:",
-                        min = 1,
-                        max = 50,
-                        value = 30)
-        ),
-
-        # Show a plot of the generated distribution
-        mainPanel(
-           plotOutput("distPlot")
-        )
-    )
-)
+  titlePanel(paste0("COVID-19 Values by Population as of ", data_date)),
+    mainPanel(
+      tabsetPanel(type = "tabs",
+        tabPanel("Plot",
+                 br(),
+                 fluidRow(
+                   sidebarPanel(
+                     selectInput("val", h3("Select Variable"), 
+                                 choices = list(
+                                   "Cases"  = "case", 
+                                   "Deaths" = "death",
+                                   "Tests"  = "test"), 
+                                 selected = "case"), 
+                     radioButtons("type", label = NULL, 
+                                  choices = list(
+                                    "Total"                      = "_total_PC_100k", 
+                                    "Daily"                      = "_new_PC_100k",
+                                    "Daily 7-Day Moving Average" = "_MA7_PC_100k"),
+                                  selected = "_total_PC_100k")
+                   ),  #end sidebarPanel
+                   plotOutput("hex_pc_plots", width = "200px")
+                 ) #end fluid Row 
+        ) #end Plot tabPanel
+       # tabPanel("Summary"),
+      #  tabPanel("Table")
+      ) #end tabsetPanel
+    ) #main Panel
+) #fluidPage
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
 
-    output$distPlot <- renderPlot({
-        # generate bins based on input$bins from ui.R
-        x    <- faithful[, 2]
-        bins <- seq(min(x), max(x), length.out = input$bins + 1)
-
-        # draw the histogram with the specified number of bins
-        hist(x, breaks = bins, col = 'darkgray', border = 'white')
+    output$hex_pc_plots <- renderPlot({
+        var <- paste0(input$val, input$type)
+        HEX_MAP_FUNC(var)
     })
 }
 
