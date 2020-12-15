@@ -21,7 +21,7 @@ facet_data <- covid19 %>%
 ```
 
 
-```{r state-MA7-free}
+```{r state-MA7-free, fig.width= 7, fig.height= 5.25}
 title <- paste("7-Day Moving Average of New Cases")
 subtitle <- paste(x_min, "to", x_max) #x_min/x_max from parameters.R file 
   
