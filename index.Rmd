@@ -43,7 +43,7 @@ mod_dates <- tibble(type = NA, name = NA, mod_date = NA) %>%
 ## Overview  
 
 
-Data available through: `r data_date`  
+Data as of `r data_date`  
  
 
 ```{r child="overview.Rmd"}
@@ -56,7 +56,7 @@ Code for this page last modified: `r last_mod`
 
 ## Growth Factor  
 
-Data available through: `r data_date`  
+Data as of `r data_date`  
 
 ```{r child="growth_factor.Rmd"}
 ```
@@ -69,7 +69,7 @@ Code for this page last modified: `r last_mod`
 ## State Plots
 
 
-Data available through: `r data_date`  
+Data as of `r data_date`  
 
 ```{r child="state.Rmd"}
 ```
@@ -81,7 +81,7 @@ Code for this page last modified: `r last_mod`
 
 ## Data  
 
-Data available through: `r data_date`  
+Data as of `r data_date`  
 
 
 ```{r child="data_source.Rmd"}
