@@ -1,0 +1,126 @@
+---
+title: ""
+output:
+  html_document:
+    highlight: "tango"
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r current-outside-script, results="hide", warning=FALSE, message=FALSE, include = FALSE}
+# source("script/variable/setup.R")
+# source("script/dataframe/covid19.R") #run script for covid19 df
+# source("script/variable/parameters.R") #global parameters
+```
+
+
+```{r state-MA7-PC, fig.height=5}
+
+#HEX MAP SET UP
+
+#INFO HERE: https://www.r-graph-gallery.com/328-hexbin-map-of-the-usa.html 
+
+# Download the Hexagones boundaries at geojson format here:
+#     https://team.carto.com/u/andrew/tables/andrew.us_states_hexgrid/public/map.
+
+# Load downloaded file 
+spdf <- geojsonio::geojson_read("data/us_states_hexgrid.geojson",  what = "sp")
+
+spdf@data <-  spdf@data %>% 
+  mutate(
+    google_name = gsub(" \\(United States\\)", "", google_name)
+    , state_pc = iso3166_2
+  )
+spdf_fortified <- broom::tidy(spdf, region = "state_pc")
+
+
+df <- covid19 %>% 
+  filter(geo %in% c(state.abb, "DC", "USA")) %>%
+  filter(date == max(date)) %>%
+  mutate(
+      risk_group = cut(
+        case_MA7_PC_100k
+        , breaks = risk_group_breaks
+        , labels = risk_group_labels
+        , right = FALSE
+        )
+    , font_color = SET_FONT_COLOR(risk_group)
+  )
+
+max_date <- max(covid19$date)
+
+hex_data<- spdf_fortified %>%
+  left_join(. , df, by=c("id" = "geo") ) 
+
+
+#HEX MAP STATE LABELS 
+# Calculate the centers of each hexagon to add the labels:
+#requires rgeos package 
+centers <- cbind.data.frame(data.frame(rgeos::gCentroid(spdf, byid=TRUE), id=spdf@data$iso3166_2))
+
+
+labels <- centers %>%
+  left_join(., hex_data, by = c("id" = "id")) 
+
+
+USA_data <- df %>% filter(geo == "USA") %>% filter(date == max_date)
+title <- paste("New Cases 7-Day Moving Average per 100,000 on", max_date)
+USA_val_text <- paste0("National US value: ", round(USA_data$case_MA7_PC_100k, 0))
+
+USA_bg_color <- risk_group_colors[names(risk_group_colors) == USA_data$risk_group]
+USA_ft_color <- SET_FONT_COLOR(USA_data$risk_group)
+
+hex_data$USA_val <- USA_val_text
+
+ggplot(data = hex_data, aes(x = long, y = lat, group = group, fill = risk_group)) + 
+  geom_polygon() +
+  geom_polygon( color = "white" , size = 1, show.legend = FALSE) +
+  facet_grid( . ~ USA_val) + 
+  scale_fill_manual(
+      name = NULL
+    , values = risk_group_colors
+    , drop = FALSE #show all categories
+  ) + 
+  guides(fill=guide_legend(title.position="top")) + 
+  geom_text(
+    data = labels
+    , aes(x=x, y=y+0.5, label=id)
+    , color = labels$font_color 
+    , fontface = "bold"
+  ) +
+  geom_text(
+    data = labels
+    , aes(x=x, y=y-0.8, label=round(case_MA7_PC_100k, 0))
+    , color = labels$font_color
+    , size = 2.5
+  )+
+  theme_void() +
+  coord_map() +
+  labs(title = title ) +
+  theme(
+      plot.title = element_text(face = "bold", hjust = 0.5, margin = margin(0, 0, 10, 0))
+    , plot.subtitle = element_text(hjust = 0.5, size = 12)
+    , strip.text.x  = element_text(size = 12, color = "white", face = "bold", margin = margin(3, 0, 3, 0))
+    , strip.background.x = element_rect(fill = USA_bg_color, color = USA_bg_color,)
+    , legend.spacing.x = unit(0, 'cm')
+    , legend.margin=margin(t = .5, unit='cm')
+    , legend.position = "bottom"
+    , legend.text = element_text(margin = margin(0,12,0,3)) # t r b l
+  )
+```
+
+
+
+
+```{r, out.width = "100%", eval = FALSE }
+### Take a Closer Look! 
+
+# Build your own plot for a given state and time period by using a shiny app.  The app can be access through this  link, <a href="https://mareichler.shinyapps.io/diy-covid19-plots/" target = "_blank">mareichler.shinyapps.io/diy-covid19-plots/</a>, and is also embedded below:  
+# knitr::include_app("https://mareichler.shinyapps.io/diy-covid19-plots/", height = "500px")
+```
+
+
+
+
+
+

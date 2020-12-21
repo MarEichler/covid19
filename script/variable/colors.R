@@ -5,7 +5,7 @@ gf1_2   <- brewer.pal(5, "YlOrRd")[3]
 gf2plus <- brewer.pal(5, "YlOrRd")[4]
 
 color_palette <- list(
-  "0"   = gf0
+    "0"   = gf0
   , "0-1" = gf0_1
   , "1-2" = gf1_2
   , "2+"  = gf2plus
@@ -16,7 +16,7 @@ color_palette <- list(
 #https://www.npr.org/sections/health-shots/2020/03/16/816707182/map-tracking-the-spread-of-the-coronavirus-in-the-u-s
 
 nc_perc_palette <- list(
-  "-100%" = "#549990" 
+    "-100%" = "#549990" 
   ,  "-50%" = "#7dc3ae" #GnYlRd[2]
   ,   "-5%" = "#ebe3a7" #GnYlRd[5]
   ,   "+5%" = "#eeb97a" #GnYlRd[6]
@@ -45,3 +45,20 @@ NPR_yellow    <- "#ebe3a7" #yellow
 NPR_yellorang <- "#eeb97a" #yellow/orange
 NPR_orange    <- "#ea8e4f" #orange
 NPR_red       <- "#df6222"
+
+
+
+
+
+risk_group_colors <- c(
+    "#FCFFA4FF" #<1 
+  , "#F7D340FF" # [1,10)
+  , "#E55C30FF" # [10,25)
+  , "#B1325AFF" # [25, 50)
+  , "#87216BFF" #[50, inf)
+  )
+
+names(risk_group_colors) <-  risk_group_labels
+
+
+

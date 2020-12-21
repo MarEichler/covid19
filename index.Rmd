@@ -12,9 +12,8 @@ knitr::opts_chunk$set(echo=FALSE)
 
 ```{r index-outside-scripts, results="hide", warning=FALSE, message=FALSE, include = FALSE}
 source("script/variable/setup.R")
-source("script/variable/colors.R") #colors 
-source("script/dataframe/covid19.R") #run script for covid19 df 
-source("script/variable/parameters.R") #global parameters 
+source("script/dataframe/covid19.R") #run script for covid19 df
+source("script/variable/parameters.R") #global parameters
 ```
 
 
@@ -66,7 +65,7 @@ last_mod <- mod_dates %>% filter(type == "script" | name == "growth_factor") %>%
 ```
 Code for this page last modified: `r last_mod` 
 
-## State Plots
+## State Trends
 
 
 Data as of `r data_date`  
@@ -78,6 +77,21 @@ Data as of `r data_date`
 last_mod <- mod_dates %>% filter(type == "script" | name == "state") %>% pull(mod_date) %>% max() %>% format(., "%Y-%m-%e")
 ```
 Code for this page last modified: `r last_mod` 
+
+
+## Current
+
+
+Data as of `r data_date`  
+
+```{r child="current.Rmd"}
+```
+
+```{r}
+last_mod <- mod_dates %>% filter(type == "script" | name == "state") %>% pull(mod_date) %>% max() %>% format(., "%Y-%m-%e")
+```
+Code for this page last modified: `r last_mod` 
+
 
 ## Data  
 
