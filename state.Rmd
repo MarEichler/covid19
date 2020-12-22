@@ -20,36 +20,6 @@ facet_data <- covid19 %>%
 ```
 
 
-```{r state-MA7-free, fig.height= 5, eval = FALSE}
-title <- paste("7-Day Moving Average of New Cases")
-subtitle <- paste(x_min, "to", x_max) #x_min/x_max from parameters.R file 
-  
-ggplot(facet_data, aes(date, case_MA7)) + 
-    geom_area(fill = blue_comp, alpha = 0.2) + 
-    geom_line(color = blue_comp) + 
-    facet_geo(~geo, grid = "us_state_grid2" , labeller = adjust_labels, scales = "free") +
-    scale_x_date(      name = NULL, breaks = NULL, expand = c(0, 0)) + 
-    scale_y_continuous(name = NULL, breaks = NULL, expand = c(0, 0)
-                       , limits = c(0, NA)
-                       ) +
-    theme_minimal() +
-    labs(
-      title = title
-      , subtitle = subtitle
-      , caption = paste("Scales are free\nThis plot is not to compare numbers state to state",
-                        "but to look at curves and where cases are increasing or decreasing")
-    ) +
-    theme_minimal() +
-    theme(
-        strip.text = element_text(margin = margin(3, 3, 3, 3), face = "bold")
-      , plot.title = element_text(face = "bold", hjust = 0.5)
-      , plot.subtitle = element_text(hjust = 0.5, size = 12)
-      , panel.grid = element_blank()
-    ) 
-```
-
-&nbsp; 
-
 ```{r state-MA7PC, fig.height= 5}
 
 title <- paste("7-Day Moving Average of New Cases per 100,000 ")
