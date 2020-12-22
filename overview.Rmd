@@ -10,9 +10,8 @@ editor_options:
 
 ```{r overview-outside-script, results="hide", warning=FALSE, message=FALSE, include = FALSE}
 # source("script/variable/setup.R")
-# source("script/variable/colors.R") #colors 
-# source("script/dataframe/covid19.R") #run script for covid19 df 
-# source("script/variable/parameters.R") #global parameters 
+# source("script/dataframe/covid19.R") #run script for covid19 df
+# source("script/variable/parameters.R") #global parameters
 ```
 
 
@@ -166,7 +165,7 @@ plot_dp <- ggplot(covid19_US, aes(date, death_prop)) +
     , limits = c(0, death_prop_max)
     , labels = scales::percent
   ) +
-  ggtitle("Dealth Percentage per Day") + 
+  ggtitle("Case Fatality Percentage per Day") + 
   theme_minimal()+
   theme(
       plot.title = element_text(hjust = 0.5, size = subtitle_size)
