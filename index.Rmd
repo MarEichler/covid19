@@ -81,7 +81,7 @@ last_mod <- mod_dates %>% filter(type == "script" | name == "state") %>% pull(mo
 Code for this page last modified: `r last_mod` 
 
 
-## Current
+## Current New Cases
 
 
 Data as of `r data_date`  
