@@ -13,6 +13,7 @@ knitr::opts_chunk$set(echo=FALSE)
 ```{r index-outside-scripts, results="hide", warning=FALSE, message=FALSE, include = FALSE}
 source("script/variable/setup.R")
 source("script/dataframe/covid19.R") #run script for covid19 df
+source("script/dataframe/covid19_county.R") #run script for covid19 df
 source("script/variable/parameters.R") #global parameters
 ```
 
@@ -32,6 +33,7 @@ mod_dates <- tibble(type = NA, name = NA, mod_date = NA) %>%
   add_row(type = "rmd",    name = "growth_factor", mod_date = file.info("growth_factor.Rmd")$mtime) %>%
   add_row(type = "rmd",    name = "state",         mod_date = file.info("state.Rmd")$mtime) %>%
   add_row(type = "rmd",    name = "data_source",   mod_date = file.info("data_source.Rmd")$mtime) %>%
+  add_row(type = "rmd",    name = "current",       mod_date = file.info("current.Rmd")$mtime) %>%
   drop_na()
 ```
 
@@ -88,7 +90,7 @@ Data as of `r data_date`
 ```
 
 ```{r}
-last_mod <- mod_dates %>% filter(type == "script" | name == "state") %>% pull(mod_date) %>% max() %>% format(., "%Y-%m-%e")
+last_mod <- mod_dates %>% filter(type == "script" | name == "current") %>% pull(mod_date) %>% max() %>% format(., "%Y-%m-%e")
 ```
 Code for this page last modified: `r last_mod` 
 
