@@ -25,20 +25,21 @@ subtitle_size <- 12
 
 current_date <- max(covid19$date)
 
-x_min <- as.Date(startdate) #-.5
-x_max <- as.Date(current_date) #+1
+x_min <- as.Date(startdate) -.5
+x_max <- as.Date(current_date) + .5
 
 
 #set up consistent date breaks
-my_date_breaks <- pretty_breaks()(as.Date(c(x_min, x_max)))
+#my_date_breaks <- pretty_breaks()(as.Date(c(x_min, x_max)))
+my_date_breaks <- seq.Date(as.Date("2020-04-01"), as.Date(x_max), "2 month")
 
 #date scaling (want consistency)
 date_scaling <- scale_x_date(
     name = NULL
-  , labels = date_format("%b-%d")
+  , labels = date_format("%b %Y")
   , breaks = my_date_breaks
   , expand = c(0, 0)
-  , limits = c(x_min, x_max)
+  , limits = c(x_min, x_max) 
 )
 
 # for US plot; 10,000 -> 10k
@@ -113,7 +114,7 @@ risk_group_labels <- c("<1 Low", "[1,10) Medium", "[10,25) High", "[25,50) Very 
 
 
 risk_group_colors <- c(
-    "#FCFFA4FF" #<1 
+    NPR_litegreen#"#FCFFA4FF" #<1 
   , "#F7D340FF" # [1,10)
   , "#E55C30FF" # [10,25)
   , "#B1325AFF" # [25, 50)
