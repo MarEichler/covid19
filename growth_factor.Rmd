@@ -100,16 +100,19 @@ ggplot(gf_data, aes(x=date))+
 ```
 
 
-<br>  
+<br> 
+
+### Last Two Weeks  
+
 ```{r gf-natl-diff-one, fig.height = 2.5}
 
 gf_data4wk <- covid19 %>%
   filter(geo == "USA") %>%
   select(date, contains("gf")) %>%
-  filter(date > max(date) - 28)
+  filter(date > max(date) - 14)
 
 labels_gf <- gf_data4wk %>% 
-  filter(date == max(date)-20)
+  filter(date == max(date)-10)
 
 seclarg <- gf_data4wk %>%
   top_n(n= 2, wt = gf) %>%
@@ -142,7 +145,7 @@ ggplot(gf_data4wk, aes(x=date))+
   )+
   scale_y_continuous(minor_breaks = NULL) + 
   labs(
-      title = "USA National Daily and 7-Day Moving Average Growth Factor Last 4 Weeks"
+      title = "USA National Daily and 7-Day Moving Average Growth Factor Last Two Weeks"
     , subtitle =  "Growth Factor Difference from One" 
     , caption = "A growth factor less than one (difference less than zero) means new cases are decreasing"
   ) +
@@ -162,7 +165,7 @@ ggplot(gf_data4wk, aes(x=date))+
 ```{r gf-facet-data}
 gf_facet_val <- covid19 %>%
   filter(geo %in% c(state.abb, "DC")) %>% 
-  filter(date > max(date) - 28)  #x_min from parameters.R file 
+  filter(date > max(date) - 14)  #x_min from parameters.R file 
 
 gf_facet_max <- gf_facet_val %>%
   group_by(geo) %>%
@@ -187,7 +190,7 @@ ggplot(gf_facet, aes(date, y = gf_MA7 - 1)) +
        , expand = c(0, 0)
                         ) +
     labs(
-      title = "Individual State 7-Day Moving Average Growth Factor Last 4 Weeks"
+      title = "Individual State 7-Day Moving Average Growth Factor Last Two Weeks"
       , subtitle =  "Growth Factor Difference from One"
       , caption = paste0(
         "Dates range from ", min(gf_facet$date), " to ", max(gf_facet$date)
