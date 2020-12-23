@@ -10,11 +10,12 @@ editor_options:
 ```{r current-outside-script, results="hide", warning=FALSE, message=FALSE, include = FALSE}
 # source("script/variable/setup.R")
 # source("script/dataframe/covid19.R") #run script for covid19 df
+# source("script/dataframe/covid19_county.R") #run script for covid19 df
 # source("script/variable/parameters.R") #global parameters
 ```
 
 
-```{r state-MA7-PC, fig.height=5}
+```{r state-MA7-PC, fig.height=5, fig.width = 8}
 
 #HEX MAP SET UP
 
@@ -96,10 +97,10 @@ ggplot(data = hex_data, aes(x = long, y = lat, group = group, fill = risk_group)
   )+
   theme_void() +
   coord_map() +
-  labs(title = title ) +
+  labs(title = title) +
   theme(
       plot.title = element_text(face = "bold", hjust = 0.5, margin = margin(0, 0, 10, 0))
-    , plot.subtitle = element_text(hjust = 0.5, size = 12)
+    , plot.subtitle = element_text(hjust = 0.5, size = subtitle_size)
     , strip.text.x  = element_text(size = 12, color = "white", face = "bold", margin = margin(3, 0, 3, 0))
     , strip.background.x = element_rect(fill = USA_bg_color, color = USA_bg_color,)
     , legend.spacing.x = unit(0, 'cm')
@@ -108,6 +109,56 @@ ggplot(data = hex_data, aes(x = long, y = lat, group = group, fill = risk_group)
     , legend.text = element_text(margin = margin(0,12,0,3)) # t r b l
   )
 ```
+
+<br> 
+
+```{r county-MA7-PC, fig.height=5, fig.width = 8}
+state_sf  <- get_urbn_map("states", sf = TRUE)
+counties_sf <- get_urbn_map("counties", sf = TRUE)
+
+county_map_data <- covid19_county %>%
+  filter(date == max(date)) %>%
+  mutate(
+      risk_group = cut(
+        case_MA7_PC_100k
+        , breaks = risk_group_breaks
+        , labels = risk_group_labels
+        , right = FALSE
+        )
+    , font_color = SET_FONT_COLOR(risk_group)
+  ) %>% 
+  right_join(., counties_sf)
+
+
+county_map_data$USA_val <- USA_val_text
+
+ggplot(county_map_data, aes(geometry = geometry)) +
+  geom_sf(aes(fill = risk_group), color = NA) + 
+  geom_sf(data = state_sf, aes(geometry = geometry), color = "white", fill = NA) + 
+ # geom_sf(data = subset(state_sf, state_abbv %in% c("AK", "HI")), aes(geometry = geometry), color = "grey50", fill = NA) + 
+  #facet_grid( . ~ USA_val) + 
+  scale_fill_manual(
+      name = NULL
+    , values = risk_group_colors
+    , drop = FALSE #show all categories
+    , na.value = "grey70"
+  ) +
+  theme_void() +
+  coord_sf() +
+  #labs(title = title ) +
+  theme(
+      plot.title = element_text(face = "bold", hjust = 0.5, margin = margin(0, 0, 10, 0))
+    , plot.subtitle = element_text(hjust = 0.5, size = 12)
+    , strip.text.x  = element_text(size = 12, color = "white", face = "bold", margin = margin(3, 0, 3, 0))
+    , strip.background.x = element_rect(fill = USA_bg_color, color = USA_bg_color,)
+    , legend.spacing.x = unit(0, 'cm')
+    , legend.margin=margin(t = .5, unit='cm')
+    , legend.position = "none"
+    , legend.text = element_text(margin = margin(0,12,0,3)) # t r b l
+  )
+
+```
+
 
 
 
