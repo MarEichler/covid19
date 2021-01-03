@@ -51,7 +51,7 @@ Data as of `r data_date`
 ```
 
 ```{r}
-last_mod <- mod_dates %>% filter(type == "script" | name == "overview") %>% pull(mod_date) %>% max() %>% format(., "%Y-%m-%e")
+last_mod <- mod_dates %>% filter(type == "script" | name == "overview") %>% pull(mod_date) %>% max() %>% format(., "%Y-%m-%d")
 ```
 Code for this page last modified: `r last_mod` 
 
@@ -63,7 +63,7 @@ Data as of `r data_date`
 ```
 
 ```{r}
-last_mod <- mod_dates %>% filter(type == "script" | name == "growth_factor") %>% pull(mod_date) %>% max() %>% format(., "%Y-%m-%e")
+last_mod <- mod_dates %>% filter(type == "script" | name == "growth_factor") %>% pull(mod_date) %>% max() %>% format(., "%Y-%m-%d")
 ```
 Code for this page last modified: `r last_mod` 
 
@@ -76,7 +76,7 @@ Data as of `r data_date`
 ```
 
 ```{r}
-last_mod <- mod_dates %>% filter(type == "script" | name == "state") %>% pull(mod_date) %>% max() %>% format(., "%Y-%m-%e")
+last_mod <- mod_dates %>% filter(type == "script" | name == "state") %>% pull(mod_date) %>% max() %>% format(., "%Y-%m-%d")
 ```
 Code for this page last modified: `r last_mod` 
 
@@ -90,7 +90,7 @@ Data as of `r data_date`
 ```
 
 ```{r}
-last_mod <- mod_dates %>% filter(type == "script" | name == "current") %>% pull(mod_date) %>% max() %>% format(., "%Y-%m-%e")
+last_mod <- mod_dates %>% filter(type == "script" | name == "current") %>% pull(mod_date) %>% max() %>% format(., "%Y-%m-%d")
 ```
 Code for this page last modified: `r last_mod` 
 
@@ -104,7 +104,7 @@ Data as of `r data_date`
 ```
 
 ```{r}
-last_mod <- mod_dates %>% filter(name == "data_source") %>% pull(mod_date) %>% max() %>% format(., "%Y-%m-%e")
+last_mod <- mod_dates %>% filter(name == "data_source") %>% pull(mod_date) %>% max() %>% format(., "%Y-%m-%d")
 ```
 Code for this page last modified: `r last_mod` 
 
