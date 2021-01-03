@@ -35,12 +35,14 @@ spdf@data <-  spdf@data %>%
 spdf_fortified <- broom::tidy(spdf, region = "state_pc")
 
 
+current_date <- max(covid19$date)
+
 df <- covid19 %>% 
   filter(geo %in% c(state.abb, "DC", "USA")) %>%
-  filter(date == max(date)) %>%
+  filter(date == current_date) %>%
   mutate(
       risk_group = cut(
-        case_MA7_PC_100k
+        round(case_MA7_PC_100k, digits = 0)
         , breaks = risk_group_breaks
         , labels = risk_group_labels
         , right = FALSE
@@ -52,6 +54,7 @@ max_date <- max(covid19$date)
 
 hex_data<- spdf_fortified %>%
   left_join(. , df, by=c("id" = "geo") ) 
+
 
 
 #HEX MAP STATE LABELS 
@@ -122,21 +125,19 @@ counties_sf <- get_urbn_map("counties", sf = TRUE) %>%
   )
 
 county_map_data <- covid19_county  %>% 
- filter(date == max(date)) %>%
+ filter(date == current_date) %>%
   mutate(
       risk_group = cut(
-        case_MA7_PC_100k
+        round(case_MA7_PC_100k, digits = 0)
         , breaks = risk_group_breaks
         , labels = risk_group_labels
         , right = FALSE
         )
-    , font_color = SET_FONT_COLOR(risk_group)
   ) %>% 
   select(date, county_fips, case_MA7_PC_100k, risk_group) %>%
   left_join(., counties_sf, by = "county_fips")
 
 
-county_map_data$USA_val <- USA_val_text
 
 ggplot(county_map_data, aes(geometry = geometry)) +
   geom_sf(aes(fill = risk_group), color = NA) + 
