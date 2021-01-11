@@ -82,14 +82,20 @@ max_val <- RoundTo(max(last14days_facet_data$case_new_PC_100k), multiple = 5)
 
 mye_green <- brewer.pal(n=7, "RdYlGn")[7]
 mye_red   <- brewer.pal(n=7, "RdYlGn")[1]
+
+colors_indec <- c(
+    brewer.pal(n=7, "RdYlGn")[7]
+    , brewer.pal(n=7, "RdYlGn")[1]
+  )
+
+names(colors_indec) <-  c("Decreasing", "Increasing")
   
 ggplot(last14days_facet_data, aes(date, case_MA7_PC_100k)) + 
     geom_col(aes(y = case_new_PC_100k), alpha=0.3) +
     #geom_area(alpha = 0.2, aes(fill = trend)) + 
     geom_line(aes(color = trend), alpha = 0.6) + 
     facet_geo(~geo, grid = "us_state_grid2" , labeller = adjust_labels, scales = "fixed") +
-    #scale_fill_manual (name = "Trend of 7-Day Moving Average", values = c(mye_green, mye_red)) + 
-    scale_color_manual(name = "Trend of 7-Day Moving Average", values = c(mye_green, mye_red)) + 
+    scale_color_manual(name = "Trend of 7-Day Moving Average", values = colors_indec, drop = FALSE) + 
     scale_x_date(      name = NULL, expand = c(0, 0), breaks = NULL) + 
     scale_y_continuous(
         name = NULL
