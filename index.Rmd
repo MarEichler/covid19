@@ -24,17 +24,19 @@ data_date <- covid19 %>% pull(date) %>% max()
 
 
 ```{r index-mod-dates}
-mod_dates <- tibble(type = NA, name = NA, mod_date = NA) %>%
-  add_row(type = "script", name = "setup",         mod_date = file.info("script/variable/setup.R")$mtime) %>%
-  add_row(type = "script", name = "colors",        mod_date = file.info("script/variable/colors.R")$mtime) %>%
-  add_row(type = "script", name = "covid df",      mod_date = file.info("script/dataframe/covid19.R")$mtime) %>%
-  add_row(type = "script", name = "param",         mod_date = file.info("script/variable/parameters.R")$mtime) %>%
-  add_row(type = "rmd",    name = "overview",      mod_date = file.info("overview.Rmd")$mtime) %>%
-  add_row(type = "rmd",    name = "growth_factor", mod_date = file.info("growth_factor.Rmd")$mtime) %>%
-  add_row(type = "rmd",    name = "state",         mod_date = file.info("state.Rmd")$mtime) %>%
-  add_row(type = "rmd",    name = "data_source",   mod_date = file.info("data_source.Rmd")$mtime) %>%
-  add_row(type = "rmd",    name = "current",       mod_date = file.info("current.Rmd")$mtime) %>%
-  drop_na()
+mod_dates <- tribble(
+       ~type,           ~name, ~mod_date
+  , "script", "setup"        , file.info("script/variable/setup.R")$mtime
+  , "script", "colors"       , file.info("script/variable/colors.R")$mtime
+  , "script", "covid df"     , file.info("script/dataframe/covid19.R")$mtime
+  , "script", "param"        , file.info("script/variable/parameters.R")$mtime
+  , "rmd"   , "overview"     , file.info("overview.Rmd")$mtime
+  , "rmd"   , "growth_factor", file.info("growth_factor.Rmd")$mtime
+  , "rmd"   , "state"        , file.info("state.Rmd")$mtime
+  , "rmd"   , "data_source"  , file.info("data_source.Rmd")$mtime
+  , "rmd"   , "current"      , file.info("current.Rmd")$mtime
+  , "rmd"   , "total"        , file.info("total_cases.Rmd")$mtime
+)
 ```
 
 
@@ -91,6 +93,20 @@ Data as of `r data_date`
 
 ```{r}
 last_mod <- mod_dates %>% filter(type == "script" | name == "current") %>% pull(mod_date) %>% max() %>% format(., "%Y-%m-%d")
+```
+Code for this page last modified: `r last_mod` 
+
+
+## Total Cases
+
+
+Data as of `r data_date`  
+
+```{r child="total_cases.Rmd"}
+```
+
+```{r}
+last_mod <- mod_dates %>% filter(type == "script" | name == "total_cases") %>% pull(mod_date) %>% max() %>% format(., "%Y-%m-%d")
 ```
 Code for this page last modified: `r last_mod` 
 
