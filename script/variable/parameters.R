@@ -135,4 +135,29 @@ SET_FONT_COLOR <- function(vec){
 }
 
 
+### quantiles groups 
 
+quant_perc <- c(0.2, 0.4, 0.6, 0.8) #[)
+quant_labels <- c("<20% quantile", "[20%, 40%) quantile", "[40%, 60%) quantile", "[60%, 80%) quantile", "80%+ quantile")
+
+
+quant_colors <- c(
+    "#FCFFA4FF" # <20% 
+  , "#F7D340FF" # [20%,40%)
+  , "#E55C30FF" # [40%,60%)
+  , "#B1325AFF" # [60%,80%)
+  , "#87216BFF" # [80%, inf)
+)
+
+names(quant_colors) <-  quant_labels
+
+
+SET_FONT_COLOR_quant <- function(vec){
+  case_when(
+      vec == quant_labels[1] ~ "black"
+    , vec == quant_labels[2] ~ "black"
+    , vec == quant_labels[3] ~ "white"
+    , vec == quant_labels[4] ~ "white"
+    , vec == quant_labels[5] ~ "white"
+  )
+}
