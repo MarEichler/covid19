@@ -137,12 +137,14 @@ county_map_data <- covid19_county  %>%
   select(date, county_fips, case_MA7_PC_100k, risk_group) %>%
   left_join(., counties_sf, by = "county_fips")
 
-
+lower48_sf  <- get_urbn_map("states", sf = TRUE) %>% subset(!state_abbv %in% c("AK", "HI"))
+lower48_border <- st_union(lower48_sf)
 
 ggplot(county_map_data, aes(geometry = geometry)) +
   geom_sf(aes(fill = risk_group), color = NA) + 
   geom_sf(data = state_sf, aes(geometry = geometry), color = "white", fill = NA) + 
- # geom_sf(data = subset(state_sf, state_abbv %in% c("AK", "HI")), aes(geometry = geometry), color = "grey50", fill = NA) + 
+  geom_sf(data = lower48_border, aes(geometry = geometry), fill = NA, color = "grey50") + 
+  geom_sf(data = subset(state_sf, state_abbv %in% c("AK", "HI")), aes(geometry = geometry), color = "grey50", fill = NA) + 
   #facet_grid( . ~ USA_val) + 
   scale_fill_manual(
       name = NULL
