@@ -82,9 +82,10 @@ USA_ft_color <- SET_FONT_COLOR_quant(USA_data$quantile)
 
 hex_data$USA_val <- USA_val_text
 
-ggplot(data = hex_data, aes(x = long, y = lat, group = group, fill = quantile)) + 
-  geom_polygon() +
-  geom_polygon( color = "white" , size = 1, show.legend = FALSE) +
+ggplot(data = hex_data, aes(x = long, y = lat, group = group)) + 
+  geom_polygon(aes(fill = quantile)) +
+  geom_polygon(color = "white", fill = NA, size = 1, show.legend = FALSE) +
+  geom_polygon(data = subset(hex_data, font_color == "black"), color = "grey80", fill = NA, size = 0.25 ) +  
   facet_grid( . ~ USA_val) + 
   scale_fill_manual(
       name = NULL
