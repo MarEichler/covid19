@@ -1,29 +1,16 @@
-#global parameters and ggplot formatting 
-
-
-gf0     <- "grey80"
-gf0_1   <- brewer.pal(5, "YlOrRd")[2]
-gf1_2   <- brewer.pal(5, "YlOrRd")[3]
-gf2plus <- brewer.pal(5, "YlOrRd")[4]
-
-color_palette <- list(
-  "0"   = gf0
-  , "0-1" = gf0_1
-  , "1-2" = gf1_2
-  , "2+"  = gf2plus
-)
-
+############################
+##### GGPLOT ###############
 
 #beginning date for overview plots 
 startdate <- "2020-03-15"
-#3/18 - start 'lockdown' ; after large growth factors↕
 
 
 #plot parametrs
-title_size <- 14
-subtitle_size <- 12
 
-current_date <- max(covid19$date)
+current_date <- min(
+  max(covid19$date)
+  #, max(covid19_county$date)
+  )
 
 x_min <- as.Date(startdate) -.5
 x_max <- as.Date(current_date) + .5
@@ -58,42 +45,50 @@ millions_scaling <- scale_y_continuous(
   , expand = c(0, 0)
 )
 
+#output_type is Rmd or RShiny; affects the font sizes 
 
-
-#caption for gf_plots that gives info 
-cap_gf <- paste(
-  strwrap("A growth factor below 1 means new cases are decreasing,\ni.e. the pandemic is slowing"
-          , 30)
-  , collapse = "\n"
+#global theme 
+font_size_title       <- case_when(
+    output_type == "Rmd"    ~ 14
+  , output_type == "RShiny" ~ 21
 )
-gf_info_cap <- annotate("text", x = x_min + 1, y = 0, label = cap_gf, vjust=-0.3, hjust= -0.1, size = 3, color = "grey15") 
-
-#red box on gf plots 
-red_box <- annotate("rect", xmin = x_min, xmax = x_max, ymin = 1, ymax =  Inf, fill = gf2plus, alpha = 0.2) 
-
-
-#colors from NPR 
-#https://www.npr.org/sections/health-shots/2020/03/16/816707182/map-tracking-the-spread-of-the-coronavirus-in-the-u-s
-
-nc_perc_palette <- list(
-  "-100%" = "#549990" 
-  ,  "-50%" = "#7dc3ae" #GnYlRd[2]
-  ,   "-5%" = "#ebe3a7" #GnYlRd[5]
-  ,   "+5%" = "#eeb97a" #GnYlRd[6]
-  ,  "+50%" = "#ea8e4f" #GnYlRd[7]
-  , "+100%" = "#df6222" #GnYlRd[8]
+font_size_subtitle    <- case_when(
+    output_type == "Rmd"    ~ 12
+  , output_type == "RShiny" ~ 18
+)
+font_size_axis_title  <- case_when(
+    output_type == "Rmd"    ~ 13
+  , output_type == "RShiny" ~ 19.5
+)
+font_size_axis_text   <- case_when(
+    output_type == "Rmd"    ~ 08
+  , output_type == "RShiny" ~ 12
 )
 
-chacter_breaks <- labels(nc_perc_palette)
-number_breaks <- c(-1, -.5, -.05, .05, .5, 1, Inf)
 
+theme_general <- function(){
+  theme(
+      plot.title    = element_text(size = font_size_title,      hjust = 0.5)
+    , plot.subtitle = element_text(size = font_size_subtitle,   hjust = 0.5)
+    , axis.title    = element_text(size = font_size_axis_title, hjust = 0.5)
+    , axis.text     = element_text(size = font_size_axis_text,  hjust = 0.5)
+
+  )
+  
+  
+}
+
+
+title_size    <- 14
+subtitle_size <- 12
+
+############################
+##### COLORS ###############
+
+gf_red <- "#F03B20"
 NA_grey <- "grey80"
-
 blue_comp <- "#2085f0"
-
-
 state_abbrv_color <- "grey20"
-
 line_state <- "grey20"
 
 
@@ -107,14 +102,13 @@ NPR_orange    <- "#ea8e4f" #orange
 NPR_red       <- "#df6222"
 
 
-### risk groups 
-
+### risk groups  
 risk_group_breaks <- c(-Inf, 1, 10, 25, 50, Inf) #[)
 risk_group_labels <- c("<1 Low", "[1,10) Medium", "[10,25) High", "[25,50) Very High", "50+ Extremely High")
 
 
 risk_group_colors <- c(
-    NPR_litegreen#"#FCFFA4FF" #<1 
+    "#FCFFA4FF" #<1 
   , "#F7D340FF" # [1,10)
   , "#E55C30FF" # [10,25)
   , "#B1325AFF" # [25, 50)
@@ -122,7 +116,6 @@ risk_group_colors <- c(
 )
 
 names(risk_group_colors) <-  risk_group_labels
-
 
 SET_FONT_COLOR <- function(vec){
   case_when(
