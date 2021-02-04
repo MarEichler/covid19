@@ -113,3 +113,10 @@ covid19 <- left_join(us_and_state, usa_population, by = "geo") %>%
   #create amounts per 100,000 people
   mutate_at(vars(contains("_PC")), funs("100k"= .*100000)) %>% 
   select(date, geo, contains("death"), contains("case"), contains("gf"), contains("test"), population) 
+
+
+
+########################
+######## NATIONAL US
+
+covid19_US <- covid19 %>% filter(geo == "USA")
