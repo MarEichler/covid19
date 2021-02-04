@@ -9,90 +9,20 @@ editor_options:
 
 
 ```{r overview-outside-script, results="hide", warning=FALSE, message=FALSE, include = FALSE}
+# output_type <- "Rmd" #Rmd or RShiny; affects the font sizes 
 # source("script/variable/setup.R")
 # source("script/dataframe/covid19.R") #run script for covid19 df
+# source("script/dataframe/covid19_county.R")
 # source("script/variable/parameters.R") #global parameters
 ```
 
 
-```{r overview-covid19_US}
-#find current values to use as labels 
-covid19_US <- covid19 %>% filter(geo == "USA")
-```
-
- 
-
 ###  Total Cases and Total Deaths  
 These show the cumulative total of cases and deaths by day.  I have also denoted the current cumulative totals.  These total values are important; however they are not helpful for figuring out whether the pandemic is slowing down or growing as it is difficult to see trends in cumulative curves like these.
 
-```{r overview-tc-td-plot, fig.height=3}
-
-total_labels <- covid19_US %>%
-  filter(date == max(date)) %>%
-  mutate(
-      case_total  = paste("Current Total", formatC(case_total,  big.mark=",", format="d"), sep = "\n")
-    , death_total = paste("Current Total", formatC(death_total, big.mark=",", format="d"), sep = "\n")
-  )
-
-tc <- ggplot(covid19_US, aes(date, case_total)) + 
-  geom_area(alpha = 0.4)+
-  geom_line(
-      size = 1
-    , alpha = 0.6
-  )+
-  date_scaling +
-  millions_scaling + 
-  geom_text(
-      data = total_labels 
-    , aes(
-          label = case_total
-        , y = -Inf
-        , x = max(date)
-      )
-    , vjust = -0.15
-    , hjust=1.05 
-    , size = 6
-    , fontface = "bold"
-    , color = "white"
-    ) +
-  theme_minimal() +
-  ggtitle("Total Cases by Day (in millions)") +
-  theme(
-      plot.title = element_text(size = title_size, hjust = 0.5)
-    , plot.margin  = margin(t=0, r=15, b=0, l=0)
-    , axis.ticks.length = unit(5, "pt")
-  )
-
-td <- ggplot(covid19_US, aes(date, death_total)) + 
-  geom_area(alpha = 0.4)+
-  geom_line(
-      size = 1
-    , alpha = 0.6
-  )+
-  date_scaling +
-  thousands_scaling + 
-  geom_text(
-      data = total_labels 
-    , aes(
-          label = death_total
-        , y = -Inf
-        , x = max(date)
-      )
-    , vjust = -0.15
-    , hjust=1.05 
-    , size = 6
-    , fontface = "bold"
-    , color = "white"
-    ) +
-  theme_minimal() +
-  ggtitle("Total Deaths by Day (in thousands)") +
-  theme(
-      plot.title = element_text(size = title_size, hjust = 0.5)
-    , plot.margin  = margin(t=0, r=15, b=0, l=0)
-    , axis.ticks.length = unit(5, "pt")
-  )
-
-plot_grid(tc, td, nrow = 1)
+```{r overview-01-totals, fig.height=3}
+source("script/plot/overview_totals.R")
+PLOT.overview_totals
 ```
 
 <br>
@@ -105,42 +35,9 @@ There can be a lot of variability in the daily case totals due to a variety of v
 
 
 
-```{r overview-dc-plot, warning = FALSE}  
-
-# set labels, top of second wave 
-labels_dc <- covid19_US %>% 
-  filter(date >= as.Date("2020-07-01"), date <= as.Date("2020-10-01")) %>% 
-  mutate(max = ifelse(case_new == max(case_new), 1, 0)) %>%
-  filter(max == 1)
-
-#daily cases plot
-ggplot(covid19_US, aes(x=date, y=case_new))+
-  geom_col(alpha=0.3) +
-  geom_line(
-    aes(y = case_MA7)
-    , size = 1.25
-    , color = blue_comp
-    , alpha = 0.6
-  ) +
-  geom_text_repel(
-      seed = 100
-    , data = labels_dc
-    , aes(y = case_MA7, label = "7-Day\nMoving Average")
-    , color = blue_comp
-    , nudge_y = 25000
-    , nudge_x = -20
-  ) +
-  ggtitle("New Cases per Day") +
-  date_scaling +
-  thousands_scaling +
-  theme_minimal()+
-  theme(
-      plot.title = element_text(hjust = 0.5, size = subtitle_size)
-    , axis.title.x=element_blank()
-    , axis.title.y=element_blank()
-    , plot.margin  = margin(t=0, r=15, b=0, l=0)
-    , axis.ticks.length = unit(5, "pt")
-  ) 
+```{r overview-02-dailycases, warning = FALSE}  
+source("script/plot/overview_dailycases.R")
+PLOT.overview_dailycases
 ```
 
 <br>
@@ -153,67 +50,9 @@ COVID-19 is much deadlier than the common flu.  One way to measure the impact is
 Similar to new cases there is a cyclical nature to daily deaths.  This may be due to reporting times where counts on weekdays are often higher than those on weekends.  Other variability in the data can also occurs when states change how they are assigning COVID-19 deaths, such as counting nursing home deaths and/or pneumonia deaths as COVID-19 deaths.  
 
 
-```{r overview-new-death-and-death-prop}
-
-death_prop_max <- covid19_US %>% filter(date >= x_min) %>% pull(death_prop) %>% max
-
-plot_dp <- ggplot(covid19_US, aes(date, death_prop)) + 
-  geom_line(color = "grey40", size = 1) + 
-  date_scaling + 
-  scale_y_continuous(
-      name = "Total Dealths / Total Cases"
-    , limits = c(0, death_prop_max)
-    , labels = scales::percent
-  ) +
-  ggtitle("Case Fatality Percentage per Day") + 
-  theme_minimal()+
-  theme(
-      plot.title = element_text(hjust = 0.5, size = subtitle_size)
-    , axis.title.x=element_blank()
-    , plot.margin  = margin(t=0, r=15, b=15, l=0)
-    , axis.ticks.length = unit(5, "pt")
-  )
-
-labels_nd <- covid19_US %>% 
-  filter(date >= as.Date("2020-07-01"), date <= as.Date("2020-10-01")) %>% 
-  mutate(max = ifelse(death_new == max(death_new), 1, 0)) %>%
-  filter(max == 1)
-
-plot_nd <-ggplot(covid19_US, aes(date, death_new)) + 
-  geom_col(alpha=0.3) +
-  geom_line(
-    aes(y = death_MA7)
-    , size = 1.25
-    , color = blue_comp
-    , alpha = 0.6
-  )  +
-  date_scaling + 
-  thousands_scaling +
-  geom_text_repel(
-      seed = 100
-    , data = labels_nd
-    , aes(y = death_MA7, label = "7-Day\nMoving Average")
-    , color = blue_comp
-    , nudge_y = 5000
-    , nudge_x = -10
-  ) +
-  ggtitle("New Deaths per Day") + 
-  theme_minimal()+
-  theme(
-      plot.title = element_text(hjust = 0.5, size = subtitle_size)
-    , axis.title.x=element_blank()
-    , axis.title.y=element_blank()
-    , plot.margin  = margin(t=15, r=15, b=0, l=0)
-    , axis.ticks.length = unit(5, "pt")
-  )
-
-
-cowplot::plot_grid(
-    plot_dp
-  , plot_nd
-  , nrow = 1
-  , align = "h"
-)
+```{r overview-03-fatality}
+source("script/plot/overview_fatalities.R")
+PLOT.overview_fatalities
 ```
 
 <br>
