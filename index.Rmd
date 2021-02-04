@@ -6,11 +6,12 @@ output:
 ---
 
 ```{r, include = FALSE}
-knitr::opts_chunk$set(echo=FALSE)
+knitr::opts_chunk$set(echo=FALSE) 
 ```
 
 
 ```{r index-outside-scripts, results="hide", warning=FALSE, message=FALSE, include = FALSE}
+output_type <- "Rmd" #Rmd or RShiny; affects the font sizes 
 source("script/variable/setup.R")
 source("script/dataframe/covid19.R") #run script for covid19 df
 source("script/dataframe/covid19_county.R") #run script for covid19 df
