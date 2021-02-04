@@ -140,7 +140,7 @@ gf_facet <- left_join(gf_facet_val, gf_facet_max)
 min_gf_val <- min(RoundTo(min(gf_facet$gf_MA7) - 1, multiple = 0.05), -0.1)
   
 ggplot(gf_facet, aes(date, y = gf_MA7 - 1)) + 
-    geom_area(aes(y = max_gf_from_one), fill = gf2plus, alpha = 0.15) +
+    geom_area(aes(y = max_gf_from_one), fill = gf_red, alpha = 0.15) +
     geom_area(fill = blue_comp, alpha = 0.5) + 
     facet_geo(~geo, grid = "us_state_grid2" , scales = "free") +
     scale_x_date(      name = NULL, expand = c(0, 0), breaks = NULL) + 

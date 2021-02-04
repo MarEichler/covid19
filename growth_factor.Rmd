@@ -64,7 +64,7 @@ nudge_gf_val <- ((firstmax-1)- (labels_gf$gf_MA7 - 1))*0.75
 
 
 ggplot(gf_data, aes(x=date))+
-  annotate("rect", xmin = min(gf_data$date), xmax = max(gf_data$date), ymin = 0, ymax =  Inf, fill = gf2plus, alpha = 0.15) + 
+  annotate("rect", xmin = min(gf_data$date), xmax = max(gf_data$date), ymin = 0, ymax =  Inf, fill = gf_red, alpha = 0.15) + 
   geom_col(aes(y = gf - 1), alpha=0.3) +
   geom_area(
     aes(y = gf_MA7 - 1)
@@ -122,7 +122,7 @@ nudge_gf_val <- (seclarg-1)- (labels_gf$gf_MA7 - 1)
 
 
 ggplot(gf_data4wk, aes(x=date))+
-  annotate("rect", xmin = min(gf_data4wk$date)-0.5, xmax = max(gf_data4wk$date)+0.5, ymin = 0, ymax =  Inf, fill = gf2plus, alpha = 0.15) + 
+  annotate("rect", xmin = min(gf_data4wk$date)-0.5, xmax = max(gf_data4wk$date)+0.5, ymin = 0, ymax =  Inf, fill = gf_red, alpha = 0.15) + 
   geom_col(aes(y = gf - 1), alpha=0.3) +
   geom_area(
     aes(y = gf_MA7 - 1)
@@ -188,16 +188,16 @@ covid19 %>%
   mutate(
     `Growth Factor` = cell_spec(
       `Growth Factor`, color = case_when(
-              gf > 1 ~ gf2plus
-            , gf > 0 ~ colorspace::lighten(gf2plus, 0.4)
+              gf > 1 ~ gf_red
+            , gf > 0 ~ colorspace::lighten(gf_red, 0.4)
             , TRUE   ~ "grey35"
           )
       , bold = T
       ), 
     `Growth Factor 7-day MA` = cell_spec(
       `Growth Factor 7-day MA`, color = case_when(
-              gf_MA7 > 1 ~ gf2plus
-            , gf_MA7 > 0 ~ colorspace::lighten(gf2plus, 0.4)
+              gf_MA7 > 1 ~ gf_red
+            , gf_MA7 > 0 ~ colorspace::lighten(gf_red, 0.4)
             , TRUE   ~ "grey35"
           )
       , bold = T
