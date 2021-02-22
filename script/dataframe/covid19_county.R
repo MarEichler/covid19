@@ -54,13 +54,17 @@ covid19_county <- left_join(jh_cases, cnty_population, by = c("countyFIPS"))  %>
   group_by(county_fips) %>%
   mutate(
     #new cases for each day; take total from today minus total from yesterday
-    case_new = case_total - lag(case_total)
+      case_new = case_total - lag(case_total)
     #if negative; total has been re-adjusted; set to 0 
     , case_new = ifelse(case_new <0, 0, case_new)
     #growth factor = new cases today / new cases yesterday
     #if new cases yesterday = 0; set gf = cases new today (technically = inf)
     # , gf = ifelse(lag(case_new) == 0 | is.na(lag(case_new)), case_new , case_new / lag(case_new))
   )  %>% 
+  # if 2019-02-19 IA -- change case_new to NA; change in reporting; numbers very different than surrounding days
+  mutate(
+    case_new = ifelse(state == "Iowa" & date == as.Date("2021-02-19"), NA, case_new)
+  ) %>%
   #moving averages 
   mutate( #THIS STEP TAKES ABOUT 5 SECONDS TO RUN!! (~3-045 if do all dates)
     case_MA7  = c(rep(NA, 6), zoo::rollmean(case_new,  k = 7, na.rm = TRUE))
@@ -88,3 +92,4 @@ covid19_county <- left_join(jh_cases, cnty_population, by = c("countyFIPS"))  %>
   ) %>% 
   #remove rows that don't have MA
   drop_na(case_MA7)
+
