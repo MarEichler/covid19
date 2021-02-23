@@ -7,10 +7,8 @@ startdate <- "2020-03-15"
 
 #plot parametrs
 
-current_date <- min(
-  max(covid19$date)
-  #, max(covid19_county$date)
-  )
+current_date <- max(covid19$date)
+#min(max(covid19$date), max(covid19_county$date))
 
 x_min <- as.Date(startdate) -.5
 x_max <- as.Date(current_date) + .5
@@ -107,21 +105,31 @@ risk_group_breaks <- c(-Inf, 1, 10, 25, 50, Inf) #[)
 risk_group_labels <- c("<1 Low", "[1,10) Medium", "[10,25) High", "[25,50) Very High", "50+ Extremely High")
 
 
+# risk_group_colors <- c(
+#     "#FCFFA4FF" #<1 
+#   , "#F7D340FF" # [1,10)
+#   , "#E55C30FF" # [10,25)
+#   , "#B1325AFF" # [25, 50)
+#   , "#87216BFF" #[50, inf)
+# )
+
+
 risk_group_colors <- c(
-    "#FCFFA4FF" #<1 
-  , "#F7D340FF" # [1,10)
-  , "#E55C30FF" # [10,25)
-  , "#B1325AFF" # [25, 50)
-  , "#87216BFF" #[50, inf)
+    "#51A09E" #<1 
+  , "#EFC637" # [1,10)
+  , "#E38D2C" # [10,25)
+  , "#A23520" # [25, 50)
+  , "#87216B" #[50, inf)
 )
+
 
 names(risk_group_colors) <-  risk_group_labels
 
 SET_FONT_COLOR <- function(vec){
   case_when(
-      vec == risk_group_labels[1] ~ "black"
+      vec == risk_group_labels[1] ~ "black" 
     , vec == risk_group_labels[2] ~ "black"
-    , vec == risk_group_labels[3] ~ "white"
+    , vec == risk_group_labels[3] ~ "black"
     , vec == risk_group_labels[4] ~ "white"
     , vec == risk_group_labels[5] ~ "white"
   )
