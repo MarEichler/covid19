@@ -37,19 +37,27 @@ spdf_fortified <- broom::tidy(spdf, region = "state_pc")
 
 current_date <- max(covid19$date)
 
-quant_state <- covid19 %>% 
-  filter(geo %in% c(state.abb, "DC", "USA")) %>%
-  filter(date == current_date) %>%
+quant_breaks <- covid19_county %>% 
   pull(case_total_PC) %>%
-  quantile(prob = quant_perc)
+  quantile(prob = quant_perc, na.rm = TRUE)
+
+quant_labels <- c(
+    paste0("<", percent(quant_breaks[1], accuracy = 0.1))
+  , paste0("[", percent(quant_breaks[1], accuracy = 0.1), ", ", percent(quant_breaks[2], accuracy = 0.1), ")")
+  , paste0("[", percent(quant_breaks[2], accuracy = 0.1), ", ", percent(quant_breaks[3], accuracy = 0.1), ")")
+  , paste0("[", percent(quant_breaks[3], accuracy = 0.1), ", ", percent(quant_breaks[4], accuracy = 0.1), ")")
+  , paste0(     percent(quant_breaks[4], accuracy = 0.1), "+")
+)
+
+names(quant_colors) <-  quant_labels
 
 df <- covid19 %>% 
   filter(geo %in% c(state.abb, "DC", "USA")) %>%
   filter(date == current_date) %>%
   mutate(
       quantile = cut(
-        case_total_PC
-        , breaks = c(-Inf, quant_state, Inf)
+        round(case_total_PC, digits = 3)
+        , breaks = c(-Inf, quant_breaks, Inf)
         , labels = quant_labels
         , right = FALSE
         )
@@ -131,16 +139,13 @@ counties_sf <- get_urbn_map("counties", sf = TRUE) %>%
     , county_fips = as.character(county_fips)
   )
 
-quant_cnty <- covid19_county %>% 
-  pull(case_total_PC) %>%
-  quantile(prob = quant_perc, na.rm = TRUE)
 
 county_map_data <- covid19_county  %>% 
  filter(date == current_date) %>%
   mutate(
       quantile = cut(
-        case_total_PC
-        , breaks = c(-Inf, quant_cnty, Inf)
+        round(case_total_PC, digits = 3)
+        , breaks = c(-Inf, quant_breaks, Inf)
         , labels = quant_labels
         , right = FALSE
         )
