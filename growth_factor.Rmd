@@ -60,7 +60,7 @@ firstmax <- gf_data%>%
   top_n(n= 1, wt = gf) %>%
   pull(gf) 
 
-nudge_gf_val <- ((firstmax-1)- (labels_gf$gf_MA7 - 1))*0.75
+nudge_gf_val <- ((firstmax-4.5)- (labels_gf$gf_MA7 - 1))*0.75
 
 
 ggplot(gf_data, aes(x=date))+
@@ -87,6 +87,7 @@ ggplot(gf_data, aes(x=date))+
     , caption = "A growth factor less than one (difference less than zero) means new cases are decreasing"
   ) +
   theme_minimal()+
+  coord_cartesian(ylim = c(NA, 1.5)) + 
   theme(
       plot.title = element_text(hjust = 0.5, size = title_size)
     , plot.subtitle = element_text(hjust = 0.5, size = subtitle_size)

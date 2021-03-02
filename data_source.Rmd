@@ -7,27 +7,18 @@ editor_options:
   chunk_output_type: inline
 ---
 
-### National and State Level Data
-
-The COVID-19 deaths, cases, and tests are taken from the 
-<a href="https://covidtracking.com/data/download" target= "_blank">
-Covid Tracking Project</a>.  
-
-Population numbers are taken from the 
-<a href="https://www.census.gov/data/datasets/time-series/demo/popest/2010s-state-total.html#par_textimage_1873399417" target = "_blank">
-US Census State Population Totals</a>. 
-Note that the projected population for 2019 were used.  
-
-### County Level Data
 
 COVID-19 cases at the county level are taken from
 <a href="https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data/csse_covid_19_time_series" target= "_blank">
 Johns Hopkins</a>.  
 
 Population numbers are taken from the 
+<a href="https://www.census.gov/data/datasets/time-series/demo/popest/2010s-state-total.html#par_textimage_1873399417" target = "_blank">
+US Census State Population Totals</a>
+and the 
 <a href="https://www.census.gov/data/datasets/time-series/demo/popest/2010s-counties-total.html" target = "_blank">
 US Census County Population Totals</a>. 
-Note that the projected population for 2019 were used.  
+The projected population for 2019 values were used to calculate the per capital measures.  
 
 ### Plot Dates 
 
