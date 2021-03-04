@@ -8,8 +8,9 @@ editor_options:
 ---
 
 ```{r total-outside-script, results="hide", warning=FALSE, message=FALSE, include = FALSE}
+# output_type <- "Rmd"
 # source("script/variable/setup.R")
-# source("script/dataframe/covid19.R") #run script for covid19 df
+# source("script/dataframe/covid19_state.R") #run script for covid19 df
 # source("script/dataframe/covid19_county.R") #run script for covid19 df
 # source("script/variable/parameters.R") #global parameters
 ```
@@ -39,14 +40,14 @@ current_date <- max(covid19$date)
 
 quant_breaks <- covid19_county %>% 
   pull(case_total_PC) %>%
-  quantile(prob = quant_perc, na.rm = TRUE)
+  quantile(prob = c(0, quant_perc, 1), na.rm = TRUE)
 
 quant_labels <- c(
-    paste0("<", percent(quant_breaks[1], accuracy = 0.1))
-  , paste0("[", percent(quant_breaks[1], accuracy = 0.1), ", ", percent(quant_breaks[2], accuracy = 0.1), ")")
+    paste0("[", percent(quant_breaks[1], accuracy = 0.1), ", ", percent(quant_breaks[2], accuracy = 0.1), ")")
   , paste0("[", percent(quant_breaks[2], accuracy = 0.1), ", ", percent(quant_breaks[3], accuracy = 0.1), ")")
   , paste0("[", percent(quant_breaks[3], accuracy = 0.1), ", ", percent(quant_breaks[4], accuracy = 0.1), ")")
-  , paste0(     percent(quant_breaks[4], accuracy = 0.1), "+")
+  , paste0("[", percent(quant_breaks[4], accuracy = 0.1), ", ", percent(quant_breaks[5], accuracy = 0.1), ")")
+  , paste0("[", percent(quant_breaks[5], accuracy = 0.1), ", ", percent(quant_breaks[6], accuracy = 0.1), "]")
 )
 
 names(quant_colors) <-  quant_labels
@@ -57,7 +58,7 @@ df <- covid19 %>%
   mutate(
       quantile = cut(
         round(case_total_PC, digits = 3)
-        , breaks = c(-Inf, quant_breaks, Inf)
+        , breaks = c(quant_breaks[1:5], Inf)
         , labels = quant_labels
         , right = FALSE
         )
@@ -145,7 +146,7 @@ county_map_data <- covid19_county  %>%
   mutate(
       quantile = cut(
         round(case_total_PC, digits = 3)
-        , breaks = c(-Inf, quant_breaks, Inf)
+        , breaks = c(quant_breaks[1:5], Inf)
         , labels = quant_labels
         , right = FALSE
         )
