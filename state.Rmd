@@ -8,8 +8,9 @@ editor_options:
 ---
 
 ```{r state-outside-script, results="hide", warning=FALSE, message=FALSE, include = FALSE}
+# output_type <- "Rmd"
 # source("script/variable/setup.R")
-# source("script/dataframe/covid19.R") #run script for covid19 df
+# source("script/dataframe/covid19_state.R") #run script for covid19 df
 # source("script/variable/parameters.R") #global parameters
 ```
 
@@ -70,7 +71,14 @@ last14days_facet_data <- last14days_facet_data %>%
   select(date, geo, case_MA7_PC_100k) %>%
   pivot_wider(., names_from = date, values_from = case_MA7_PC_100k) %>%
   select(geo, min_date = 2, max_date = 3) %>%
-  mutate(trend = ifelse(min_date <= max_date, "Increasing", "Decreasing")) %>%
+  mutate(
+    trend = case_when(
+        abs(min_date - max_date) <= 2 ~ "Minimal change (<=2)"
+        ,   min_date - max_date  < -2 ~ "Increasing"
+        ,   min_date - max_date  >  2 ~ "Decreasing"
+      )
+    ) %>%
+  #mutate(trend = ifelse(min_date <= max_date, "Increasing", "Decreasing")) %>%
   select(geo, trend) %>%
   left_join(last14days_facet_data, ., by = "geo")
 
@@ -80,15 +88,16 @@ subtitle <- paste(min(last14days_facet_data$date), "to", max(last14days_facet_da
 
 max_val <- RoundTo(max(last14days_facet_data$case_new_PC_100k, na.rm = TRUE), multiple = 5)
 
-mye_green <- brewer.pal(n=7, "RdYlGn")[7]
-mye_red   <- brewer.pal(n=7, "RdYlGn")[1]
 
 colors_indec <- c(
       brewer.pal(n=7, "RdYlGn")[7]
     , brewer.pal(n=7, "RdYlGn")[1]
+    , "grey20"
   )
 
-names(colors_indec) <-  c("Decreasing", "Increasing")
+
+
+names(colors_indec) <-  last14days_facet_data %>% distinct(trend) %>% pull(trend)
   
 ggplot(last14days_facet_data, aes(date, case_MA7_PC_100k)) + 
     geom_col(aes(y = case_new_PC_100k), alpha=0.3) +
