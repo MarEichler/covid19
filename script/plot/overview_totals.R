@@ -6,10 +6,7 @@ total_labels <- covid19_US %>%
     , death_total = paste("Current Total", formatC(death_total, big.mark=",", format="d"), sep = "\n")
   )
 
-ggtext_size <- case_when(
-    output_type == "Rmd"    ~ 6
-  , output_type == "RShiny" ~ 9
-)
+ggtext_size <-  6
 
 tc <- ggplot(covid19_US, aes(date, case_total)) + 
   geom_area(alpha = 0.4)+

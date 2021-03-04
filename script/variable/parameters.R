@@ -43,25 +43,13 @@ millions_scaling <- scale_y_continuous(
   , expand = c(0, 0)
 )
 
-#output_type is Rmd or RShiny; affects the font sizes 
 
 #global theme 
-font_size_title       <- case_when(
-    output_type == "Rmd"    ~ 14
-  , output_type == "RShiny" ~ 21
-)
-font_size_subtitle    <- case_when(
-    output_type == "Rmd"    ~ 12
-  , output_type == "RShiny" ~ 18
-)
-font_size_axis_title  <- case_when(
-    output_type == "Rmd"    ~ 13
-  , output_type == "RShiny" ~ 19.5
-)
-font_size_axis_text   <- case_when(
-    output_type == "Rmd"    ~ 08
-  , output_type == "RShiny" ~ 12
-)
+font_size_title       <- 14
+font_size_subtitle    <- 12
+font_size_axis_title  <- 13
+font_size_axis_text   <-  8
+
 
 
 theme_general <- function(){
