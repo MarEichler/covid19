@@ -90,9 +90,9 @@ max_val <- RoundTo(max(last14days_facet_data$case_new_PC_100k, na.rm = TRUE), mu
 
 
 colors_indec <- c(
-      brewer.pal(n=7, "RdYlGn")[1]
+      "grey20"
+    , brewer.pal(n=7, "RdYlGn")[1]
     , brewer.pal(n=7, "RdYlGn")[7]
-    , "grey20"
   )
 
 
