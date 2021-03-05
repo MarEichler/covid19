@@ -13,5 +13,6 @@ testing
 diy-covid19-plots/rsconnect/
 .dcf
 *.html
+*.jpg
 
 *index.html
