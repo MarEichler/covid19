@@ -7,7 +7,7 @@ labels_dc <- covid19_US %>%
   filter(max == 1)
 
 #daily cases plot
-PLOT.overview_dailycases <- ggplot(covid19_US, aes(x=date, y=case_new))+
+PLOToverview_dailycases <- ggplot(covid19_US, aes(x=date, y=case_new))+
   geom_col(alpha=0.3) +
   geom_line(
     aes(y = case_MA7)
@@ -34,3 +34,4 @@ PLOT.overview_dailycases <- ggplot(covid19_US, aes(x=date, y=case_new))+
     , plot.margin  = margin(t=0, r=15, b=0, l=0)
     , axis.ticks.length = unit(5, "pt")
   ) 
+

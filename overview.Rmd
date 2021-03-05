@@ -36,7 +36,7 @@ There can be a lot of variability in the daily case totals due to a variety of v
 
 ```{r overview-02-dailycases, warning = FALSE}  
 source("script/plot/overview_dailycases.R")
-PLOT.overview_dailycases
+PLOToverview_dailycases
 ```
 
 <br>
@@ -51,7 +51,7 @@ Similar to new cases there is a cyclical nature to daily deaths.  This may be du
 
 ```{r overview-03-fatality}
 source("script/plot/overview_fatalities.R")
-PLOT.overview_fatalities
+PLOToverview_fatalities
 ```
 
 <br>

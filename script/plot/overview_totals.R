@@ -69,4 +69,4 @@ td <- ggplot(covid19_US, aes(date, death_total)) +
 PLOToverview_totals <- plot_grid(tc, td, nrow = 1)
 
 
-ggsave(file ="img/PLOToverview_totals.jpg" , plot = PLOToverview_totals, width = default_w, height = 3)
+

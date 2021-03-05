@@ -53,9 +53,10 @@ plot_nd <-ggplot(covid19_US, aes(date, death_new)) +
   )
 
 
-PLOT.overview_fatalities <- cowplot::plot_grid(
-  plot_dp
-  , plot_nd
+PLOToverview_fatalities <- cowplot::plot_grid(
+    plot_nd
+  , plot_dp
   , nrow = 1
   , align = "h"
 )
+
