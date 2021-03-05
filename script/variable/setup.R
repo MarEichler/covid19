@@ -22,10 +22,11 @@ library(DescTools)
 library(urbnmapr)
 
 
+default_w <- 8
+default_h <- 3.5
 
 
-
-knitr::opts_chunk$set(fig.width=8, fig.height = 4, dpi=300, echo=FALSE, warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(fig.width=default_w, fig.height=default_h, dpi=300, echo=FALSE, warning = FALSE, message = FALSE)
 
 
 #use code from the fundamentals of data vizualization book: 
