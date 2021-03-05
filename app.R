@@ -7,6 +7,8 @@ source("script/variable/parameters.R") #global parameters
 source("script/plot/overview_totals.R")
 source("script/plot/overview_dailycases.R")
 source("script/plot/overview_fatalities.R")
+source("script/plot/gf_longterm.R")
+source("script/plot/gf_twoweeks.R")
 
 plot_w_perc <- "70%"
 
@@ -16,12 +18,21 @@ lastmod_date <- file.info("app.R")$mtime %>% with_tz(tzone = "America/Los_Angele
 data_date <- covid19 %>% pull(date) %>% max() %>% format("%B, %e %Y")
 
 ui <- fluidPage(
+    # section below allows in-line LaTeX via $ in mathjax. 
+    # https://stackoverflow.com/questions/54876731/inline-latex-equations-in-shiny-app-with-mathjax
+    tags$div(HTML("<script type='text/x-mathjax-config' >
+            MathJax.Hub.Config({
+            tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+            });
+            </script >
+            ")),
 mainPanel(width = 12, 
     titlePanel("COVID-19 Tracking"),
-    tabsetPanel(type = "tabs",
+    tabsetPanel(type = "tabs", selected = 2, 
                 #-- TAB1: OVERVIEW  ---------------------------------
                 tabPanel( #1
                     align = "center", 
+                    value = 1,
                     title = "Overview",
                     br(), 
                     fluidRow(column(width = 8, offset = 2, align = "left", #style = "border: solid 1px black;", 
@@ -34,7 +45,7 @@ mainPanel(width = 12,
                     br(), 
                     fluidRow(imageOutput("PLOToverview_totals", height = "100%")), 
                     br(), 
-                    fluidRow(column(width = 8, offset = 2, align = "left", #style = "border: solid 1px black;", 
+                    fluidRow(column(width = 8, offset = 2, align = "left",  
                                     h2("New Cases"), 
                                     "Looking at new cases each day can help us see if the pandemic is slowing.  
                                      A decreasing number of new cases per day is evidence that the pandemic is slowing down.
@@ -48,7 +59,7 @@ mainPanel(width = 12,
                     br(), 
                     fluidRow(imageOutput("PLOToverview_dailycases", height = "100%")),
                     br(), 
-                    fluidRow(column(width = 8, offset = 2, align = "left", #style = "border: solid 1px black;", 
+                    fluidRow(column(width = 8, offset = 2, align = "left", 
                                     h2("New Deaths and Case Fatality"), 
                                     "COVID-19 is much deadlier than the common flu.  
                                      One way to measure the impact is to look at the case fatality percentage, which is the total number of deaths divided by the total number of cases. 
@@ -61,8 +72,57 @@ mainPanel(width = 12,
                     br(), 
                     fluidRow(imageOutput("PLOToverview_fatalities", height = "100%"))
                 ), #tabPanel1  
-                #-- TAB2 ---------------------------------
-                tabPanel( #2
+                #-- TAB2: GROWTH FACTOR   ---------------------------------
+                tabPanel( #1
+                    align = "center", 
+                    value = 2, 
+                    title = "Growth Factor",
+                    br(), 
+                    fluidRow(column(width = 8, offset = 2, align = "left", 
+                                    h2("Is the pandemic slowing down?"), 
+                                    "One important calcualtion is the growth factor, as outlined in",
+                                    tags$a("3Blue1Brown's youtube video on exponential growth.", href = "https://www.youtube.com/watch?v=Kas0tIxDvrg", target = "_blank"), 
+                                    "The growth factor is calculated as follows: ", 
+                                    withMathJax("$$ \\text{Growth Factor} = \\frac{ \\text{New-Cases}_N}{\\text{New-Cases}_{N-1}} $$"),
+                                    "where", withMathJax("$N$"), "is a given day.  Essentialy this is taking the amount of new cases today and dividing them by the amount of new cases yesterday.", 
+                                    "The growth factor can be very helpful in determining if the pandemic is slowing. 
+                                     If the growth factor is less than 1, this means that the amount of new cases today is less than yesterday. 
+                                     Once there are multiple days with a growth factor less than 1 it is a strong sign that the pandemic is slowing down.
+                                    ", 
+                                    h3("Adjustment to Growth Factor"),
+                                    "What if there were 0 cases yesterday? This would make the growth factor undefined. 
+                                    This makes it difficult to look at trends. I have adjusted the growth factor so that if the previous day had 0 cases, the current day’s growth factor is equal to the number of new cases:
+                                    ",  
+                                    withMathJax(
+                                     "$$
+                                     \\text{Growth Factor} = \\begin{cases}
+                                        \\frac{ \\text{New-Cases}_N}{\\text{New-Cases}_{N-1}} & \\text{if } \\text{New-Cases}_{N-1} \\neq 0 
+                                        \\\\[1ex]
+                                        \\text{New-Cases}_N & \\text{if } \\text{New-Cases}_{N-1} = 0 
+                                        \\end{cases}
+                                     $$")
+                    )), #fluidRow(column())
+                    br(), 
+                    fluidRow(column(width = 8, offset = 2, align = "left",
+                                    h2("Growth Factor Plots"), 
+                                    "Similar to the new cases per day, there can be a lot of variability in growth factors  
+                                     In order to get a better sense of the trend I am showing a 7-day moving average of the growth factor.  
+                                    ", br(), br(),  
+                                    "Between mid-April and mid-June the growth factor hovered around 1, showing that although cases were decreasing there was not substantial decrease in growth.  
+                                     After states began to re-open there was a dramatic increase in new-cases starting in mid-June.  
+                                     Between mid-June and mid-July cases started increasing dramatically which lead lead to the 7-day moving average growth factor to be above 1 for a month.  
+                                     From mid-July  to October the 7-day moving average growth factor has oscillating around 1.  
+                                     Starting in the Fall with the dramatic increase of new cases, the 7-day moving average growth factor has been consistently above 1 during the massive third wave.
+                                     In February 2021 as new cases decreased the growth factor was consistently below 1. 
+                                    "
+                    )), #fluidRow(column())
+                    br(), 
+                    fluidRow(imageOutput("PLOTgf_longterm", height = "100%")),
+                    br(), br(), 
+                    fluidRow(imageOutput("PLOTgf_twoweeks", height = "100%"))
+                ), #tabPanel2
+                #-- TAB 00 ---------------------------------
+                tabPanel( #00
                     title = "TAB",
                     br(), 
                     sidebarPanel(sliderInput("bins",
@@ -72,7 +132,7 @@ mainPanel(width = 12,
                                              value = 30)
                     ),
                     plotOutput("distPlot")
-                ) #tabPanel2
+                ) #tabPanel 00
     ), #tabsetPanel
     #-- FOOTER ROW ---------------------------------
     br(), br(), 
@@ -81,7 +141,8 @@ mainPanel(width = 12,
             width = 12, 
             align = "center", 
             div(paste0("JH data as of ", data_date)), 
-            div(paste0("Code last updated ", lastmod_date)), 
+            div(tags$a("Code", href = "https://github.com/MarEichler/covid19", target = "_blank"), paste0("last updated ", lastmod_date)),
+            #div(paste0("Code last updated ", lastmod_date)), 
             br(), br()
         ) #end column
     ) #end fluidRow
@@ -126,6 +187,28 @@ server <- function(input, output, session) {
         out_w <- ifelse(session$clientData$output_PLOToverview_fatalities_width <= 1000, "100%", plot_w_perc)
         outfile <- tempfile(fileext = ".jpg")
         ggsave(file = outfile, plot = PLOToverview_fatalities, width = default_w, height = default_h)
+        list( src = normalizePath(outfile)
+              , width = out_w 
+              , contentType = "image/jpg"
+              #, alt = "alttext"
+        )
+    }, deleteFile = TRUE)
+    
+    output$PLOTgf_longterm<- renderImage({
+        out_w <- ifelse(session$clientData$output_PLOTgf_longterm_width <= 1000, "100%", plot_w_perc)
+        outfile <- tempfile(fileext = ".jpg")
+        ggsave(file = outfile, plot = PLOTgf_longterm, width = default_w, height = default_h)
+        list( src = normalizePath(outfile)
+              , width = out_w 
+              , contentType = "image/jpg"
+              #, alt = "alttext"
+        )
+    }, deleteFile = TRUE)
+    
+    output$PLOTgf_twoweeks<- renderImage({
+        out_w <- ifelse(session$clientData$output_PLOTgf_twoweeks_width <= 1000, "100%", plot_w_perc)
+        outfile <- tempfile(fileext = ".jpg")
+        ggsave(file = outfile, plot = PLOTgf_twoweeks, width = default_w, height = default_h)
         list( src = normalizePath(outfile)
               , width = out_w 
               , contentType = "image/jpg"
