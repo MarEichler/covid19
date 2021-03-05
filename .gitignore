@@ -16,3 +16,4 @@ diy-covid19-plots/rsconnect/
 *.jpg
 
 *index.html
+*rsconnect*
