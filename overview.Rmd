@@ -34,7 +34,7 @@ There can be a lot of variability in the daily case totals due to a variety of v
 
 
 
-```{r overview-02-dailycases, warning = FALSE}  
+```{r overview-02-dailycases, warning = FALSE, fig.height = 4}  
 source("script/plot/overview_dailycases.R")
 PLOToverview_dailycases
 ```
@@ -49,7 +49,7 @@ COVID-19 is much deadlier than the common flu.  One way to measure the impact is
 Similar to new cases there is a cyclical nature to daily deaths.  This may be due to reporting times where counts on weekdays are often higher than those on weekends.  Other variability in the data can also occurs when states change how they are assigning COVID-19 deaths, such as counting nursing home deaths and/or pneumonia deaths as COVID-19 deaths.  
 
 
-```{r overview-03-fatality}
+```{r overview-03-fatality, fig.height = 4}
 source("script/plot/overview_fatalities.R")
 PLOToverview_fatalities
 ```
