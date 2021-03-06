@@ -12,6 +12,7 @@ source("script/plot/gf_twoweeks.R")
 source("script/plot/state_newcases.R")
 source("script/plot/state_twoweeks.R")
 source("script/plot/state_twoweeksgf.R")
+source("script/plot/nc.R")
 
 plot_w_perc <- "70%"
 
@@ -31,7 +32,7 @@ ui <- fluidPage(
             ")),
 mainPanel(width = 12, 
     titlePanel("COVID-19 Tracking"),
-    tabsetPanel(type = "tabs", selected = 3, 
+    tabsetPanel(type = "tabs", selected = 4, 
                 #-- TAB1: OVERVIEW  ---------------------------------
                 tabPanel( #1
                     align = "center", 
@@ -136,6 +137,14 @@ mainPanel(width = 12,
                     br(), br(), 
                     fluidRow(imageOutput("PLOTstate_twoweeksgf", height = "100%"))
                 ), #tabPanel3
+                #-- TAB4: NEW CASES  -----------------------
+                tabPanel( #3
+                    align = "center", 
+                    value = 4, 
+                    title = "Current New Cases",
+                    br(), 
+                    fluidRow(imageOutput("PLOTnc", height = "100%")),
+                ), #tabPanel4
                 #-- TAB 00 ---------------------------------
                 tabPanel( #00
                     title = "TAB",
@@ -171,7 +180,7 @@ server <- function(input, output, session) {
     output$PLOToverview_totals <- renderImage({
         out_w <- ifelse(session$clientData$output_PLOToverview_totals_width <= 1000, "100%", plot_w_perc)
         outfile <- tempfile(fileext = ".jpg")
-        ggsave(file = outfile, plot = PLOToverview_totals, width = default_w, height = 3)
+        ggsave(file = outfile, plot = PLOToverview_totals, width = default_w, height = default_h*0.6)
         list( src = normalizePath(outfile)
             , width = out_w 
             , contentType = "image/jpg"
@@ -182,7 +191,7 @@ server <- function(input, output, session) {
     output$PLOToverview_dailycases <- renderImage({
         out_w <- ifelse(session$clientData$output_PLOToverview_dailycases_width <= 1000, "100%", plot_w_perc)
         outfile <- tempfile(fileext = ".jpg")
-        ggsave(file = outfile, plot = PLOToverview_dailycases, width = default_w, height = default_h)
+        ggsave(file = outfile, plot = PLOToverview_dailycases, width = default_w, height = default_h*0.8)
         list( src = normalizePath(outfile)
               , width = out_w 
               , contentType = "image/jpg"
@@ -193,7 +202,7 @@ server <- function(input, output, session) {
     output$PLOToverview_fatalities <- renderImage({
         out_w <- ifelse(session$clientData$output_PLOToverview_fatalities_width <= 1000, "100%", plot_w_perc)
         outfile <- tempfile(fileext = ".jpg")
-        ggsave(file = outfile, plot = PLOToverview_fatalities, width = default_w, height = default_h)
+        ggsave(file = outfile, plot = PLOToverview_fatalities, width = default_w, height = default_h*0.8)
         list( src = normalizePath(outfile)
               , width = out_w 
               , contentType = "image/jpg"
@@ -228,18 +237,7 @@ server <- function(input, output, session) {
     output$PLOTstate_newcases<- renderImage({
         out_w <- ifelse(session$clientData$output_PLOTstate_newcases_width <= 1000, "100%", plot_w_perc)
         outfile <- tempfile(fileext = ".jpg")
-        ggsave(file = outfile, plot = PLOTstate_newcases, width = default_w, height = 5)
-        list( src = normalizePath(outfile)
-              , width = out_w 
-              , contentType = "image/jpg"
-              #, alt = "alttext"
-        )
-    }, deleteFile = TRUE)
-    
-    output$PLOTstate_newcases<- renderImage({
-        out_w <- ifelse(session$clientData$output_PLOTstate_newcases_width <= 1000, "100%", plot_w_perc)
-        outfile <- tempfile(fileext = ".jpg")
-        ggsave(file = outfile, plot = PLOTstate_newcases, width = default_w, height = 5)
+        ggsave(file = outfile, plot = PLOTstate_newcases, width = default_w, height = default_h*1.15)
         list( src = normalizePath(outfile)
               , width = out_w 
               , contentType = "image/jpg"
@@ -250,7 +248,7 @@ server <- function(input, output, session) {
     output$PLOTstate_twoweeks<- renderImage({
         out_w <- ifelse(session$clientData$output_PLOTstate_twoweeks_width <= 1000, "100%", plot_w_perc)
         outfile <- tempfile(fileext = ".jpg")
-        ggsave(file = outfile, plot = PLOTstate_twoweeks, width = default_w, height = 5)
+        ggsave(file = outfile, plot = PLOTstate_twoweeks, width = default_w, height = default_h*1.15)
         list( src = normalizePath(outfile)
               , width = out_w 
               , contentType = "image/jpg"
@@ -261,7 +259,20 @@ server <- function(input, output, session) {
     output$PLOTstate_twoweeksgf<- renderImage({
         out_w <- ifelse(session$clientData$output_PLOTstate_twoweeksgf_width <= 1000, "100%", plot_w_perc)
         outfile <- tempfile(fileext = ".jpg")
-        ggsave(file = outfile, plot = PLOTstate_twoweeksgf, width = default_w, height = 5.75)
+        ggsave(file = outfile, plot = PLOTstate_twoweeksgf, width = default_w, height = default_h*1.15)
+        list( src = normalizePath(outfile)
+              , width = out_w 
+              , contentType = "image/jpg"
+              #, alt = "alttext"
+        )
+    }, deleteFile = TRUE)
+    
+    
+    #-- TAB4: NEW CASES -----------------------
+    output$PLOTnc <- renderImage({
+        out_w <- ifelse(session$clientData$output_PLOTnc_width <= 1000, "100%", plot_w_perc)
+        outfile <- tempfile(fileext = ".jpg")
+        ggsave(file = outfile, plot = PLOTnc, width = default_w, height = default_h*2)
         list( src = normalizePath(outfile)
               , width = out_w 
               , contentType = "image/jpg"
