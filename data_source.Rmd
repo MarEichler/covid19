@@ -18,7 +18,7 @@ US Census State Population Totals</a>
 and the 
 <a href="https://www.census.gov/data/datasets/time-series/demo/popest/2010s-counties-total.html" target = "_blank">
 US Census County Population Totals</a>. 
-The projected population for 2019 values were used to calculate the per capital measures.  
+The projected population for 2019 values were used to calculate the per capita measures.  
 
 ### Plot Dates 
 

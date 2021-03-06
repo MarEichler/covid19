@@ -13,6 +13,7 @@ source("script/plot/state_newcases.R")
 source("script/plot/state_twoweeks.R")
 source("script/plot/state_twoweeksgf.R")
 source("script/plot/nc.R")
+source("script/plot/tc.R")
 
 plot_w_perc <- "70%"
 
@@ -31,8 +32,8 @@ ui <- fluidPage(
             </script >
             ")),
 mainPanel(width = 12, 
-    titlePanel("COVID-19 Tracking"),
-    tabsetPanel(type = "tabs", selected = 4, 
+    titlePanel("Tracking COVID-19 in the United States"),
+    tabsetPanel(type = "tabs", selected = 1, 
                 #-- TAB1: OVERVIEW  ---------------------------------
                 tabPanel( #1
                     align = "center", 
@@ -138,25 +139,60 @@ mainPanel(width = 12,
                     fluidRow(imageOutput("PLOTstate_twoweeksgf", height = "100%"))
                 ), #tabPanel3
                 #-- TAB4: NEW CASES  -----------------------
-                tabPanel( #3
+                tabPanel( #4
                     align = "center", 
                     value = 4, 
                     title = "Current New Cases",
                     br(), 
-                    fluidRow(imageOutput("PLOTnc", height = "100%")),
+                    fluidRow(imageOutput("PLOTnc", height = "100%"))
                 ), #tabPanel4
-                #-- TAB 00 ---------------------------------
-                tabPanel( #00
-                    title = "TAB",
+                #-- TAB5: NEW CASES  -----------------------
+                tabPanel( #5
+                    align = "center", 
+                    value = 5, 
+                    title = "Total Cases",
                     br(), 
-                    sidebarPanel(sliderInput("bins",
-                                             "Number of bins:",
-                                             min = 1,
-                                             max = 50,
-                                             value = 30)
-                    ),
-                    plotOutput("distPlot")
-                ) #tabPanel 00
+                    fluidRow(imageOutput("PLOTtc", height = "100%"))
+                ), #tabPanel5
+                #-- TAB 00 ---------------------------------
+                # tabPanel( #00
+                #     title = "TAB",
+                #     br(), 
+                #     sidebarPanel(sliderInput("bins",
+                #                              "Number of bins:",
+                #                              min = 1,
+                #                              max = 50,
+                #                              value = 30)
+                #     ),
+                #     plotOutput("distPlot")
+                # ) #tabPanel 00
+                #-- TAB99: DATA INFO  -----------------------
+                tabPanel( #99
+                    align = "center", 
+                    value = 99, 
+                    title = "Data Source",
+                    br(), 
+                    fluidRow(column(width = 8, offset = 2, align = "left", #style = "border: solid 1px black;", 
+                                    h2("Total Cases and Total Dealths"), 
+                                    "COVID-19 cases at the county level are taken from",
+                                    tags$a("Johns Hopkins.", href = "https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data/csse_covid_19_time_series", target = "_blank"),
+                                    "Population numbers are taken from the",
+                                    tags$a("US Census State Population Totals", href = "https://www.census.gov/data/datasets/time-series/demo/popest/2010s-state-total.html#par_textimage_1873399417", target = "_blank"),
+                                    "and the", 
+                                    tags$a("US Census County Population Totals.", href = "https://www.census.gov/data/datasets/time-series/demo/popest/2010s-counties-total.html", target = "_blank"),
+                                    "The projected population for 2019 values were used to calculate per capita measures.", 
+                                    br(), 
+                                    h4("Plot Dates"),
+                                    "Many of the plots have been restricted to show data on March 15, 2020 and after. 
+                                     This is when case numbers started to rise and preventative measures started to increase dramatically.
+                                    ",
+                                    h4("Data Limitations"), 
+                                    "A large limitation for this data is that reported new cases, and thus the growth factor, may not consistently and accurately represent the true number of new cases each day. 
+                                     As mentioned before, this could be due to test availability, reporting protocols, and a number of other variables. 
+                                     It is important to note that this information is a helpful tool in trying to understand the pandemic, but it may not reflect the entire story.
+                                    "
+                    )), #fluidRow(column())
+                ) #tabPanel99
     ), #tabsetPanel
     #-- FOOTER ROW ---------------------------------
     br(), br(), 
@@ -280,15 +316,27 @@ server <- function(input, output, session) {
         )
     }, deleteFile = TRUE)
     
+    #-- TAB5: TOTAL CASES -----------------------
+    output$PLOTtc <- renderImage({
+        out_w <- ifelse(session$clientData$output_PLOTtc_width <= 1000, "100%", plot_w_perc)
+        outfile <- tempfile(fileext = ".jpg")
+        ggsave(file = outfile, plot = PLOTtc, width = default_w, height = default_h*2)
+        list( src = normalizePath(outfile)
+              , width = out_w 
+              , contentType = "image/jpg"
+              #, alt = "alttext"
+        )
+    }, deleteFile = TRUE)
+    
     #-- TAB00 -----------------------
-    output$distPlot <- renderPlot({
-        # generate bins based on input$bins from ui.R
-        x    <- faithful[, 2]
-        bins <- seq(min(x), max(x), length.out = input$bins + 1)
-        
-        # draw the histogram with the specified number of bins
-        hist(x, breaks = bins, col = 'darkgray', border = 'white')
-    })
+    # output$distPlot <- renderPlot({
+    #     # generate bins based on input$bins from ui.R
+    #     x    <- faithful[, 2]
+    #     bins <- seq(min(x), max(x), length.out = input$bins + 1)
+    #     
+    #     # draw the histogram with the specified number of bins
+    #     hist(x, breaks = bins, col = 'darkgray', border = 'white')
+    # })
     
 } #end of server 
 
