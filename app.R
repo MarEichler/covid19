@@ -9,6 +9,9 @@ source("script/plot/overview_dailycases.R")
 source("script/plot/overview_fatalities.R")
 source("script/plot/gf_longterm.R")
 source("script/plot/gf_twoweeks.R")
+source("script/plot/state_newcases.R")
+source("script/plot/state_twoweeks.R")
+source("script/plot/state_twoweeksgf.R")
 
 plot_w_perc <- "70%"
 
@@ -28,7 +31,7 @@ ui <- fluidPage(
             ")),
 mainPanel(width = 12, 
     titlePanel("COVID-19 Tracking"),
-    tabsetPanel(type = "tabs", selected = 2, 
+    tabsetPanel(type = "tabs", selected = 3, 
                 #-- TAB1: OVERVIEW  ---------------------------------
                 tabPanel( #1
                     align = "center", 
@@ -73,7 +76,7 @@ mainPanel(width = 12,
                     fluidRow(imageOutput("PLOToverview_fatalities", height = "100%"))
                 ), #tabPanel1  
                 #-- TAB2: GROWTH FACTOR   ---------------------------------
-                tabPanel( #1
+                tabPanel( #2
                     align = "center", 
                     value = 2, 
                     title = "Growth Factor",
@@ -121,6 +124,18 @@ mainPanel(width = 12,
                     br(), br(), 
                     fluidRow(imageOutput("PLOTgf_twoweeks", height = "100%"))
                 ), #tabPanel2
+                #-- TAB3: STATE FACET -----------------------
+                tabPanel( #3
+                    align = "center", 
+                    value = 3, 
+                    title = "State Trends",
+                    br(), 
+                    fluidRow(imageOutput("PLOTstate_newcases", height = "100%")),
+                    br(), br(), 
+                    fluidRow(imageOutput("PLOTstate_twoweeks", height = "100%")),
+                    br(), br(), 
+                    fluidRow(imageOutput("PLOTstate_twoweeksgf", height = "100%"))
+                ), #tabPanel3
                 #-- TAB 00 ---------------------------------
                 tabPanel( #00
                     title = "TAB",
@@ -151,16 +166,8 @@ mainPanel(width = 12,
 
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
-
-    output$distPlot <- renderPlot({
-        # generate bins based on input$bins from ui.R
-        x    <- faithful[, 2]
-        bins <- seq(min(x), max(x), length.out = input$bins + 1)
-
-        # draw the histogram with the specified number of bins
-        hist(x, breaks = bins, col = 'darkgray', border = 'white')
-    })
     
+    #-- TAB1: OVERVIEW -----------------------
     output$PLOToverview_totals <- renderImage({
         out_w <- ifelse(session$clientData$output_PLOToverview_totals_width <= 1000, "100%", plot_w_perc)
         outfile <- tempfile(fileext = ".jpg")
@@ -194,6 +201,7 @@ server <- function(input, output, session) {
         )
     }, deleteFile = TRUE)
     
+    #-- TAB2: GROTWTH FACTOR  -----------------------
     output$PLOTgf_longterm<- renderImage({
         out_w <- ifelse(session$clientData$output_PLOTgf_longterm_width <= 1000, "100%", plot_w_perc)
         outfile <- tempfile(fileext = ".jpg")
@@ -215,6 +223,61 @@ server <- function(input, output, session) {
               #, alt = "alttext"
         )
     }, deleteFile = TRUE)
+    
+    #-- TAB3: STATE FACET -----------------------
+    output$PLOTstate_newcases<- renderImage({
+        out_w <- ifelse(session$clientData$output_PLOTstate_newcases_width <= 1000, "100%", plot_w_perc)
+        outfile <- tempfile(fileext = ".jpg")
+        ggsave(file = outfile, plot = PLOTstate_newcases, width = default_w, height = 5)
+        list( src = normalizePath(outfile)
+              , width = out_w 
+              , contentType = "image/jpg"
+              #, alt = "alttext"
+        )
+    }, deleteFile = TRUE)
+    
+    output$PLOTstate_newcases<- renderImage({
+        out_w <- ifelse(session$clientData$output_PLOTstate_newcases_width <= 1000, "100%", plot_w_perc)
+        outfile <- tempfile(fileext = ".jpg")
+        ggsave(file = outfile, plot = PLOTstate_newcases, width = default_w, height = 5)
+        list( src = normalizePath(outfile)
+              , width = out_w 
+              , contentType = "image/jpg"
+              #, alt = "alttext"
+        )
+    }, deleteFile = TRUE)
+    
+    output$PLOTstate_twoweeks<- renderImage({
+        out_w <- ifelse(session$clientData$output_PLOTstate_twoweeks_width <= 1000, "100%", plot_w_perc)
+        outfile <- tempfile(fileext = ".jpg")
+        ggsave(file = outfile, plot = PLOTstate_twoweeks, width = default_w, height = 5)
+        list( src = normalizePath(outfile)
+              , width = out_w 
+              , contentType = "image/jpg"
+              #, alt = "alttext"
+        )
+    }, deleteFile = TRUE)
+    
+    output$PLOTstate_twoweeksgf<- renderImage({
+        out_w <- ifelse(session$clientData$output_PLOTstate_twoweeksgf_width <= 1000, "100%", plot_w_perc)
+        outfile <- tempfile(fileext = ".jpg")
+        ggsave(file = outfile, plot = PLOTstate_twoweeksgf, width = default_w, height = 5.75)
+        list( src = normalizePath(outfile)
+              , width = out_w 
+              , contentType = "image/jpg"
+              #, alt = "alttext"
+        )
+    }, deleteFile = TRUE)
+    
+    #-- TAB00 -----------------------
+    output$distPlot <- renderPlot({
+        # generate bins based on input$bins from ui.R
+        x    <- faithful[, 2]
+        bins <- seq(min(x), max(x), length.out = input$bins + 1)
+        
+        # draw the histogram with the specified number of bins
+        hist(x, breaks = bins, col = 'darkgray', border = 'white')
+    })
     
 } #end of server 
 
