@@ -23,7 +23,7 @@ library(urbnmapr)
 
 
 default_w <- 8
-default_h <- 4
+default_h <- 5
 
 
 knitr::opts_chunk$set(fig.width=default_w, fig.height=default_h, dpi=300, echo=FALSE, warning = FALSE, message = FALSE)
