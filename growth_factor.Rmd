@@ -128,9 +128,3 @@ covid19 %>%
   row_spec(1, bold=T, background = "rgba(0, 0, 0, .05)")
 ```
 
-$$
-\text{Growth Factor} = 
-\begin
-\frac{ \text{New-Cases}_N}{\text{New-Cases}_{N-1}}  \text{if } \text{New-Cases}_{N-1} \neq 0 
-\text{New-Cases}_N  \text{if } \text{New-Cases}_{N-1} = 0 
-$$
