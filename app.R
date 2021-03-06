@@ -1,6 +1,6 @@
 source("script/variable/setup.R")
 source("script/dataframe/covid19_state.R") #run script for covid19 df
-# source("script/dataframe/covid19_county.R") #run script for covid19 df
+source("script/dataframe/covid19_county.R") #run script for covid19 df
 source("script/variable/parameters.R") #global parameters
 
 
