@@ -35,7 +35,7 @@ mod_dates <- tribble(
   , "rmd"   , "growth_factor", file.info("growth_factor.Rmd")$mtime
   , "rmd"   , "state"        , file.info("state.Rmd")$mtime
   , "rmd"   , "data_source"  , file.info("data_source.Rmd")$mtime
-  , "rmd"   , "current"      , file.info("current.Rmd")$mtime
+  , "rmd"   , "nc"      , file.info("nc.Rmd")$mtime
   , "rmd"   , "total"        , file.info("total_cases.Rmd")$mtime
 )
 ```
@@ -89,11 +89,11 @@ Code for this page last modified: `r last_mod`
 
 Data as of `r data_date`  
 
-```{r child="current.Rmd"}
+```{r child="nc.Rmd"}
 ```
 
 ```{r}
-last_mod <- mod_dates %>% filter(type == "script" | name == "current") %>% pull(mod_date) %>% max() %>% format(., "%Y-%m-%d")
+last_mod <- mod_dates %>% filter(type == "script" | name == "nc") %>% pull(mod_date) %>% max() %>% format(., "%Y-%m-%d")
 ```
 Code for this page last modified: `r last_mod` 
 
