@@ -22,6 +22,7 @@ library(shiny)
 lastmod_date <- file.info("app.R")$mtime %>% with_tz(tzone = "America/Los_Angeles") %>% format("%B, %e %Y %H:%M %Z")
 data_date <- covid19 %>% pull(date) %>% max() %>% format("%B, %e %Y")
 
+
 ui <- fluidPage(
     # section below allows in-line LaTeX via $ in mathjax. 
     # https://stackoverflow.com/questions/54876731/inline-latex-equations-in-shiny-app-with-mathjax
@@ -30,7 +31,7 @@ ui <- fluidPage(
             tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
             });
             </script >
-            ")),
+            ")), 
 mainPanel(width = 12, 
     titlePanel("Tracking COVID-19 in the United States"),
     tabsetPanel(type = "tabs", selected = 1, 
@@ -140,18 +141,18 @@ mainPanel(width = 12,
                 ), #tabPanel3
                 #-- TAB4: NEW CASES  -----------------------
                 tabPanel( #4
-                    align = "center", 
-                    value = 4, 
+                    align = "center",
+                    value = 4,
                     title = "Current New Cases",
                     br(), 
                     fluidRow(imageOutput("PLOTnc", height = "100%"))
                 ), #tabPanel4
                 #-- TAB5: NEW CASES  -----------------------
                 tabPanel( #5
-                    align = "center", 
-                    value = 5, 
+                    align = "center",
+                    value = 5,
                     title = "Total Cases",
-                    br(), 
+                    br(),
                     fluidRow(imageOutput("PLOTtc", height = "100%"))
                 ), #tabPanel5
                 #-- TAB 00 ---------------------------------
@@ -173,7 +174,6 @@ mainPanel(width = 12,
                     title = "Data Source",
                     br(), 
                     fluidRow(column(width = 8, offset = 2, align = "left", #style = "border: solid 1px black;", 
-                                    h2("Total Cases and Total Dealths"), 
                                     "COVID-19 cases at the county level are taken from",
                                     tags$a("Johns Hopkins.", href = "https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data/csse_covid_19_time_series", target = "_blank"),
                                     "Population numbers are taken from the",
@@ -208,6 +208,8 @@ mainPanel(width = 12,
     ) #end fluidRow
 ) #mainPanel
 ) #fluidPage
+
+
 
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
@@ -310,19 +312,19 @@ server <- function(input, output, session) {
         outfile <- tempfile(fileext = ".jpg")
         ggsave(file = outfile, plot = PLOTnc, width = default_w, height = default_h*2)
         list( src = normalizePath(outfile)
-              , width = out_w 
+              , width = out_w
               , contentType = "image/jpg"
               #, alt = "alttext"
         )
     }, deleteFile = TRUE)
-    
+
     #-- TAB5: TOTAL CASES -----------------------
     output$PLOTtc <- renderImage({
         out_w <- ifelse(session$clientData$output_PLOTtc_width <= 1000, "100%", plot_w_perc)
         outfile <- tempfile(fileext = ".jpg")
         ggsave(file = outfile, plot = PLOTtc, width = default_w, height = default_h*2)
         list( src = normalizePath(outfile)
-              , width = out_w 
+              , width = out_w
               , contentType = "image/jpg"
               #, alt = "alttext"
         )
