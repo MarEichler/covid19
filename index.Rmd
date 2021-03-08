@@ -55,7 +55,7 @@ JH data as of `r data_date `   <br>
 <a href="https://github.com/MarEichler/covid19" target = "_blank">
 Code </a>
 last updated `r lastmod_date`
-</center>
+</center><br><br>
 
 
 ## Growth Factor  
@@ -68,7 +68,7 @@ JH data as of `r data_date `   <br>
 <a href="https://github.com/MarEichler/covid19" target = "_blank">
 Code </a>
 last updated `r lastmod_date`
-</center>
+</center><br><br>
 
 ## State Trends
 
@@ -80,7 +80,7 @@ JH data as of `r data_date `   <br>
 <a href="https://github.com/MarEichler/covid19" target = "_blank">
 Code </a>
 last updated `r lastmod_date`
-</center>
+</center><br><br>
 
 
 ## Current New Cases
@@ -93,7 +93,7 @@ JH data as of `r data_date `   <br>
 <a href="https://github.com/MarEichler/covid19" target = "_blank">
 Code </a>
 last updated `r lastmod_date`
-</center>
+</center><br><br>
 
 
 ## Total Cases
@@ -107,7 +107,7 @@ JH data as of `r data_date `   <br>
 <a href="https://github.com/MarEichler/covid19" target = "_blank">
 Code </a>
 last updated `r lastmod_date`
-</center>
+</center><br><br>
 
 ## Data  
 ```{r child="data_source.Rmd"}
@@ -120,4 +120,4 @@ JH data as of `r data_date `   <br>
 <a href="https://github.com/MarEichler/covid19" target = "_blank">
 Code </a>
 last updated `r lastmod_date`
-</center>
+</center><br><br>
