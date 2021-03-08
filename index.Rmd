@@ -18,9 +18,6 @@ source("script/variable/parameters.R") #global parameters
 ```
 
 
-```{r index-data-date}
-data_date <- covid19 %>% pull(date) %>% max()
-```
 
 
 ```{r index-mod-dates}
@@ -38,6 +35,10 @@ mod_dates <- tribble(
   , "rmd"   , "nc"      , file.info("nc.Rmd")$mtime
   , "rmd"   , "total"        , file.info("total_cases.Rmd")$mtime
 )
+
+
+lastmod_date <- mod_dates %>% pull(mod_date) %>% max() %>% with_tz(tzone = "America/Los_Angeles") %>% format("%B, %e %Y %H:%M %Z")
+data_date <- covid19 %>% pull(date) %>% max() %>% format("%B, %e %Y")
 ```
 
 
@@ -46,82 +47,77 @@ mod_dates <- tribble(
 
 ## Overview  
 
-
-Data as of `r data_date`  
- 
-
 ```{r child="overview.Rmd"}
 ```
+<br><br>
+<center>
+JH data as of `r data_date `   <br>
+<a href="https://github.com/MarEichler/covid19" target = "_blank">
+Code </a>
+last updated `r lastmod_date`
+</center>
 
-```{r}
-last_mod <- mod_dates %>% filter(type == "script" | name == "overview") %>% pull(mod_date) %>% max() %>% format(., "%Y-%m-%d")
-```
-Code for this page last modified: `r last_mod` 
 
 ## Growth Factor  
 
-Data as of `r data_date`  
-
 ```{r child="growth_factor.Rmd"}
 ```
-
-```{r}
-last_mod <- mod_dates %>% filter(type == "script" | name == "growth_factor") %>% pull(mod_date) %>% max() %>% format(., "%Y-%m-%d")
-```
-Code for this page last modified: `r last_mod` 
+<br><br>
+<center>
+JH data as of `r data_date `   <br>
+<a href="https://github.com/MarEichler/covid19" target = "_blank">
+Code </a>
+last updated `r lastmod_date`
+</center>
 
 ## State Trends
 
-
-Data as of `r data_date`  
-
 ```{r child="state.Rmd"}
 ```
-
-```{r}
-last_mod <- mod_dates %>% filter(type == "script" | name == "state") %>% pull(mod_date) %>% max() %>% format(., "%Y-%m-%d")
-```
-Code for this page last modified: `r last_mod` 
+<br><br>
+<center>
+JH data as of `r data_date `   <br>
+<a href="https://github.com/MarEichler/covid19" target = "_blank">
+Code </a>
+last updated `r lastmod_date`
+</center>
 
 
 ## Current New Cases
 
-
-Data as of `r data_date`  
-
 ```{r child="nc.Rmd"}
 ```
-
-```{r}
-last_mod <- mod_dates %>% filter(type == "script" | name == "nc") %>% pull(mod_date) %>% max() %>% format(., "%Y-%m-%d")
-```
-Code for this page last modified: `r last_mod` 
+<br><br>
+<center>
+JH data as of `r data_date `   <br>
+<a href="https://github.com/MarEichler/covid19" target = "_blank">
+Code </a>
+last updated `r lastmod_date`
+</center>
 
 
 ## Total Cases
 
-
-Data as of `r data_date`  
-
 ```{r child="total_cases.Rmd"}
 ```
 
-```{r}
-last_mod <- mod_dates %>% filter(type == "script" | name == "total_cases") %>% pull(mod_date) %>% max() %>% format(., "%Y-%m-%d")
-```
-Code for this page last modified: `r last_mod` 
-
+<br><br>
+<center>
+JH data as of `r data_date `   <br>
+<a href="https://github.com/MarEichler/covid19" target = "_blank">
+Code </a>
+last updated `r lastmod_date`
+</center>
 
 ## Data  
-
-Data as of `r data_date`  
-
-
 ```{r child="data_source.Rmd"}
 ```
 
-```{r}
-last_mod <- mod_dates %>% filter(name == "data_source") %>% pull(mod_date) %>% max() %>% format(., "%Y-%m-%d")
-```
-Code for this page last modified: `r last_mod` 
 
+<br><br>
+<center>
+JH data as of `r data_date `   <br>
+<a href="https://github.com/MarEichler/covid19" target = "_blank">
+Code </a>
+last updated `r lastmod_date`
+</center>
