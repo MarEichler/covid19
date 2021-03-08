@@ -37,7 +37,7 @@ mod_dates <- tribble(
 )
 
 
-lastmod_date <- mod_dates %>% pull(mod_date) %>% max() %>% with_tz(tzone = "America/Los_Angeles") %>% format("%B, %e %Y %H:%M %Z")
+lastmod_date <- mod_dates %>% pull(mod_date) %>% max() %>% with_tz(tzone = Sys.timezone()) %>% format("%B, %e %Y %H:%M %Z")
 data_date <- covid19 %>% pull(date) %>% max() %>% format("%B, %e %Y")
 ```
 

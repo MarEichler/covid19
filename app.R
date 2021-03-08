@@ -15,11 +15,31 @@ source("script/plot/state_twoweeksgf.R")
 source("script/plot/nc.R")
 source("script/plot/tc.R")
 
+
+max_modtime <- max(
+  file.info("script/variable/setup.R")$mtime
+, file.info("script/dataframe/covid19_state.R")$mtime #run script for covid19 df
+, file.info("script/dataframe/covid19_county.R")$mtime #run script for covid19 df
+, file.info("script/variable/parameters.R")$mtime #global parameters
+, file.info("script/plot/overview_totals.R")$mtime
+, file.info("script/plot/overview_dailycases.R")$mtime
+, file.info("script/plot/overview_fatalities.R")$mtime
+, file.info("script/plot/gf_longterm.R")$mtime
+, file.info("script/plot/gf_twoweeks.R")$mtime
+, file.info("script/plot/state_newcases.R")$mtime
+, file.info("script/plot/state_twoweeks.R")$mtime
+, file.info("script/plot/state_twoweeksgf.R")$mtime
+, file.info("script/plot/nc.R")$mtime
+, file.info("script/plot/tc.R")$mtime
+, file.info("app.R")$mtime
+)
+
+
 plot_w_perc <- "70%"
 
 library(shiny)
 
-lastmod_date <- file.info("app.R")$mtime %>% with_tz(tzone = "America/Los_Angeles") %>% format("%B, %e %Y %H:%M %Z")
+lastmod_date <- max_modtime %>% with_tz(tzone = Sys.timezone()) %>% format("%B, %e %Y %H:%M %Z")
 data_date <- covid19 %>% pull(date) %>% max() %>% format("%B, %e %Y")
 
 
