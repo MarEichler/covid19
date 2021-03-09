@@ -30,14 +30,14 @@ max_val <- RoundTo(max(last14days_facet_data$case_new_PC_100k, na.rm = TRUE), mu
 
 
 colors_indec <- c(
-  "grey20"
+    brewer.pal(n=7, "RdYlGn")[7]
   , brewer.pal(n=7, "RdYlGn")[1]
-  , brewer.pal(n=7, "RdYlGn")[7]
+  , "grey20"
 )
 
 
 
-names(colors_indec) <-  last14days_facet_data %>% distinct(trend) %>% pull(trend)
+names(colors_indec) <-  last14days_facet_data %>% distinct(trend) %>% pull(trend) %>% sort()
 
 PLOTstate_twoweeks <- ggplot(last14days_facet_data, aes(date, case_MA7_PC_100k)) + 
   geom_col(aes(y = case_new_PC_100k), alpha=0.3) +
