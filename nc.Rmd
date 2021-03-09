@@ -8,17 +8,20 @@ editor_options:
 ---
 
 ```{r current-outside-script, results="hide", warning=FALSE, message=FALSE, include = FALSE}
-source("script/variable/setup.R")
-source("script/dataframe/covid19_state.R") #run script for covid19 df
-source("script/dataframe/covid19_county.R") #run script for covid19 df
-source("script/variable/parameters.R") #global parameters
+# source("script/variable/setup.R")
+# source("script/dataframe/covid19_state.R") #run script for covid19 df
+# source("script/dataframe/covid19_county.R") #run script for covid19 df
+# source("script/variable/parameters.R") #global parameters
 ```
 
 
-```{r fig.height=10, fig.width = 8}
+```{r fig.height=12, fig.width = 8}
 source("script/plot/nc.R")
 PLOTnc
 ```
+
+
+
 
 
 

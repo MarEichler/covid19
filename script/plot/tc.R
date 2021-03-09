@@ -1,23 +1,12 @@
 
-#HEX MAP SET UP
-
-#INFO HERE: https://www.r-graph-gallery.com/328-hexbin-map-of-the-usa.html 
-
-# Download the Hexagones boundaries at geojson format here:
-#     https://team.carto.com/u/andrew/tables/andrew.us_states_hexgrid/public/map.
-
-# Load downloaded file 
-spdf <- geojsonio::geojson_read("data/us_states_hexgrid.geojson",  what = "sp")
-
-spdf@data <-  spdf@data %>% 
-  mutate(
-    google_name = gsub(" \\(United States\\)", "", google_name)
-    , state_pc = iso3166_2
-  )
-spdf_fortified <- broom::tidy(spdf, region = "state_pc")
+# https://github.com/MarEichler/us_hex_map/tree/main/states_and_territories
+centers   <- read_csv("data/usa_st_centers.csv")
+spdf_fort <- read_csv("data/usa_st_fort.csv")
 
 
 current_date <- max(covid19$date)
+
+hex_items <- c(state.abb, "DC", "PR", "USA")
 
 quant_breaks <- covid19_county %>% 
   pull(case_total_PC) %>%
@@ -34,7 +23,7 @@ quant_labels <- c(
 names(quant_colors) <-  quant_labels
 
 df <- covid19 %>% 
-  filter(geo %in% c(state.abb, "DC", "USA")) %>%
+  filter(geo %in% hex_items) %>%
   filter(date == current_date) %>%
   mutate(
     quantile = cut(
@@ -48,19 +37,16 @@ df <- covid19 %>%
 
 max_date <- max(covid19$date)
 
-hex_data<- spdf_fortified %>%
-  left_join(. , df, by=c("id" = "geo") ) 
+ 
 
-
-
-#HEX MAP STATE LABELS 
-# Calculate the centers of each hexagon to add the labels:
-#requires rgeos package 
-centers <- cbind.data.frame(data.frame(rgeos::gCentroid(spdf, byid=TRUE), id=spdf@data$iso3166_2))
+hex_data<- spdf_fort %>%
+  left_join(., df, by=c("id" = "geo")) %>%
+  filter(id %in%  hex_items) 
 
 
 labels <- centers %>%
-  left_join(., hex_data, by = c("id" = "id")) 
+  left_join(., hex_data, by = "id") %>%
+  filter(id %in%  hex_items) 
 
 
 USA_data <- df %>% filter(geo == "USA") %>% filter(date == max_date)
@@ -85,18 +71,18 @@ PLOTtc_hex <- ggplot(data = hex_data, aes(x = long, y = lat, group = group)) +
   guides(fill=guide_legend(title.position="top")) + 
   geom_text(
       data = labels
-    , aes(x=x, y=y+0.5, label=id)
+    , aes(x=x, y=y+5, label=id)
     , color = labels$font_color 
     , fontface = "bold"
   ) +
   geom_text(
       data = labels
-    , aes(x=x, y=y-0.8, label=scales::percent(case_total_PC, accuracy = 0.1))
+    , aes(x=x, y=y-6, label=scales::percent(case_total_PC, accuracy = 0.1))
     , color = labels$font_color
     , size = 2.5
   ) +
   theme_void() +
-  coord_map() +
+  coord_fixed() +
   labs(title = title) +
   theme(
       plot.title = element_text(face = "bold", hjust = 0.5, margin = margin(0, 0, 10, 0))
