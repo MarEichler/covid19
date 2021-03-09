@@ -330,7 +330,7 @@ server <- function(input, output, session) {
     output$PLOTnc <- renderImage({
         out_w <- ifelse(session$clientData$output_PLOTnc_width <= 1000, "100%", plot_w_perc)
         outfile <- tempfile(fileext = ".jpg")
-        ggsave(file = outfile, plot = PLOTnc, width = default_w, height = default_h*2)
+        ggsave(file = outfile, plot = PLOTnc, width = default_w, height = default_h*2.4)
         list( src = normalizePath(outfile)
               , width = out_w
               , contentType = "image/jpg"
@@ -342,7 +342,7 @@ server <- function(input, output, session) {
     output$PLOTtc <- renderImage({
         out_w <- ifelse(session$clientData$output_PLOTtc_width <= 1000, "100%", plot_w_perc)
         outfile <- tempfile(fileext = ".jpg")
-        ggsave(file = outfile, plot = PLOTtc, width = default_w, height = default_h*2)
+        ggsave(file = outfile, plot = PLOTtc, width = default_w, height = default_h*2.4)
         list( src = normalizePath(outfile)
               , width = out_w
               , contentType = "image/jpg"
