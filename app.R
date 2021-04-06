@@ -39,7 +39,8 @@ plot_w_perc <- "70%"
 
 library(shiny)
 
-lastmod_date <- max_modtime %>% with_tz(tzone = Sys.timezone()) %>% format("%B, %e %Y %H:%M %Z")
+machine_tzone <- "America/Los_Angeles" #Sys.timezone() 
+lastmod_date <- max_modtime %>% with_tz(tzone = machine_tzone) %>% format("%B, %e %Y %H:%M %Z")
 data_date <- covid19 %>% pull(date) %>% max() %>% format("%B, %e %Y")
 
 
