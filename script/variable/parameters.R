@@ -21,7 +21,7 @@ my_date_breaks <- seq.Date(as.Date("2020-04-01"), as.Date(x_max), "2 month")
 #date scaling (want consistency)
 date_scaling <- scale_x_date(
     name = NULL
-  , labels = date_format("%b %Y")
+  , labels = date_format("%b '%y")
   , breaks = my_date_breaks
   , expand = c(0, 0)
   , limits = c(x_min, x_max) 
