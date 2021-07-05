@@ -12,13 +12,25 @@ df <- covid19 %>%
   filter(geo %in%  hex_items) %>%
   filter(date == current_date) %>%
   mutate(
+    case_MA7_PC_100k.plotval = case_when(
+        case_MA7_PC_100k >  1.5 ~ round(case_MA7_PC_100k, digits = 0)
+      , case_MA7_PC_100k <= 1.5 ~ round(case_MA7_PC_100k, digits = 1)
+    )
+  ) %>% 
+  mutate(
     risk_group = cut(
-      round(case_MA7_PC_100k, digits = 0)
+      case_MA7_PC_100k.plotval
       , breaks = risk_group_breaks
       , labels = risk_group_labels
       , right = FALSE
     )
     , font_color = SET_FONT_COLOR(risk_group)
+  ) %>%
+  mutate(
+    case_MA7_PC_100k.label = case_when(
+        case_MA7_PC_100k >  1.5 ~ as.character(round(case_MA7_PC_100k, digits = 0))
+      , case_MA7_PC_100k <= 1.5 ~ as.character(round(case_MA7_PC_100k, digits = 1))
+    )
   )
 
 max_date <- max(covid19$date)
@@ -62,7 +74,7 @@ PLOTnc_hex <- ggplot(data = hex_data, aes(x = long, y = lat, group = group, fill
   ) +
   geom_text(
       data = labels
-    , aes(x=x, y=y-6, label=round(case_MA7_PC_100k, 0))
+    , aes(x=x, y=y-6, label=case_MA7_PC_100k.label)
     , color = labels$font_color
     , size = 2.5
   )+
