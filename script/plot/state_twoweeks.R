@@ -26,7 +26,7 @@ last14days_facet_data <- last14days_facet_data %>%
 title <- paste("New Cases per 100,000 last 2 Weeks")
 subtitle <- paste(min(last14days_facet_data$date), "to", max(last14days_facet_data$date)) 
 
-max_val <- RoundTo(max(last14days_facet_data$case_new_PC_100k, na.rm = TRUE), multiple = 5)
+max_val <- RoundTo(max(last14days_facet_data$case_MA7_PC_100k, na.rm = TRUE), multiple = 5)
 
 
 colors_indec <- c(
@@ -37,7 +37,7 @@ colors_indec <- c(
 
 
 
-names(colors_indec) <-  last14days_facet_data %>% distinct(trend) %>% pull(trend) %>% sort()
+names(colors_indec) <-  c("Decreasing", "Increasing", "Minimal Change (<=2)")
 
 PLOTstate_twoweeks <- ggplot(last14days_facet_data, aes(date, case_MA7_PC_100k)) + 
   geom_col(aes(y = case_new_PC_100k), alpha=0.3) +
@@ -50,7 +50,7 @@ PLOTstate_twoweeks <- ggplot(last14days_facet_data, aes(date, case_MA7_PC_100k))
       name = NULL
     , expand = c(0, 0)
     , breaks = c(0, max_val)
-    , limits = c(0, max_val)
+   # , limits = c(0, max_val)
   ) +
   theme_minimal() +
   labs(
@@ -58,6 +58,7 @@ PLOTstate_twoweeks <- ggplot(last14days_facet_data, aes(date, case_MA7_PC_100k))
     , subtitle = subtitle
   ) +
   theme_minimal() +
+  coord_cartesian(ylim = c(0, max_val)) + 
   theme(
       strip.text = element_text(margin = margin(3, 3, 3, 3), face = "bold")
     , plot.title = element_text(face = "bold", hjust = 0.5)

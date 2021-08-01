@@ -3,6 +3,8 @@ gf_data <- covid19 %>%
   select(date, contains("gf")) %>%
   filter(date >= x_min)
 
+gf_max <- gf_data %>% filter(date > as.Date("2020-05-01")) %>% pull(gf) %>% max(na.rm = TRUE)
+
 labels_gf <- gf_data %>% 
   filter(date >= as.Date("2020-03-25"), date <= as.Date("2020-05-01")) %>%
   top_n(n=1, wt = gf_MA7)
@@ -28,7 +30,7 @@ PLOTgf_longterm <- ggplot(gf_data, aes(x=date))+
     , aes(y = gf_MA7-1, label = "7-Day\nMoving Average")
     , color = blue_comp
     , nudge_y = nudge_gf_val
-    , nudge_x = 20
+    , nudge_x = 60
   ) +
   date_scaling + 
   scale_y_continuous(minor_breaks = NULL) + 
@@ -38,7 +40,7 @@ PLOTgf_longterm <- ggplot(gf_data, aes(x=date))+
     , caption = "A growth factor less than one (difference less than zero) means new cases are decreasing"
   ) +
   theme_minimal()+
-  coord_cartesian(ylim = c(NA, 1.5)) + 
+  coord_cartesian(ylim = c(NA, gf_max)) + 
   theme(
       plot.title = element_text(hjust = 0.5, size = title_size)
     , plot.subtitle = element_text(hjust = 0.5, size = subtitle_size)
