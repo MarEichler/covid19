@@ -19,7 +19,7 @@ library(tidyquant)
 library(RColorBrewer)
 library(zoo)
 library(DescTools)
-library(urbnmapr)
+library(urbnmapr) #https://github.com/UrbanInstitute/urbnmapr
 
 
 default_w <- 8
